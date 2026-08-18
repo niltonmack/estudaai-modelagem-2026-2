@@ -1,0 +1,37 @@
+ESTUDAAI - REQUISITOS FUNCIONAIS (RF)
+
+RF01 - Cadastrar usuário
+O sistema deve permitir o cadastro de novos usuários.
+
+RF02 - Autenticar usuário
+O sistema deve permitir que usuários cadastrados realizem login e acessem as funcionalidades disponíveis para seu perfil.
+
+RF03 - Escolher trilha pré-definida
+O sistema deve permitir que o aluno visualize e escolha trilhas de aprendizagem pré-definidas, organizadas por área ou categoria.
+
+RF04 - Criar trilha personalizada com LLM
+O sistema deve permitir que o aluno descreva seus objetivos de estudo em linguagem natural e solicite a criação de uma trilha personalizada com apoio de um agente baseado em LLM.
+
+RF05 - Visualizar trilha de aprendizagem
+O sistema deve permitir que o aluno consulte as etapas, conteúdos e sequência de uma trilha selecionada ou personalizada.
+
+RF06 - Visualizar progresso
+O sistema deve permitir que o aluno acompanhe seu progresso em cada trilha de aprendizagem.
+
+RF07 - Marcar etapa como concluída
+O sistema deve permitir que o aluno marque uma etapa da trilha como concluída.
+
+RF08 - Conversar com o agente LLM
+O sistema deve oferecer uma interface de conversa para que o aluno solicite sugestões, esclareça dúvidas e receba apoio relacionado à sua trilha de aprendizagem.
+
+RF09 - Gerenciar categorias
+O sistema deve permitir que usuários administradores cadastrem, consultem, alterem e removam categorias de aprendizagem.
+
+RF10 - Gerenciar trilhas
+O sistema deve permitir que usuários administradores cadastrem, consultem, alterem e removam trilhas pré-definidas.
+
+RF11 - Gerenciar etapas
+O sistema deve permitir que usuários administradores cadastrem, consultem, alterem e removam etapas associadas às trilhas.
+
+RF12 - Associar etapas a trilhas
+O sistema deve permitir que o administrador organize as etapas que compõem cada trilha e defina sua sequência.
