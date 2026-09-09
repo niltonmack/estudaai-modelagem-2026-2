@@ -49,7 +49,7 @@ A interface **SHALL** apresentar navegação clara e consistente, permitindo que
 
 **Tipo EARS:** Ubíquo
 
-O código do sistema **SHALL** ser organizado em módulos e seguir boas práticas compatíveis com a arquitetura do Django, facilitando correções e a evolução do sistema.
+O código do sistema **SHALL** ser organizado em módulos e seguir boas práticas compatíveis com um backend em Node e um frontend em React, facilitando correções e a evolução do sistema.
 
 ## RNF08 - Compatibilidade web
 

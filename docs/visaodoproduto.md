@@ -4,7 +4,7 @@
 
 ### Objetivo
 
-O **EstudaAI** é uma aplicação web voltada para auxiliar estudantes no planejamento de seus estudos por meio da recomendação de trilhas de aprendizagem. O sistema oferece duas formas de utilização:
+O **EstudaAI** é uma aplicação web voltada para auxiliar estudantes no planejamento de seus estudos por meio da recomendação de trilhas de aprendizagem. A interface é implementada em **React** e a API em **Node**. O sistema oferece duas formas de utilização:
 
 - **Trilhas Pré-definidas**: O aluno pode escolher entre trilhas de estudo já curadas por especialistas, prontas para serem seguidas
 - **Trilhas Personalizadas**: O aluno pode criar trilhas personalizadas com o auxílio de um agente baseado em LLM (Large Language Model)

@@ -29,7 +29,7 @@
  - Operações de cadastro, consulta, alteração e remoção de etapas.
  - Associação de etapas às trilhas e definição explícita da sequência.
  - Interface clara para revisar os dados antes de disponibilizá-los aos alunos.
- - Código modular e manutenível para permitir a evolução das funcionalidades administrativas.
+ - Código modular e manutenível (frontend React e backend Node) para permitir a evolução das funcionalidades administrativas.
 
  ### Dores e frustrações
 
@@ -55,7 +55,7 @@
  - **RF10:** gerenciar trilhas pré-definidas.
  - **RF11 e RF12:** gerenciar etapas e associá-las às trilhas em uma sequência definida.
  - **RNF05 e RNF06:** proteger operações administrativas e restringi-las ao perfil de administrador.
- - **RNF04 e RNF07:** manter uma interface consistente e uma base de código organizada.
+ - **RNF04 e RNF07:** manter uma interface consistente e uma base de código organizada em módulos React (frontend) e Node (backend).
  - **RB02, RB03, RB07 e RB11:** garantir administração restrita, integridade do catálogo e tratamento do impacto de remoções.
 
  ### Critérios de sucesso
