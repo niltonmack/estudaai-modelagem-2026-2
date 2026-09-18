@@ -1,0 +1,151 @@
+{
+  "servers": {
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "aws-s3": {
+      "command": "C:\\APLICACOES\\mcp-tools\\aws\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\APLICACOES\\mcp-tools\\aws\\server.py"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "AWS_ACCESS_KEY_ID": "${env:AWS_ACCESS_KEY_ID}",
+        "AWS_SECRET_ACCESS_KEY": "${env:AWS_SECRET_ACCESS_KEY}",
+        "AWS_BUCKET": "${env:AWS_BUCKET}",
+        "AWS_READONLY": "${env:AWS_READONLY}"
+      }
+    },
+    "azure-blob": {
+      "command": "C:\\APLICACOES\\mcp-tools\\azure\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\APLICACOES\\mcp-tools\\azure\\server.py"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "AZURE_STORAGE_CONNECTION_STRING": "${env:AZURE_STORAGE_CONNECTION_STRING}",
+        "AZURE_STORAGE_CONTAINER": "${env:AZURE_STORAGE_CONTAINER}",
+        "AZURE_STORAGE_NAME": "${env:AZURE_STORAGE_NAME}",
+        "AZURE_STORAGE_KEY": "${env:AZURE_STORAGE_KEY}",
+        "AZURE_STORAGE_URL": "${env:AZURE_STORAGE_URL}",
+        "AZURE_READONLY": "${env:AZURE_READONLY}"
+      }
+    },
+    "sqlserver": {
+      "command": "C:\\APLICACOES\\mcp-tools\\sqlserver\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\APLICACOES\\mcp-tools\\sqlserver\\server.py"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "MSSQL_HOST": "${env:MSSQL_HOST}",
+        "MSSQL_PORT": "${env:MSSQL_PORT}",
+        "MSSQL_USER": "${env:MSSQL_USER}",
+        "MSSQL_PASSWORD": "${env:MSSQL_PASSWORD}",
+        "MSSQL_DATABASE": "${env:MSSQL_DATABASE}",
+        "MSSQL_READONLY": "${env:MSSQL_READONLY}"
+      }
+    },
+    "ssh": {
+      "command": "C:\\APLICACOES\\mcp-tools\\ssh\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\APLICACOES\\mcp-tools\\ssh\\server.py"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "SSH_HOST": "${env:SSH_HOST}",
+        "SSH_PORT": "${env:SSH_PORT}",
+        "SSH_USERNAME": "${env:SSH_USERNAME}",
+        "SSH_PASSWORD": "${env:SSH_PASSWORD}"
+      }
+    },
+    "postgres": {
+      "command": "node",
+      "args": [
+        "C:\\APLICACOES\\mcp-tools\\postgres\\dist\\server.js"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "PGHOST": "${env:PGHOST}",
+        "PGPORT": "${env:PGPORT}",
+        "PGUSER": "${env:PGUSER}",
+        "PGPASSWORD": "${env:PGPASSWORD}",
+        "PGDATABASE": "${env:PGDATABASE}",
+        "PGSSLMODE": "${env:PGSSLMODE}",
+        "PG_READONLY": "${env:PG_READONLY}"
+      }
+    },
+    "mysql": {
+      "command": "node",
+      "args": [
+        "C:\\APLICACOES\\mcp-tools\\mysql\\dist\\server.js"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "MYSQL_HOST": "${env:MYSQL_HOST}",
+        "MYSQL_PORT": "${env:MYSQL_PORT}",
+        "MYSQL_USER": "${env:MYSQL_USER}",
+        "MYSQL_PASSWORD": "${env:MYSQL_PASSWORD}",
+        "MYSQL_DATABASE": "${env:MYSQL_DATABASE}",
+        "MYSQL_READONLY": "${env:MYSQL_READONLY}"
+      }
+    },
+    "redis": {
+      "command": "C:\\APLICACOES\\mcp-tools\\redis\\.venv\\Scripts\\python.exe",
+      "args": [
+        "-m",
+        "src.main"
+      ],
+      "cwd": "C:\\APLICACOES\\mcp-tools\\redis",
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "REDIS_HOST": "${env:REDIS_HOST}",
+        "REDIS_PORT": "${env:REDIS_PORT}",
+        "REDIS_PWD": "${env:REDIS_PWD}",
+        "REDIS_SSL": "${env:REDIS_SSL}",
+        "REDIS_DB": "${env:REDIS_DB}",
+        "REDIS_READONLY": "${env:REDIS_READONLY}"
+      }
+    },
+    "ftp": {
+      "command": "C:\\APLICACOES\\mcp-tools\\ftp\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\APLICACOES\\mcp-tools\\ftp\\server.py"
+      ],
+      "envFile": "${workspaceFolder}/.vscode/mcp.env",
+      "env": {
+        "FTP_HOST": "${env:FTP_HOST}",
+        "FTP_PORT": "${env:FTP_PORT}",
+        "FTP_USER": "${env:FTP_USER}",
+        "FTP_PASSWORD": "${env:FTP_PASSWORD}",
+        "FTP_PROTOCOL": "${env:FTP_PROTOCOL}",
+        "FTP_IMPLICIT_TLS": "${env:FTP_IMPLICIT_TLS}",
+        "FTP_READONLY": "${env:FTP_READONLY}"
+      }
+    },
+    "mui-mcp": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@mui/mcp@latest"
+      ]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ]
+    }
+  }
+}
