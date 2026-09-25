@@ -5,7 +5,7 @@
 **Ator primário:** Aluno  
 **Ator secundário:** Agente LLM  
 
-O diagrama em PNG está em [`caso-uso-aluno.png`](caso-uso-aluno.png). Fundamentação: [modelo conceitual](modelo-conceitual.md), [RF01–RF08](EstudaAI_RF.md), [RB01 e RB04–RB10](EstudaAI_RB.md) e persona [Lucas Almeida](persona1.md).
+O diagrama em PNG está em [`caso-uso-aluno.png`](caso-uso-aluno.png). Fundamentação: [modelo conceitual](modelo-conceitual.md), [RF01–RF08](EstudaAI_RF.md), [RB01, RB03–RB10 e RB14](EstudaAI_RB.md) e persona [Lucas Almeida](persona1.md).
 
 ![Diagrama de caso de uso do aluno](caso-uso-aluno.png)
 
@@ -39,7 +39,7 @@ flowchart TB
 
 | Relação | Tipo | Significado |
 |---|---|---|
-| Acompanhar trilha → Autenticar usuário | «include» | RB01 exige autenticação para selecionar trilha, criar trilha personalizada ou registrar progresso |
+| Acompanhar trilha → Autenticar usuário | «include» | RB01 exige autenticação para selecionar trilha, criar trilha personalizada ou registrar progresso. Listar o catálogo pode ser anônimo. |
 | Acompanhar trilha → Registrar conclusão e progresso | «include» | O acompanhamento sempre consulta `Progresso` e pode registrar `ConclusaoEtapa` |
 | Escolher trilha pré-definida → Acompanhar trilha | «extend» | Caminho opcional: o aluno escolhe uma `Trilha` curada do catálogo |
 | Criar trilha personalizada → Acompanhar trilha | «extend» | Caminho opcional: `SolicitacaoTrilha` origina `Trilha` personalizada com apoio do Agente LLM |
@@ -65,8 +65,9 @@ Permitir que o aluno inicie ou retome uma trilha, visualize etapas e sequência,
 
 ### Pré-condições
 
-1. O aluno possui uma conta de `Usuario` com perfil de aluno, ou se cadastra no início do fluxo (RF01).
-2. Existem trilhas pré-definidas no catálogo **ou** o serviço de LLM está disponível para gerar uma trilha personalizada.
+1. Para cadastro: o e-mail ainda não está em uso (RF01). O primeiro administrador **não** nasce neste fluxo: é criado por seed na implantação.
+2. Para escolher trilha, criar personalizada, registrar progresso ou conversar: o ator é `Aluno` autenticado (RB01, RB14). Administrador **não** executa o UC01.
+3. Existem trilhas pré-definidas no catálogo **ou** o serviço de LLM está habilitado pelo administrador. Se nenhum dos dois valer, o sistema apenas informa catálogo indisponível (E4).
 
 ### Pós-condições de sucesso
 
@@ -85,8 +86,8 @@ Nenhuma trilha é associada ao aluno e nenhum `Progresso` novo é persistido. Te
 Caminho feliz: o aluno autenticado escolhe uma trilha pré-definida e registra progresso.
 
 1. O aluno informa e-mail e senha.
-2. O sistema autentica o `Usuario` e libera as funções do perfil aluno (RF02).
-3. O sistema exibe o catálogo de trilhas pré-definidas organizadas por `Categoria` (RF03).
+2. O sistema autentica o `Usuario` com JWT (Bearer), confirma o perfil aluno e libera as funções (RF02, RB14).
+3. O sistema exibe o catálogo de trilhas pré-definidas organizadas por `Categoria` (RF03). A mesma listagem também é visível sem login.
 4. O aluno escolhe uma trilha pré-definida.
 5. O sistema cria ou retoma o `Progresso` individual desse aluno nessa `Trilha` (RB04).
 6. O sistema exibe titulo, descrição, etapas, conteúdos e sequência (RF05).
@@ -105,11 +106,11 @@ No passo 1, se o aluno ainda não possui conta, o sistema permite o cadastro e r
 No passo 2, o sistema informa a falha e volta ao passo 1. O catálogo e o progresso permanecem inacessíveis.
 
 **A3 — Criar trilha personalizada (ponto de extensão, RF04, RB08, RB09)**  
-No passo 3, o aluno descreve o objetivo de estudo em linguagem natural em vez de escolher o catálogo.
+No passo 3, o aluno descreve o objetivo de estudo em linguagem natural em vez de escolher o catálogo. A geração é **síncrona** (sem fila), com timeout de 60 segundos.
 
-1. O sistema registra `SolicitacaoTrilha.textoObjetivo` e encaminha o texto ao Agente LLM.
-2. O Agente LLM devolve `respostaLLM` com proposta de percurso.
-3. O sistema cria `Trilha` do tipo `personalizada`, com `Categoria` e uma ou mais `Etapa` ordenadas (RB03).
+1. O sistema registra `SolicitacaoTrilha.textoObjetivo` e encaminha o texto ao Agente LLM (Gemini, se habilitado).
+2. O Agente LLM devolve `respostaLLM` em JSON com `titulo`, `descricao` e etapas `{titulo, conteudo, ordem}`.
+3. O sistema cria `Trilha` do tipo `personalizada`, classificada na categoria sentinela **Personalizada**, com uma ou mais `Etapa` ordenadas cujo `conteudo` é Markdown (RB03).
 4. O sistema associa a trilha ao aluno por meio de `Progresso` (RB09).
 5. O fluxo continua no passo 6.
 
@@ -117,30 +118,37 @@ No passo 3, o aluno descreve o objetivo de estudo em linguagem natural em vez de
 No passo 7, o aluno encerra sem marcar nova etapa. O histórico já registrado é preservado (RB12).
 
 **A5 — Conversar com o agente LLM (ponto de extensão, RF08, RB10)**  
-Após o passo 6, o aluno envia uma `Mensagem` sobre a trilha em andamento. O Agente LLM responde com apoio ao estudo. A conversa **não** altera a curadoria das trilhas pré-definidas.
+Após o passo 6, o aluno com trilha em andamento envia uma `Mensagem` referida a essa `Trilha`. O Agente LLM responde com apoio ao estudo (timeout 60 s). Sem progresso ativo, o sistema recusa a conversa. A conversa **não** altera a curadoria das trilhas pré-definidas.
 
 **A6 — Retomar trilha já acompanhada**  
-No passo 4, se já existir `Progresso` ativo para a trilha escolhida, o sistema retoma etapas, conclusões e percentual existentes, sem criar outro acompanhamento.
+No passo 4, se já existir `Progresso` ativo para a trilha escolhida, o sistema retoma etapas, conclusões e percentual existentes, sem criar outro acompanhamento. Não há fluxo de pausar, abandonar ou reiniciar.
+
+**A7 — Logout**  
+A qualquer momento após o passo 2, o aluno solicita encerramento de sessão (RF02). O sistema efetua o logout.
 
 ### Fluxos de exceção
 
 **E1 — Uso sem autenticação (RB01)**  
-Se o aluno tentar escolher trilha, criar trilha personalizada ou registrar progresso sem sessão autenticada, o sistema recusa a operação e conduz à autenticação.
+Se o aluno tentar escolher trilha, criar trilha personalizada ou registrar progresso sem sessão autenticada, o sistema recusa a operação e conduz à autenticação. A **listagem** do catálogo permanece disponível.
 
-**E2 — Agente LLM indisponível**  
-Em A3, se o Agente LLM não produzir resposta, o sistema não cria `Trilha` personalizada, informa a falha e oferece o catálogo pré-definido.
+**E2 — Agente LLM indisponível ou timeout**  
+Em A3 ou A5, se o Agente LLM não produzir resposta em 60 segundos, o sistema não cria `Trilha` personalizada (A3), não altera o catálogo (A5), informa a falha e, em A3, oferece o catálogo pré-definido.
 
-**E3 — Resposta do LLM sem etapas suficientes (RB03)**  
-Em A3, se a resposta não permitir montar uma trilha com categoria e ao menos uma etapa, o sistema não persiste a trilha e solicita nova descrição ou cancelamento.
+**E3 — Resposta do LLM insuficiente (RB03)**  
+Em A3, se faltar `titulo`/`descricao` ou não houver 1..* etapas ordenadas, o sistema não persiste a trilha e solicita nova descrição ou cancelamento. A categoria **não** vem do LLM.
+
+**E4 — Catálogo vazio e LLM desabilitado**  
+Se não houver trilha pré-definida e o LLM estiver desligado, o sistema exibe mensagem de catálogo indisponível. Nenhuma `Trilha` personalizada é persistida.
 
 ### Regras de negócio e requisitos
 
 | Item | Papel neste caso de uso |
 |---|---|
-| RF01, RF02 | Cadastro e autenticação |
-| RF03, RF05 | Catálogo, etapas, conteúdos e sequência |
-| RF04, RB08, RB09 | Trilha personalizada a partir de `SolicitacaoTrilha` |
+| RF01, RF02 | Cadastro (e-mail único, senha com hash, recuperação), login JWT, logout |
+| RF03, RF05 | Catálogo (listagem anônima), etapas, conteúdos Markdown e sequência |
+| RF04, RB08, RB09 | Trilha personalizada síncrona; sentinela **Personalizada**; JSON de `respostaLLM` |
 | RF06, RF07, RB04, RB05, RB06, RB12 | Progresso individual, conclusão explícita e percentual derivado |
-| RF08, RB10 | Conversa de apoio, sem substituir trilhas curadas |
-| RB01 | Autenticação obrigatória para trilhas e progresso |
+| RF08, RB10 | Conversa de apoio com trilha obrigatória, sem substituir trilhas curadas |
+| RB01 | Autenticação obrigatória para trilhas e progresso; listagem livre |
 | RB03 | Trilha sempre com categoria e etapas ordenadas |
+| RB14 | UC01 exclusivo do aluno |

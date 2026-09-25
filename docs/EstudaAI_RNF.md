@@ -19,7 +19,7 @@ O sistema **SHALL** adaptar o conteúdo da interface para uso em computadores, t
 
 **Tipo EARS:** Optional feature
 
-**WHERE** a funcionalidade de modelo de linguagem estiver habilitada, o sistema **SHALL** permitir a integração com uma API de modelo de linguagem, utilizando a OpenAI ou uma solução local baseada em Ollama.
+**WHERE** a funcionalidade de modelo de linguagem estiver habilitada, o sistema **SHALL** permitir a integração com uma API de modelo de linguagem utilizando **Gemini**. O administrador **SHALL** poder habilitar ou desabilitar essa funcionalidade pela interface administrativa. Chamadas ao LLM **SHALL** aplicar timeout de 60 segundos e **SHALL NOT** entrar no orçamento de 2 segundos do RNF03.
 
 ## RNF03 - Desempenho
 

@@ -14,7 +14,7 @@ Drivers ([`drivers-arquiteturais.md`](drivers-arquiteturais.md)) explicam *o que
 | ID | Decisão | Por que é cara |
 |---|---|---|
 | [ADR-001](#adr-001--frontend-nextjs-react-e-backend-node-via-api) | Next.js (React) + Node (API) | Trocar o framework de UI ou a stack é reescrever o sistema |
-| [ADR-002](#adr-002--llm-apenas-no-backend-atrás-de-uma-porta-provedor-intercambiável) | LLM no backend, atrás de porta, OpenAI ou Ollama | Acoplar o domínio ou o cliente Next.js a um SDK vaza chave, mistura latência e impede RNF02 |
+| [ADR-002](#adr-002--llm-apenas-no-backend-atrás-de-uma-porta-provedor-intercambiável) | LLM no backend, atrás de porta; provedor **Gemini** | Acoplar o domínio ou o cliente Next.js a um SDK vaza chave, mistura latência e impede RNF02 |
 | [ADR-003](#adr-003--uma-trilha-dois-modos-catálogo-curado-separado-do-apoio-llm) | Uma entidade `Trilha` com `tipo`; catálogo ≠ conversa | Migrar o modelo e as APIs de acompanhamento depois de haver dados é caro |
 | [ADR-004](#adr-004--invariantes-e-autorização-na-api-node-não-só-na-ui) | Regras RB/RNF valem no servidor | Corrigir autorização e progresso “só no cliente” depois de dados inválidos já persistidos é caro |
 
@@ -24,18 +24,18 @@ Status de todas: **aceita** (2026-09-08).
 
 ## O que deliberadamente não tem ADR
 
-Estas escolhas são reversíveis ou **ainda não foram tomadas**. Inventá-las agora seria ADR falsa.
+Estas escolhas **foram tomadas** na entrevista humana ([`decisoes-em-aberto.md`](decisoes-em-aberto.md)), mas **não** amarram o projeto no sentido desta ADR: desfazê-las não reescreve o domínio nem a fronteira de confiança.
 
-| Tema | Por que não é ADR agora |
-|---|---|
-| Framework HTTP do Node (Express, Fastify, Nest etc.) | Cabe atrás da mesma API; a troca não reescreve o domínio |
-| Biblioteca de UI/CSS no Next.js | Não altera o contrato com a API Node |
-| App Router versus Pages Router no Next.js | Cabe no mesmo framework; a troca não reescreve o domínio nem a API |
-| Banco de dados específico | Ainda não decidido pelos ADs |
-| Fila assíncrona para o LLM | UC01 trata a geração no fluxo do aluno; pode-se introduzir depois |
-| JWT versus sessão/cookie | Detalhe de mecanismo, desde que a autorização continue na API (ADR-004) |
-| Microserviços | O monolito modular é a opção *barata* de desfazer; adotar distribuição agora é que seria caro — e os ADs **não** pedem isso |
-| Provedor LLM em produção (OpenAI *versus* Ollama) | A ADR-002 existe justamente para deixar essa troca barata |
+| Tema | Decisão atual | Por que não é ADR |
+|---|---|---|
+| Framework HTTP do Node | **NestJS** | Cabe atrás da mesma API; a troca não reescreve `Trilha` / `Progresso` |
+| Biblioteca de UI/CSS no Next.js | **Tailwind CSS + shadcn/ui** | Não altera o contrato com a API Nest |
+| Roteamento no Next.js | **App Router** | Cabe no mesmo framework; Route Handlers não substituem a API (ADR-001) |
+| Banco de dados | **MySQL / MariaDB** | Esquema físico continua derivado do modelo conceitual |
+| Autenticação | **JWT Bearer** | Detalhe de mecanismo; autorização permanece na API (ADR-004) |
+| Fila assíncrona para o LLM | **Não** nesta versão (geração síncrona, timeout 60 s) | UC01 trata a geração no fluxo do aluno |
+| Microserviços | Não adotados | O monolito modular é a opção barata; os ADs não pedem distribuição |
+| Provedor LLM concreto | **Gemini**, interruptor na UI do administrador | A ADR-002 existe para deixar a troca de adaptador barata; o domínio não conhece o SDK |
 
 ---
 
@@ -43,7 +43,7 @@ Estas escolhas são reversíveis ou **ainda não foram tomadas**. Inventá-las a
 
 ### Decisão
 
-O EstudaAI será uma aplicação web com **frontend em Next.js** (framework React) e **API de domínio em Node**. São dois artefatos: o Next.js entrega a interface (rotas, páginas, SSR/RSC conforme o próprio Next.js); o Node expõe o contrato HTTP de catálogo, progresso, identidade e LLM.
+O EstudaAI será uma aplicação web com **frontend em Next.js** (**App Router**, React) e **API de domínio em Node** (**NestJS**). São dois artefatos: o Next.js entrega a interface; o Nest expõe o contrato HTTP de catálogo, progresso, identidade e LLM.
 
 Esta ADR **substitui** a formulação anterior “SPA React (Vite/CRA) + API Node”. O React continua sendo a biblioteca de UI; o **framework** adotado é o Next.js.
 
@@ -83,27 +83,28 @@ Não haverá templates Django no lugar do Next.js. Route Handlers / Server Actio
 
 ### Decisão
 
-Chamadas a modelo de linguagem (gerar trilha personalizada e conversar) saem **somente do Node**, por um **adaptador/porta** cujo contrato é “texto in → estrutura de trilha ou mensagem out”.
+Chamadas a modelo de linguagem (gerar trilha personalizada e conversar) saem **somente da API Nest**, por um **adaptador/porta** cujo contrato é “texto in → estrutura de trilha ou mensagem out”.
 
-- Provedores previstos: **OpenAI** ou **Ollama** (RNF02).
-- A função pode estar **desligada**; nesse caso o UC01 segue pelo catálogo pré-definido.
-- Timeout e falha do LLM **não** entram no orçamento de 2 s das ações locais (RNF03).
+- Provedor desta versão: **Gemini** (RNF02).
+- A função é habilitada ou desabilitada **pelo administrador** na interface (RF13); com a função desligada o UC01 segue pelo catálogo pré-definido.
+- Timeout: **60 segundos**. Falha ou estouro **não** entram no orçamento de 2 s das ações locais (RNF03).
+- `respostaLLM` para geração é JSON `{ titulo, descricao, etapas: [{titulo, conteudo, ordem}] }`. Categoria não vem do LLM (sentinela **Personalizada**).
 - Nenhuma chave de provedor vive no cliente Next.js (browser) nem em Server Components usados como atalho para o SDK.
 
 ### Por que foi tomada
 
-- RF04 e RF08 tornam o Agente LLM ator secundário; RNF02 exige dois provedores possíveis e habilitação opcional.
+- RF04 e RF08 tornam o Agente LLM ator secundário; RNF02 exige Gemini com habilitação opcional pelo administrador.
 - AD-QA01 e AD-CEN01: se a listagem do catálogo esperar o LLM, o SLA local quebra.
 - RB10: sugestão de conversa não pode escrever no catálogo curado. Isso só se garante se o adaptador não tiver permissão de publicação administrativa.
-- Acoplar `Trilha` / `Progresso` ao SDK da OpenAI tornaria Ollama (e o desligamento) uma reescrita. A porta deixa a **escolha do provedor** barata — por isso *essa* escolha de provedor não tem ADR própria.
+- Acoplar `Trilha` / `Progresso` ao SDK do Gemini tornaria outro provedor (e o desligamento) uma reescrita. A porta deixa a **escolha do provedor** barata — por isso *essa* escolha não tem ADR própria.
 
 ### Alternativas consideradas
 
 | Alternativa | Por que foi rejeitada |
 |---|---|
-| Chamar OpenAI/Ollama no browser ou em Route Handler do Next.js | Expõe chave ou mistura latência da UI com o provedor; fura a porta única da API Node e impede RB01/RNF05 no mesmo ponto |
-| Um único SDK no domínio (só OpenAI) | Viola RNF02; desfazer o vendor lock é reescrever o núcleo |
-| Microsserviço só de LLM | Os ADs não pedem distribuição; um adaptador interno no Node basta e é mais barato de operar |
+| Chamar Gemini no browser ou em Route Handler do Next.js | Expõe chave ou mistura latência da UI com o provedor; fura a porta única da API Nest e impede RB01/RNF05 no mesmo ponto |
+| Um único SDK no domínio (acoplado ao Gemini) | Viola a porta; desfazer o vendor lock é reescrever o núcleo |
+| Microsserviço só de LLM | Os ADs não pedem distribuição; um adaptador interno no Nest basta e é mais barato de operar |
 | LLM obrigatório no caminho feliz do aluno | A pré-condição do UC01 admite catálogo **ou** LLM; RNF02 é *WHERE* habilitado |
 
 ### Consequências
@@ -112,7 +113,7 @@ Chamadas a modelo de linguagem (gerar trilha personalizada e conversar) saem **s
 - Há dois caminhos na API: **local** (catálogo, progresso, CRUD) e **externo** (gerar / conversar), com política de timeout e fallback (UC01-E2, UC01-E3).
 - Resposta inválida do LLM não persiste `Trilha` que viole RB03.
 - Custo: um contrato a manter e testes de adaptador falso (fake) para o domínio.
-- Trocar OpenAI por Ollama (ou desligar o LLM) **não** exige nova ADR, desde que a porta se mantenha.
+- Trocar o adaptador Gemini (ou desligar o LLM) **não** exige nova ADR, desde que a porta se mantenha.
 
 **Drivers:** AD-C02, AD-QA01, AD-QA03, AD-CEN01, AD-CEN03, RF04, RF08, RNF02, RNF03, RB08, RB10.
 
@@ -164,11 +165,13 @@ Autenticação, perfil (aluno / administrador) e regras de domínio são **impos
 
 Inclui, no servidor:
 
-- recusar anônimo em escolha de trilha, geração personalizada e progresso (RB01, RNF05);
-- recusar aluno em CRUD de categoria, trilha pré-definida e etapa (RB02, RNF06);
+- recusar anônimo em escolha de trilha, geração personalizada, progresso e conversa (RB01, RNF05);
+- permitir listagem anônima do catálogo (RF03, RB01);
+- recusar aluno em CRUD de categoria, trilha pré-definida, etapa e interruptor LLM (RB02, RNF06, RF13);
 - gravar `ConclusaoEtapa` só com marcação explícita e calcular `/percentualProgresso` no domínio (RB05, RB06);
-- validar RB03 antes de publicar trilha;
-- consultar `Progresso` / `ConclusaoEtapa` antes de remover etapa vinculada (RB11).
+- validar RB03 antes de publicar trilha (categoria sentinela **Personalizada** nas geradas);
+- recusar remoção de etapa com progresso vigente e de categoria que ainda classifique trilhas (RB11, RB13);
+- impor XOR de perfil (RB14) e JWT Bearer como mecanismo desta versão.
 
 O Next.js pode esconder botões; isso **não** é a restrição.
 
@@ -192,8 +195,8 @@ O Next.js pode esconder botões; isso **não** é a restrição.
 
 - Toda rota de escrita do UC01 e do UC02 passa por autenticação + autorização + invariante.
 - O Next.js torna-se cliente da API; testes de regra de negócio concentram-se no Node.
-- Mecanismo de sessão (cookie, JWT, etc.) pode mudar **sem** nova ADR, desde que esta fronteira se mantenha.
-- RB11 exige leitura de dependências na mesma API que executa o delete — não um “confirm” apenas visual.
+- Mecanismo de sessão é JWT Bearer nesta versão e pode mudar **sem** nova ADR, desde que esta fronteira se mantenha.
+- RB11/RB13 exigem leitura de dependências na mesma API que recusa o delete — não um “confirm” apenas visual.
 
 **Drivers:** AD-RF02, AD-RF03, AD-RF04, AD-QA02, UC01, UC02, RB01–RB06, RB11, RNF05, RNF06.
 
@@ -201,11 +204,11 @@ O Next.js pode esconder botões; isso **não** é a restrição.
 
 ## Relação com os drivers
 
-| ADR | ADs que a justificam | O que continua em aberto |
+| ADR | ADs que a justificam | Complemento desta versão (não é ADR) |
 |---|---|---|
-| 001 | AD-C01, AD-C03 | Framework HTTP da API Node; App Router vs Pages Router |
-| 002 | AD-C02, AD-QA01, AD-QA03 | Qual provedor está ligado em cada ambiente |
-| 003 | AD-RF01, AD-RF03 | Esquema físico / SGBD |
-| 004 | AD-RF02, AD-RF04, AD-QA02 | Protocolo de autenticação |
+| 001 | AD-C01, AD-C03 | NestJS + App Router |
+| 002 | AD-C02, AD-QA01, AD-QA03 | Gemini; interruptor admin; timeout 60 s; JSON de `respostaLLM` |
+| 003 | AD-RF01, AD-RF03 | MySQL / MariaDB; sentinela **Personalizada** |
+| 004 | AD-RF02, AD-RF04, AD-QA02 | JWT Bearer; XOR de perfil; catálogo anônimo |
 
 Nova ADR só se uma decisão futura **invalidar** uma destas quatro (por exemplo, abandonar o Next.js, colocar o domínio só em Route Handlers, acoplar o domínio a um SDK de LLM, ou mover a autorização para fora da API sem substituto).
