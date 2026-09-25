@@ -11,7 +11,7 @@ EstudaAI: web de trilhas de aprendizagem. Frontend Next.js (App Router), API Nes
 Documentação de modelagem: `docs/` (visão, RF, RB, RNF, modelo conceitual, UC, drivers, ADRs).
 Mapa SDD: `docs/mapa-specs.md`. Decisões humanas: `docs/decisoes-em-aberto.md`.
 
-Não invente requisito, entidade ou tecnologia em aberto. Gemini como LLM diverge de RNF02/ADR-002 até a baseline ser alterada.
+Não invente requisito, entidade ou tecnologia fora da baseline e de `docs/decisoes-em-aberto.md` (23 OPENs fechadas). LLM desta versão: Gemini, atrás da porta da API Nest. Não implemente uma Spec cujo layout esteja `pendente` em `docs/specs.md`.
 
 Handoffs do pipeline de skills: pasta `context/` na raiz.
 

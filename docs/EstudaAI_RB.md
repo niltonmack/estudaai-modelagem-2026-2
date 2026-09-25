@@ -15,6 +15,8 @@ As regras abaixo seguem o modelo EARS (Easy Approach to Requirements Syntax). As
 
 **IF** um aluno quiser selecionar uma trilha, criar uma trilha personalizada ou registrar seu progresso, o sistema **SHALL** exigir que ele esteja autenticado.
 
+A listagem do catálogo de trilhas pré-definidas **SHALL NOT** exigir autenticação.
+
 ## RB02 - Administração restrita
 
 **Tipo EARS:** Conditional
@@ -26,6 +28,8 @@ As regras abaixo seguem o modelo EARS (Easy Approach to Requirements Syntax). As
 **Tipo EARS:** Ubiquitous
 
 Toda trilha de aprendizagem **SHALL** possuir uma categoria e ser composta por uma ou mais etapas ordenadas.
+
+Toda trilha personalizada **SHALL** ser classificada na categoria sentinela de nome **Personalizada**. Essa categoria **SHALL** existir no catálogo e **SHALL NOT** ser escolhida pelo aluno nem pelo LLM.
 
 ## RB04 - Progresso individual
 
@@ -73,10 +77,30 @@ As sugestões produzidas pelo agente LLM **SHALL** ter caráter de apoio ao estu
 
 **Tipo EARS:** Conditional
 
-**IF** uma pessoa usuária solicitar a remoção de uma etapa vinculada a uma trilha, o sistema **SHALL** tratar o impacto dessa remoção sobre o progresso dos alunos que utilizam a trilha antes de concluí-la.
+**IF** uma pessoa usuária solicitar a remoção de uma etapa vinculada a uma trilha que possua progresso de alunos, o sistema **SHALL NOT** concluir a remoção.
+
+**IF** a remoção deixaria a trilha sem etapas, o sistema **SHALL** recusar a operação (RB03).
+
+`ConclusaoEtapa` já registradas **SHALL** ser preservadas no histórico. Só é permitido remover ou desassociar a etapa quando ninguém a utiliza.
 
 ## RB12 - Histórico de progresso
 
 **Tipo EARS:** State-driven
 
 **WHILE** uma trilha estiver ativa no acompanhamento de um aluno, o sistema **SHALL** manter registrada a conclusão de cada etapa desse aluno.
+
+Nesta versão o sistema **SHALL NOT** oferecer operação de pausar, abandonar ou reiniciar o `Progresso`. O atributo `ativo` apenas distingue o acompanhamento vigente.
+
+## RB13 - Integridade das categorias
+
+**Tipo EARS:** Conditional
+
+**IF** uma pessoa usuária solicitar a remoção de uma `Categoria` que ainda classifique trilhas, o sistema **SHALL NOT** concluir a remoção.
+
+Não há cascata nem recategorização automática.
+
+## RB14 - Perfil exclusivo
+
+**Tipo EARS:** Ubiquitous
+
+Todo `Usuario` **SHALL** ser **somente** aluno **ou** **somente** administrador. O sistema **SHALL NOT** acumular os dois perfis na mesma conta. O fluxo de acompanhamento de trilhas (UC01) é exclusivo do aluno.

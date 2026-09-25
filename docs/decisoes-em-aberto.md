@@ -1,15 +1,15 @@
 # Decisões em aberto — EstudaAI
 
-**Status do registro:** entrevista concluída (23 / 23)  
+**Status do registro:** entrevista concluída (23 / 23) e **absorvida na baseline**  
 **Origem:** [`mapa-specs.md`](mapa-specs.md) §3  
-**Regra:** a implementação **não** preenche silenciosamente o que permanecer em aberto. Só entra como decisão fechada o que for respondido aqui.
+**Regra:** a implementação **não** reabre o que está `decidido` ou `fora de escopo`. Este arquivo permanece como rastreio da entrevista; RF, RB, RNF, UC, modelo, drivers e ADRs já refletem as respostas.
 
 Legenda de status:
 
 | Status | Significado |
 |---|---|
 | `em aberto` | Ainda não decidido; Spec e código devem registrar OPEN, não inventar |
-| `decidido` | Resposta humana registrada; vale como complemento da baseline |
+| `decidido` | Resposta humana registrada **e** incorporada à baseline |
 | `fora de escopo` | Explicitamente excluído desta versão |
 
 ---
@@ -20,7 +20,7 @@ Legenda de status:
 |---|---|
 | **Pergunta** | Qual SGBD persistirá o modelo conceitual? O esquema físico permanece derivado do modelo, sem antecipar tabelas neste registro. |
 | **Specs** | SPEC-001 |
-| **Baseline** | Drivers §8 e ADRs: banco específico ainda não foi escolhido. |
+| **Baseline** | Drivers §8 e ADRs: banco específico ainda não tinha sido escolhido; agora MySQL/MariaDB consta como complemento reversível em [`adr.md`](adr.md). |
 | **Status** | `decidido` |
 | **Decisão** | MySQL / MariaDB |
 | **Notas** | Esquema físico permanece derivado do modelo conceitual; esta decisão escolhe o SGBD, não o desenho das tabelas. |
@@ -75,10 +75,10 @@ Legenda de status:
 |---|---|
 | **Pergunta** | Qual provedor LLM fica ligado em cada ambiente (OpenAI, Ollama, ambos) e como a função é habilitada ou desabilitada? |
 | **Specs** | SPEC-006, SPEC-007 |
-| **Baseline** | RNF02: OpenAI **ou** Ollama, somente se a função estiver habilitada. ADR-002 exige porta e interruptor. |
-| **Status** | `decidido` (divergência da baseline) |
+| **Baseline** | RNF02/ADR-002 restringiam OpenAI ou Ollama. A entrevista escolheu Gemini; a baseline foi atualizada. |
+| **Status** | `decidido` (baseline atualizada) |
 | **Decisão** | Provedor: Gemini. Interruptor: interface do administrador. |
-| **Notas** | **Conflito com RNF02 e ADR-002**, que restringem a integração a OpenAI ou Ollama. Esta resposta humana propõe alterar a baseline; até essa alteração ser aprovada, Specs devem registrar o conflito e não fingir que RNF02 já inclui Gemini. |
+| **Notas** | RNF02, ADR-002, AD-C02 e RF13 passam a registrar Gemini e o interruptor administrativo. A porta (texto in → estrutura out) permanece; o domínio não acopla o SDK. |
 
 ## OPEN-07 — Política concreta de RB11 após confirmação
 
@@ -277,7 +277,7 @@ Legenda de status:
 | OPEN-03 | UI/CSS Next.js | `decidido` — Tailwind CSS + shadcn/ui |
 | OPEN-04 | App Router vs Pages | `decidido` — App Router |
 | OPEN-05 | JWT vs sessão | `decidido` — JWT (Bearer) |
-| OPEN-06 | Provedor LLM | `decidido` — Gemini + interruptor admin (diverge RNF02/ADR-002) |
+| OPEN-06 | Provedor LLM | `decidido` — Gemini + interruptor admin (RNF02 / ADR-002 atualizados) |
 | OPEN-07 | Política RB11 | `decidido` — bloquear remoção se houver progresso; preservar conclusões; recusar trilha vazia |
 | OPEN-08 | Categoria da personalizada | `decidido` — sentinela **Personalizada** |
 | OPEN-09 | Contrato respostaLLM | `decidido` — JSON titulo, descricao, etapas `{titulo, conteudo, ordem}` |
@@ -298,4 +298,4 @@ Legenda de status:
 
 Progresso da entrevista: **23 / 23** fechadas (22 decididas, 1 fora de escopo).
 
-Nenhuma OPEN permanece `em aberto`. A implementação deve obedecer a este registro. A única divergência explícita da baseline original é **OPEN-06** (Gemini vs OpenAI/Ollama em RNF02 e ADR-002), que ainda exige alteração aprovada desses artefatos.
+Nenhuma OPEN permanece `em aberto`. A implementação deve obedecer a este registro **e** à baseline atualizada. A divergência OPEN-06 (Gemini) foi incorporada em RNF02, ADR-002, AD-C02 e RF13.
