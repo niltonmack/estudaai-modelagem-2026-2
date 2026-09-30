@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — Layout SPEC-001 (aprovado)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              ink: "#123047",
+              trail: "#1A7A72",
+              trailDark: "#14635D",
+              mint: "#D7F0ED",
+              spark: "#E3A008",
+              paper: "#F7F4EE"
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; }
+    .phone-frame {
+      width: min(390px, 100%);
+      min-height: 640px;
+      max-height: 844px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    /* O viewport simulado é um div: breakpoints md/sm do Tailwind usam a janela, não o quadro. */
+    .is-phone .auth-grid { display: block; min-height: 0; }
+    .is-phone .auth-aside { display: none !important; }
+    .is-phone .auth-panel {
+      display: flex;
+      align-items: flex-start;
+      padding: 1.25rem 1rem 2rem;
+    }
+    .is-phone .auth-form { max-width: none; width: 100%; }
+    .is-phone h2, .is-phone p, .is-phone [role="alert"], .is-phone button {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
+    }
+  </style>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-brand-trail bg-brand-mint px-4 py-3 text-sm">
+    <div class="mx-auto flex max-w-6xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <p class="font-medium text-brand-ink">
+        Protótipo SPEC-001 — layout <strong>aprovado</strong> em 2026-09-30. Não é o app em produção.
+        <a class="ml-2 underline" href="identidade.html">Identidade visual</a>
+      </p>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="text-brand-ink">Tela
+          <select id="tela" class="ml-1 rounded-md border border-brand-trail bg-white px-2 py-1">
+            <option value="login">Login</option>
+            <option value="login-erro">Login — credencial inválida</option>
+            <option value="cadastro">Cadastro de aluno</option>
+            <option value="cadastro-erro">Cadastro — e-mail duplicado</option>
+            <option value="recuperacao">Recuperação de senha</option>
+            <option value="recuperacao-ok">Recuperação — e-mail enviado</option>
+            <option value="casca-aluno">Casca aluno + logout</option>
+            <option value="casca-admin">Casca administrador + logout</option>
+          </select>
+        </label>
+        <label class="text-brand-ink">Viewport
+          <select id="vp" class="ml-1 rounded-md border border-brand-trail bg-white px-2 py-1">
+            <option value="desktop">Desktop</option>
+            <option value="phone">Smartphone (390px)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl p-4 md:p-8">
+    <div id="stage" class="mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"></div>
+  </main>
+
+  <template id="tpl-auth-shell">
+    <div class="min-h-[640px] bg-slate-50">
+      <div class="auth-grid grid min-h-[640px] md:grid-cols-2">
+        <aside class="auth-aside hidden flex-col justify-between bg-brand-ink p-10 text-white md:flex">
+          <div>
+            <img src="../identidade/logo-horizontal-inverso.svg" alt="EstudaAI" class="h-9 w-auto" />
+            <h1 class="mt-8 text-3xl font-semibold leading-tight">Trilhas de aprendizagem com curadoria e apoio de um agente.</h1>
+            <p class="mt-4 max-w-sm text-brand-mint">Cadastre-se como aluno. A área administrativa não se mistura a este fluxo (RB14).</p>
+          </div>
+          <p class="text-xs text-brand-mint">SPEC-001 · Next.js · Tailwind · shadcn/ui</p>
+        </aside>
+        <section class="auth-panel flex items-center justify-center p-6 sm:p-10">
+          <div class="auth-form w-full max-w-sm" data-form></div>
+        </section>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const tela = document.getElementById("tela");
+    const vp = document.getElementById("vp");
+
+    const hashToTela = {
+      login: "login",
+      "login-erro": "login-erro",
+      cadastro: "cadastro",
+      "cadastro-erro": "cadastro-erro",
+      recuperacao: "recuperacao",
+      "recuperacao-ok": "recuperacao-ok",
+      casca: "casca-aluno",
+      "casca-aluno": "casca-aluno",
+      "casca-admin": "casca-admin",
+      erros: "login-erro"
+    };
+
+    function applyHash() {
+      const key = (location.hash || "#login").slice(1);
+      if (hashToTela[key]) tela.value = hashToTela[key];
+    }
+
+    function logo() {
+      return `<div class="mb-6 md:hidden">
+        <img src="../identidade/logo-horizontal.svg" alt="EstudaAI" class="h-8 w-auto" />
+      </div>`;
+    }
+
+    function field(label, type, name, placeholder, extra = "") {
+      return `<label class="block text-sm font-medium leading-snug text-slate-700">${label}
+        <input type="${type}" name="${name}" placeholder="${placeholder}" ${extra}
+          class="mt-1 w-full min-w-0 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none ring-brand-trail focus:border-brand-trail focus:ring-2" />
+      </label>`;
+    }
+
+    function btn(label, kind = "primary") {
+      const cls = kind === "primary"
+        ? "w-full rounded-md bg-brand-trail px-3 py-2 text-sm font-medium leading-snug text-white hover:bg-brand-trailDark"
+        : "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium leading-snug text-slate-700 hover:bg-slate-50";
+      return `<button type="button" class="${cls}">${label}</button>`;
+    }
+
+    function alertBox(text, tone = "red") {
+      const cls = tone === "red"
+        ? "border-red-200 bg-red-50 text-red-800"
+        : "border-emerald-200 bg-emerald-50 text-emerald-800";
+      return `<div class="rounded-md border px-3 py-2 text-sm leading-relaxed ${cls}" role="alert">${text}</div>`;
+    }
+
+    function authCard(inner) {
+      const tpl = document.getElementById("tpl-auth-shell").content.cloneNode(true);
+      tpl.querySelector("[data-form]").innerHTML = inner;
+      return tpl;
+    }
+
+    function headerApp(nome, papel) {
+      const isAdmin = papel === "Administrador";
+      const navAluno = `
+        <span class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-900">Início</span>
+        <span class="rounded-md px-3 py-1.5 text-sm text-slate-400" title="SPEC-004">Catálogo</span>
+        <span class="rounded-md px-3 py-1.5 text-sm text-slate-400" title="SPEC-004">Meu progresso</span>`;
+      const navAdmin = `
+        <span class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-900">Painel</span>
+        <span class="rounded-md px-3 py-1.5 text-sm text-slate-400" title="SPEC-002">Categorias</span>
+        <span class="rounded-md px-3 py-1.5 text-sm text-slate-400" title="SPEC-003">Trilhas</span>`;
+      return `<div class="min-h-[640px] bg-slate-50">
+        <header class="border-b border-slate-200 bg-white">
+          <div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+            <div class="flex items-center gap-3">
+              <img src="../identidade/marca.svg" alt="" class="h-8 w-8" />
+              <span class="text-sm font-semibold text-brand-ink">EstudaAI</span>
+              <span class="hidden rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 sm:inline">${papel}</span>
+            </div>
+            <nav class="hidden items-center gap-1 sm:flex">${isAdmin ? navAdmin : navAluno}</nav>
+            <div class="flex items-center gap-2">
+              <span class="hidden max-w-[9rem] truncate text-sm text-slate-600 sm:inline">${nome}</span>
+              <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50">Sair</button>
+            </div>
+          </div>
+          <nav class="flex gap-1 overflow-x-auto border-t border-slate-100 px-4 py-2 sm:hidden">${isAdmin ? navAdmin : navAluno}</nav>
+        </header>
+        <section class="mx-auto max-w-5xl px-4 py-8" data-body></section>
+      </div>`;
+    }
+
+    function render() {
+      stage.className = vp.value === "phone"
+        ? "is-phone phone-frame mx-auto rounded-[1.5rem] border-8 border-slate-900 bg-white shadow-lg"
+        : "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm";
+
+      const v = tela.value;
+      let node;
+
+      if (v === "login" || v === "login-erro") {
+        node = authCard(`
+          ${logo()}
+          <h2 class="text-xl font-semibold leading-snug">Entrar</h2>
+          <p class="mt-1 text-sm leading-relaxed text-slate-500">Aluno ou administrador, cada um no seu perfil.</p>
+          <form class="mt-6 space-y-4">
+            ${v === "login-erro" ? alertBox("E-mail ou senha inválidos. Nenhuma sessão foi iniciada.") : ""}
+            ${field("E-mail", "email", "email", "lucas@exemplo.com", v === "login-erro" ? 'value="lucas@exemplo.com"' : "")}
+            ${field("Senha", "password", "senha", "••••••••", v === "login-erro" ? 'value="********"' : "")}
+            ${btn("Entrar")}
+          </form>
+          <div class="mt-4 space-y-2 text-sm">
+            <p><a class="text-brand-trail underline" href="#cadastro">Criar conta de aluno</a></p>
+            <p><a class="text-slate-600 underline" href="#recuperacao">Esqueci a senha</a></p>
+          </div>
+        `);
+      }
+
+      if (v === "cadastro" || v === "cadastro-erro") {
+        node = authCard(`
+          ${logo()}
+          <h2 class="text-xl font-semibold leading-snug">Criar conta de aluno</h2>
+          <p class="mt-1 text-sm leading-relaxed text-slate-500">O cadastro público não cria administrador. O primeiro admin nasce por seed.</p>
+          <form class="mt-6 space-y-4">
+            ${v === "cadastro-erro" ? alertBox("Este e-mail já está cadastrado. Nenhuma conta nova foi criada.") : ""}
+            ${field("Nome", "text", "nome", "Lucas Almeida", 'value="Lucas Almeida"')}
+            ${field("E-mail", "email", "email", "lucas@exemplo.com", 'value="lucas@exemplo.com"')}
+            ${field("Senha", "password", "senha", "••••••••")}
+            ${btn("Cadastrar")}
+            ${btn("Voltar ao login", "secondary")}
+          </form>
+        `);
+      }
+
+      if (v === "recuperacao") {
+        node = authCard(`
+          ${logo()}
+          <h2 class="text-xl font-semibold leading-snug">Recuperar senha</h2>
+          <p class="mt-1 text-sm leading-relaxed text-slate-500">Enviamos o procedimento para o e-mail cadastrado.</p>
+          <form class="mt-6 space-y-4">
+            ${field("E-mail", "email", "email", "lucas@exemplo.com")}
+            ${btn("Enviar procedimento")}
+            ${btn("Voltar ao login", "secondary")}
+          </form>
+        `);
+      }
+
+      if (v === "recuperacao-ok") {
+        node = authCard(`
+          ${logo()}
+          <h2 class="text-xl font-semibold leading-snug">Verifique seu e-mail</h2>
+          <div class="mt-6 space-y-4">
+            ${alertBox("Se o e-mail estiver cadastrado, o procedimento de redefinição foi enviado.", "green")}
+            <p class="text-sm leading-relaxed text-slate-600">Não confirmamos na tela se a conta existe, para não vazar cadastros.</p>
+            ${btn("Voltar ao login", "secondary")}
+          </div>
+        `);
+      }
+
+      if (v === "casca-aluno") {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = headerApp("Lucas Almeida", "Aluno");
+        wrap.querySelector("[data-body]").innerHTML = `
+          <h2 class="text-2xl font-semibold">Olá, Lucas</h2>
+          <p class="mt-2 max-w-xl text-slate-600">Você está autenticado como <strong>aluno</strong>. O catálogo e o progresso entram na SPEC-004; esta casca já mostra o logout e a navegação futura, desabilitada.</p>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">Catálogo — SPEC-004</div>
+            <div class="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">Progresso — SPEC-004</div>
+          </div>
+          <p class="mt-6 text-sm text-slate-500">O botão <strong>Sair</strong> no topo encerra a sessão (RF02 / A7).</p>
+        `;
+        node = wrap;
+      }
+
+      if (v === "casca-admin") {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = headerApp("Mariana Costa", "Administrador");
+        wrap.querySelector("[data-body]").innerHTML = `
+          <h2 class="text-2xl font-semibold">Painel administrativo</h2>
+          <p class="mt-2 max-w-xl text-slate-600">Mariana entra com o mesmo login JWT, mas o perfil é <strong>somente administrador</strong> (XOR). Não há atalho para acompanhar trilhas (UC01).</p>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">Categorias — SPEC-002</div>
+            <div class="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">Trilhas e etapas — SPEC-003</div>
+          </div>
+          <p class="mt-6 text-sm text-slate-500">O botão <strong>Sair</strong> no topo é o logout. Itens de catálogo ficam visíveis e inativos até as Specs seguintes.</p>
+        `;
+        node = wrap;
+      }
+
+      stage.replaceChildren(node);
+    }
+
+    tela.addEventListener("change", () => {
+      const map = {
+        login: "login",
+        "login-erro": "login-erro",
+        cadastro: "cadastro",
+        "cadastro-erro": "cadastro-erro",
+        recuperacao: "recuperacao",
+        "recuperacao-ok": "recuperacao-ok",
+        "casca-aluno": "casca-aluno",
+        "casca-admin": "casca-admin"
+      };
+      history.replaceState(null, "", "#" + map[tela.value]);
+      render();
+    });
+    vp.addEventListener("change", render);
+    window.addEventListener("hashchange", () => { applyHash(); render(); });
+    applyHash();
+    render();
+  </script>
+</body>
+</html>

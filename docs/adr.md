@@ -36,6 +36,8 @@ Estas escolhas **foram tomadas** na entrevista humana ([`decisoes-em-aberto.md`]
 | Fila assíncrona para o LLM | **Não** nesta versão (geração síncrona, timeout 60 s) | UC01 trata a geração no fluxo do aluno |
 | Microserviços | Não adotados | O monolito modular é a opção barata; os ADs não pedem distribuição |
 | Provedor LLM concreto | **Gemini**, interruptor na UI do administrador | A ADR-002 existe para deixar a troca de adaptador barata; o domínio não conhece o SDK |
+| Logger da API | **Logger do NestJS** (console; arquivo `logs/` só em desenvolvimento) | Não altera o domínio; política em [`logging.md`](logging.md) / RNF09 |
+| Identidade visual | Paleta Ink/Trilha/Faísca e logotipo da trilha (**aprovada** 2026-09-30) | Troca de tom não reescreve o domínio; RNF10 / [`identidade-visual.md`](identidade-visual.md) |
 
 ---
 

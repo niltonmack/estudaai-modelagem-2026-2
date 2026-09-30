@@ -1,6 +1,6 @@
 # Mapa de Specs — EstudaAI
 
-**Status:** mapa aprovado para detalhamento; texto completo em [`specs.md`](specs.md)  
+**Status:** mapa e lista de Specs **aprovados** (2026-09-30); texto completo em [`specs.md`](specs.md)  
 **Origem:** Prompt SDD (`docs/Prompt_SDD_Specs.pdf`) aplicado à baseline de modelagem  
 **Data:** 2026-09-16
 
@@ -71,6 +71,8 @@ RNFs não originam Specs próprias. Associação por Spec está no índice (§2)
 | RNF01, RNF04, RNF08 | Superfície web única, responsiva, navegadores atuais |
 | RNF02 | LLM opcional (Gemini), interruptor na UI do administrador, timeout 60 s |
 | RNF03 | Ações principais sem LLM &lt; 2 s |
+| RNF09 | Log da API Nest (identidade, autorização, falhas; sem senha/JWT) |
+| RNF10 | Logotipo e paleta únicos (Ink, Trilha, Faísca) em toda a UI |
 | RNF05, RNF06 | Autenticação e autorização na operação, não só na UI |
 | RNF07 | Módulos Node (API) + React/Next.js (UI) |
 
@@ -84,7 +86,7 @@ RNFs não originam Specs próprias. Associação por Spec está no índice (§2)
 | ADR-004 | Autenticação JWT, perfil XOR e invariantes impostos na API Nest |
 | AD-C01 / AD-C03 | Entrega web; sem app nativo; sem microserviços exigidos |
 | AD-QA01 | Isolar I/O do LLM do caminho síncrono local |
-| Complementos | MySQL/MariaDB; Tailwind + shadcn/ui; seed do primeiro admin; senha com hash |
+| Complementos | MySQL/MariaDB; Tailwind + shadcn/ui; seed do primeiro admin; senha com hash; identidade visual (RNF10) |
 
 ### 1.6 Decisões humanas (OPEN)
 
@@ -128,7 +130,7 @@ Decomposição **vertical por capacidade**. RF09–RF13 não viraram “implemen
 | **Valor** | Lucas e Mariana entram no sistema com identidade confiável; o restante das capacidades passa a ter fronteira de acesso. Esta Spec também estabelece os dois artefatos de entrega (Next.js App Router + API Nest + MySQL) exigidos por ADR-001, porque sem essa fronteira a autorização da ADR-004 não tem onde viver. |
 | **RF** | RF01, RF02 |
 | **RB** | RB01, RB02, RB14 |
-| **RNF** | RNF05, RNF06, RNF07, RNF01, RNF04, RNF08, RNF03 |
+| **RNF** | RNF05, RNF06, RNF07, RNF01, RNF04, RNF08, RNF03, RNF09, RNF10 |
 | **UC / fluxo** | UC01 «include» autenticar; UC02 «include» autenticar; A1 cadastro; A2 credenciais inválidas |
 | **Entidades** | `Usuario`, `Aluno`, `Administrador` |
 | **Drivers** | AD-RF02, AD-C01, AD-C03, AD-QA02, AD-QA04, AD-QA05 |
@@ -299,10 +301,8 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 
 ## 5. Texto completo das Specs
 
-O índice deste mapa permanece a ordem de implementação. O conteúdo completo (seções 1–14 do prompt SDD, status da Spec e **status de layout**) está em [`specs.md`](specs.md). Status inicial: Spec `especificada`, layout `pendente`.
+O índice deste mapa permanece a ordem de implementação **aprovada**: SPEC-001 → … → SPEC-007. O conteúdo completo está em [`specs.md`](specs.md). Status em 2026-09-30: Specs `aprovada`; layout da SPEC-001 `aprovado`; layout das demais `pendente`.
 
-**Portão:** o código de uma Spec só começa depois do layout `aprovado` (evidências em [`layout/`](layout/)).
+**Portão:** o código de uma Spec só começa depois do layout `aprovado` (evidências em [`layout/`](layout/)). A SPEC-001 está liberada.
 
-**Próximo passo humano:** aprovar o layout da SPEC-001.
-
-**Próximo passo de implementação (só após o layout da SPEC-001 estar `aprovado`):** implementar SPEC-001.
+**Próximo passo:** implementar a SPEC-001, sozinha. Não misturar SPEC-002.

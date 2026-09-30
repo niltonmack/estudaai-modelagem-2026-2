@@ -38,7 +38,9 @@ O código **SHALL** ser organizado em módulos compatíveis com essa arquitetura
 | Drivers arquiteturais | [`docs/drivers-arquiteturais.md`](docs/drivers-arquiteturais.md) |
 | ADRs | [`docs/adr.md`](docs/adr.md) |
 | Mapa de Specs (SDD) | [`docs/mapa-specs.md`](docs/mapa-specs.md) |
-| Specs completas | [`docs/specs.md`](docs/specs.md) |
+| Specs completas | [`docs/specs.md`](docs/specs.md) — lista e ordem **aprovadas** (2026-09-30); layout SPEC-001 **aprovado**; demais Specs com layout pendente |
+| Log da aplicação | [`docs/logging.md`](docs/logging.md) (RNF09) |
+| Identidade visual | [`docs/identidade-visual.md`](docs/identidade-visual.md) (RNF10) — **aprovada** (2026-09-30) · amostra [`docs/layout/identidade.html`](docs/layout/identidade.html) |
 | Evidências de layout | [`docs/layout/`](docs/layout/) |
 | Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 23 fechadas |
 

@@ -2,7 +2,7 @@
 
 Os mockups **não** substituem a Spec. Servem para o humano **aprovar o arranjo das telas** antes do código.
 
-Regra: Spec com layout `pendente` em [`specs.md`](../specs.md) **não** entra em implementação.
+Regra: Spec com layout `pendente` em [`specs.md`](../specs.md) **não** entra em implementação, mesmo com a Spec `aprovada`.
 
 ## Como aprovar
 
@@ -14,4 +14,12 @@ Regra: Spec com layout `pendente` em [`specs.md`](../specs.md) **não** entra em
 
 Toolkit já decidido (OPEN-03): Next.js App Router, Tailwind CSS, shadcn/ui. Aprovar o desenho, não a stack.
 
+Marca e cores (RNF10): **aprovadas** em 2026-09-30 — [`identidade-visual.md`](../identidade-visual.md) e amostra [`identidade.html`](identidade.html). A casca da SPEC-001 deve usar essa paleta.
+
 A casca (navegação aluno × admin) é aprovada na SPEC-001 e reutilizada nas demais.
+
+## SPEC-001 — layout aprovado (2026-09-30)
+
+Abrir [`spec-001.html`](spec-001.html) no navegador. Use o seletor **Tela** e o viewport **Desktop / Smartphone**.
+
+O layout da SPEC-001 está `aprovado` em [`specs.md`](../specs.md). Implementação desta Spec liberada; SPEC-002 … SPEC-007 continuam com layout `pendente`.

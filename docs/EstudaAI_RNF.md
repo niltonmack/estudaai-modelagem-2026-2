@@ -57,6 +57,24 @@ O código do sistema **SHALL** ser organizado em módulos e seguir boas prática
 
 O sistema **SHALL** funcionar nas versões atuais dos principais navegadores web utilizados em computadores e dispositivos móveis.
 
+## RNF09 - Registro de operação (log)
+
+**Tipo EARS:** Ubíquo
+
+O sistema **SHALL** registrar em log as operações de identidade, autorização e falhas relevantes da API Nest.
+
+Cada registro **SHALL** incluir data/hora, nível, evento e desfecho. O log **SHALL NOT** conter senha em texto aberto, hash de senha, token JWT completo nem chaves de provedor.
+
+Não há tela de consulta de log nesta versão: o destino é a saída da API (console e, em desenvolvimento, arquivo em `logs/`). Política detalhada: [`logging.md`](logging.md).
+
+## RNF10 - Identidade visual
+
+**Tipo EARS:** Ubíquo
+
+O sistema **SHALL** aplicar o logotipo e a paleta definidos em [`identidade-visual.md`](identidade-visual.md) em toda superfície web (aluno e administrador).
+
+O sistema **SHALL NOT** usar uma segunda paleta de marca nem um segundo símbolo por perfil. Cores de estado (sucesso, perigo) não substituem Ink, Trilha nem Faísca.
+
 ## Observação sobre `SHOULD`
 
 `SHOULD` não foi usado no corpo dos RNFs porque o arquivo de origem descreve características obrigatórias. Usá-lo reduziria a força normativa dos requisitos originais; ele deve ser aplicado apenas a comportamentos recomendados que não sejam obrigatórios.

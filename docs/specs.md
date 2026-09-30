@@ -1,10 +1,10 @@
 # Specs — EstudaAI
 
 **Origem:** [`mapa-specs.md`](mapa-specs.md) + baseline de modelagem + [`decisoes-em-aberto.md`](decisoes-em-aberto.md)  
-**Data:** 2026-09-22  
+**Data:** 2026-09-22 (texto); aprovação humana da lista e da ordem: **2026-09-30**  
 **Regra:** a implementação obedece a esta Spec. Conflito entre código, Spec e baseline **não** se resolve em silêncio.
 
-**Portão de layout:** o código de uma Spec **só** começa quando o **layout** dessa Spec estiver `aprovado`. Spec `especificada` com layout `pendente` **não** é autorização para desenvolver.
+**Portão de layout:** o código de uma Spec **só** começa quando o **layout** dessa Spec estiver `aprovado`. Spec `aprovada` com layout `pendente` **não** é autorização para desenvolver.
 
 Este arquivo contém o **texto completo** das Specs, na ordem de implementação. Não contém código nem mockup. Evidências visuais ficam em [`layout/`](layout/).
 
@@ -12,7 +12,8 @@ Legenda de status da Spec:
 
 | Status | Significado |
 |---|---|
-| `especificada` | Texto completo gerado; implementação ainda não iniciada |
+| `especificada` | Texto completo gerado; ainda sem aprovação humana da lista |
+| `aprovada` | Humano aprovou o texto e a posição na ordem; código só após layout `aprovado` |
 | `em implementação` | Código em andamento contra esta Spec **e** layout já `aprovado` |
 | `implementada` | Critérios, invariantes, testes e layout aprovado atendidos |
 | `fora de escopo` | Explicitamente excluído desta versão |
@@ -25,7 +26,22 @@ Legenda de status do layout:
 | `aprovado` | Humano registrou aprovação nas evidências da Spec; desenvolvimento liberado |
 | `não se aplica` | Sem superfície de UI própria |
 
-Como aprovar: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` para cada tela da Spec; conferir RNF01/RNF04/RNF08; preencher aprovador e data na seção **Telas e evidência de layout**. Sem isso, o status de layout permanece `pendente`.
+Como aprovar o layout: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` para cada tela da Spec; conferir RNF01/RNF04/RNF08; preencher aprovador e data na seção **Telas e evidência de layout**. Sem isso, o status de layout permanece `pendente`.
+
+---
+
+## Registro de aprovação humana
+
+| Item | Decisão | Data |
+|---|---|---|
+| Lista SPEC-001 … SPEC-007 | `aprovada` | 2026-09-30 |
+| Ordem de execução | 001 → 002 → 003 → 004 → 005 → 006 → 007 | 2026-09-30 |
+| Primeira Spec a implementar | SPEC-001 | 2026-09-30 |
+| Layout (todas as Specs) | SPEC-002 … SPEC-007 permanecem `pendente` | — |
+| Layout SPEC-001 | `aprovado` — [`layout/spec-001.html`](layout/spec-001.html) | 2026-09-30 |
+| Identidade visual (logo + paleta) | `aprovada` — [`identidade-visual.md`](identidade-visual.md) | 2026-09-30 |
+
+A aprovação da **lista e da ordem** não substitui o portão de layout das Specs ainda `pendente`. A SPEC-001 está liberada para implementação.
 
 ---
 
@@ -33,13 +49,13 @@ Como aprovar: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` para cada 
 
 | Ordem | ID | Nome | Dependências | Status | Layout |
 |---|---|---|---|---|---|
-| 1 | SPEC-001 | Cadastrar, autenticar e autorizar por perfil | — | `especificada` | `pendente` |
-| 2 | SPEC-002 | Gerenciar categorias de aprendizagem | SPEC-001 | `especificada` | `pendente` |
-| 3 | SPEC-003 | Publicar trilha pré-definida com etapas ordenadas | SPEC-002 | `especificada` | `pendente` |
-| 4 | SPEC-004 | Acompanhar trilha pré-definida | SPEC-001, SPEC-003 | `especificada` | `pendente` |
-| 5 | SPEC-005 | Tratar impacto da remoção de etapa em uso | SPEC-003, SPEC-004 | `especificada` | `pendente` |
-| 6 | SPEC-006 | Criar trilha personalizada com agente LLM | SPEC-002, SPEC-004 | `especificada` | `pendente` |
-| 7 | SPEC-007 | Conversar com o agente LLM sobre a trilha | SPEC-004, SPEC-006 | `especificada` | `pendente` |
+| 1 | SPEC-001 | Cadastrar, autenticar e autorizar por perfil | — | `aprovada` | `aprovado` |
+| 2 | SPEC-002 | Gerenciar categorias de aprendizagem | SPEC-001 | `aprovada` | `pendente` |
+| 3 | SPEC-003 | Publicar trilha pré-definida com etapas ordenadas | SPEC-002 | `aprovada` | `pendente` |
+| 4 | SPEC-004 | Acompanhar trilha pré-definida | SPEC-001, SPEC-003 | `aprovada` | `pendente` |
+| 5 | SPEC-005 | Tratar impacto da remoção de etapa em uso | SPEC-003, SPEC-004 | `aprovada` | `pendente` |
+| 6 | SPEC-006 | Criar trilha personalizada com agente LLM | SPEC-002, SPEC-004 | `aprovada` | `pendente` |
+| 7 | SPEC-007 | Conversar com o agente LLM sobre a trilha | SPEC-004, SPEC-006 | `aprovada` | `pendente` |
 | — | — | Motor de recomendação da visão (OPEN-17) | — | `fora de escopo` | `não se aplica` |
 
 ```
@@ -55,8 +71,8 @@ SPEC-001 Identidade
 
 # SPEC-001 — Cadastrar, autenticar e autorizar por perfil
 
-**Status:** `especificada`  
-**Layout:** `pendente`
+**Status:** `aprovada`  
+**Layout:** `aprovado`
 
 ## 1. Identificação
 
@@ -73,7 +89,7 @@ SPEC-001 Identidade
 |---|---|
 | **RF** | RF01, RF02 |
 | **RB** | RB01, RB02, RB14 |
-| **RNF** | RNF05, RNF06, RNF07, RNF01, RNF04, RNF08, RNF03 |
+| **RNF** | RNF05, RNF06, RNF07, RNF01, RNF04, RNF08, RNF03, RNF09, RNF10 |
 | **UC / fluxo** | UC01 «include» autenticar; UC02 «include» autenticar; A1 cadastro; A2 credenciais inválidas; A7 logout |
 | **Entidades** | `Usuario`, `Aluno`, `Administrador` |
 | **Drivers** | AD-RF02, AD-C01, AD-C03, AD-QA02, AD-QA04, AD-QA05 |
@@ -96,29 +112,30 @@ SPEC-001 Identidade
 - Promoção de aluno a administrador; conta que acumula os dois perfis.
 - Provedor de identidade externo; política numérica de comprimento de senha (não foi decidida).
 - Motor de recomendação (OPEN-17).
+- Tela para consultar logs (RNF09 grava na API; não é RF nem entidade).
 
 ## Telas e evidência de layout
 
-**Gate:** com Layout `pendente`, **não** implementar esta Spec.
+**Gate:** Layout `aprovado` em 2026-09-30. Implementação desta Spec **liberada**. Specs seguintes continuam bloqueadas até o próprio layout.
 
-Toolkit (já decidido, não é o desenho): Next.js App Router, Tailwind CSS, shadcn/ui. Aprovar o arranjo das telas, não reinventar a stack.
+Toolkit (já decidido, não é o desenho): Next.js App Router, Tailwind CSS, shadcn/ui. Marca e cores: [`identidade-visual.md`](identidade-visual.md) (RNF10), identidade **aprovada**.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Casca do app (navegação aluno × admin após login) | `docs/layout/spec-001-casca.*` | [ ] | [ ] | — | — |
-| Cadastro de aluno | `docs/layout/spec-001-cadastro.*` | [ ] | [ ] | — | — |
-| Login | `docs/layout/spec-001-login.*` | [ ] | [ ] | — | — |
-| Credencial inválida / e-mail duplicado | `docs/layout/spec-001-erros.*` | [ ] | [ ] | — | — |
-| Recuperação de senha | `docs/layout/spec-001-recuperacao.*` | [ ] | [ ] | — | — |
-| Logout (ação visível na casca) | `docs/layout/spec-001-casca.*` (mesmo artefato se couber) | [ ] | [ ] | — | — |
+| Casca do app (navegação aluno × admin após login) | [`spec-001.html#casca-aluno`](layout/spec-001.html#casca-aluno) · [`#casca-admin`](layout/spec-001.html#casca-admin) | [x] | [x] | humano | 2026-09-30 |
+| Cadastro de aluno | [`spec-001.html#cadastro`](layout/spec-001.html#cadastro) | [x] | [x] | humano | 2026-09-30 |
+| Login | [`spec-001.html#login`](layout/spec-001.html#login) | [x] | [x] | humano | 2026-09-30 |
+| Credencial inválida / e-mail duplicado | [`#login-erro`](layout/spec-001.html#login-erro) · [`#cadastro-erro`](layout/spec-001.html#cadastro-erro) | [x] | [x] | humano | 2026-09-30 |
+| Recuperação de senha | [`#recuperacao`](layout/spec-001.html#recuperacao) · [`#recuperacao-ok`](layout/spec-001.html#recuperacao-ok) | [x] | [x] | humano | 2026-09-30 |
+| Logout (ação visível na casca) | botão **Sair** nas cascas aluno e admin | [x] | [x] | humano | 2026-09-30 |
 
-Checklist RNF: navegação compreensível sem conhecimento técnico (RNF04); layout usável em computador, tablet e smartphone (RNF01); navegadores atuais (RNF08).
+Protótipo único (seletor de tela + viewport desktop/smartphone): [`docs/layout/spec-001.html`](layout/spec-001.html). Marca e paleta: [`layout/identidade.html`](layout/identidade.html). Layout desta Spec: `aprovado`.
 
-Quando todas as linhas estiverem conferidas, alterar **Layout** desta Spec e da tabela-índice para `aprovado`. Só então o status pode ir para `em implementação`.
+Checklist RNF: navegação compreensível sem conhecimento técnico (RNF04); layout usável em computador, tablet e smartphone (RNF01); navegadores atuais (RNF08); logotipo e paleta da identidade (RNF10).
 
 ## 4. Dependências
 
-Nenhuma Spec anterior. Complementos de arquitetura já decididos: NestJS, App Router, MySQL/MariaDB, JWT, Tailwind + shadcn/ui.
+Complementos de arquitetura já decididos: NestJS, App Router, MySQL/MariaDB, JWT, Tailwind + shadcn/ui, **log da API (RNF09)**, **identidade visual (RNF10)**.
 
 ## 5. Comportamento esperado
 
@@ -145,7 +162,7 @@ Nenhuma Spec anterior. Complementos de arquitetura já decididos: NestJS, App Ro
 - **E2 Pedido administrativo por aluno ou anônimo:** recusa (RB02, RNF06).
 - **E3 Pedido de acompanhamento de trilha por administrador:** recusa (RB14).
 
-**Pós-condições de sucesso:** há `Usuario` com exatamente um subtipo; senha não está em texto aberto; JWT só é emitido após credencial válida.
+**Pós-condições de sucesso:** há `Usuario` com exatamente um subtipo; senha não está em texto aberto; JWT só é emitido após credencial válida; operação correspondente foi gravada no log da API (RNF09).
 
 **Pós-condição de falha:** estado anterior preservado; anônimo não altera dados pessoais nem catálogo.
 
@@ -160,6 +177,7 @@ Nenhuma Spec anterior. Complementos de arquitetura já decididos: NestJS, App Ro
 | INV-001-05 | Autenticação, perfil e recusas valem na API Nest, não só na UI (ADR-004). |
 | INV-001-06 | Administrador **não** executa UC01 (escolher trilha, progresso, personalizada, conversa). |
 | INV-001-07 | Operações de catálogo e interruptor LLM exigem perfil administrador. |
+| INV-001-08 | Cadastro, login (ok/falha), logout, recuperação e recusa de autorização geram log na API Nest **sem** senha, hash ou JWT completo (RNF09). |
 
 ## 7. Modelo de domínio envolvido
 
@@ -171,6 +189,7 @@ Nenhuma Spec anterior. Complementos de arquitetura já decididos: NestJS, App Ro
 
 - Dois artefatos: app Next.js (App Router, Tailwind, shadcn/ui) e API Nest.
 - Módulo de identidade na API: cadastro, login JWT, logout, recuperação, seed admin.
+- Log da API Nest (Logger nativo): eventos de identidade e autorização em `stdout` (e `logs/estudaai.log` em desenvolvimento). Ver [`logging.md`](logging.md).
 - MySQL/MariaDB persiste `Usuario` e o subtipo; esquema físico deriva do conceitual, sem antecipar nomes de tabela nesta Spec.
 - Chaves e invariantes **não** migram para Route Handlers do Next.js.
 
@@ -198,6 +217,8 @@ Canal concreto de SMTP **não** foi escolhido: usar adaptador de envio; não aco
 | RNF07 | Identidade vive no módulo Nest; UI só consome o contrato |
 | RNF03 | Login, cadastro e logout (sem LLM) &lt; 2 s |
 | RNF01, RNF04, RNF08 | Telas de cadastro/login usáveis em desktop, tablet e smartphone nos navegadores atuais |
+| RNF09 | Eventos da tabela em [`logging.md`](logging.md) aparecem no log; senha e JWT não aparecem |
+| RNF10 | Login, cadastro, recuperação e cascas usam o logotipo e a paleta de [`identidade-visual.md`](identidade-visual.md) |
 
 ## 11. Critérios de aceitação
 
@@ -212,6 +233,7 @@ Canal concreto de SMTP **não** foi escolhido: usar adaptador de envio; não aco
 | AC-001-07 | Administrador autenticado | Tenta escolher trilha / registrar progresso | API recusa |
 | AC-001-08 | Implantação nova | Executa-se o seed | Existe pelo menos um `Administrador`; não há auto-cadastro admin |
 | AC-001-09 | Aluno cadastrado | Solicita recuperação de senha | Procedimento é enviado ao e-mail cadastrado |
+| AC-001-10 | Login com senha válida ou inválida | A API conclui a operação | Há linha de log `auth.login.ok` ou `auth.login.falha` **sem** o valor da senha |
 
 ## 12. Casos de teste derivados
 
@@ -224,6 +246,7 @@ Canal concreto de SMTP **não** foi escolhido: usar adaptador de envio; não aco
 7. Seed idempotente do primeiro admin.
 8. Recuperação dispara envio (adaptador falso nos testes).
 9. Tempo de login/cadastro sem LLM &lt; 2 s (amostra).
+10. Log de login ok/falha e cadastro não contém senha nem JWT.
 
 ## 13. Questões em aberto
 
@@ -237,7 +260,7 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da §12 aprovad
 
 # SPEC-002 — Gerenciar categorias de aprendizagem
 
-**Status:** `especificada`  
+**Status:** `aprovada`  
 **Layout:** `pendente`
 
 ## 1. Identificação
@@ -359,7 +382,7 @@ AC-002-* e INV-002-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-003 — Publicar trilha pré-definida com etapas ordenadas
 
-**Status:** `especificada`  
+**Status:** `aprovada`  
 **Layout:** `pendente`
 
 ## 1. Identificação
@@ -487,7 +510,7 @@ AC-003-* e INV-003-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-004 — Acompanhar trilha pré-definida
 
-**Status:** `especificada`  
+**Status:** `aprovada`  
 **Layout:** `pendente`
 
 ## 1. Identificação
@@ -620,7 +643,7 @@ AC-004-* e INV-004-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-005 — Tratar impacto da remoção de etapa em uso
 
-**Status:** `especificada`  
+**Status:** `aprovada`  
 **Layout:** `pendente`
 
 ## 1. Identificação
@@ -732,7 +755,7 @@ AC-005-* e INV-005-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-006 — Criar trilha personalizada com agente LLM
 
-**Status:** `especificada`  
+**Status:** `aprovada`  
 **Layout:** `pendente`
 
 ## 1. Identificação
@@ -879,7 +902,7 @@ AC-006-* e INV-006-* atendidos; testes da §12 aprovados; RNFs verificados; chav
 
 # SPEC-007 — Conversar com o agente LLM sobre a trilha
 
-**Status:** `especificada`  
+**Status:** `aprovada`  
 **Layout:** `pendente`
 
 ## 1. Identificação
@@ -996,13 +1019,13 @@ AC-007-* e INV-007-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ## Definition of Done do conjunto
 
-O conjunto SPEC-001 … SPEC-007 está **especificado**. O layout de cada Spec começa `pendente`.
+O conjunto SPEC-001 … SPEC-007 está **aprovado** (lista e ordem, 2026-09-30). Layout da SPEC-001: `aprovado` (2026-09-30). Layout das SPEC-002 … SPEC-007: `pendente`.
 
 Ordem obrigatória por Spec:
 
-1. texto da Spec `especificada`;
+1. texto da Spec `aprovada`;
 2. evidências em `docs/layout/` e Layout `aprovado` (humano);
-3. só então status `em implementação`;
+3. só então status `em implementação` — **uma Spec por vez**, começando pela SPEC-001;
 4. `implementada` quando AC, INV, testes, RNFs e layout conferido na entrega.
 
 Não misturar a Spec seguinte no mesmo pedido de código. Não implementar Spec com layout `pendente`.
