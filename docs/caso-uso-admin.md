@@ -4,7 +4,7 @@
 **Caso de uso:** Manter catálogo de aprendizagem  
 **Ator primário:** Administrador  
 
-O diagrama em PNG está em [`caso-uso-admin.png`](caso-uso-admin.png). Fundamentação: [modelo conceitual](modelo-conceitual.md), [RF09–RF12](EstudaAI_RF.md), [RB02, RB03, RB07 e RB11](EstudaAI_RB.md) e persona [Mariana Costa](persona2.md).
+O diagrama em PNG está em [`caso-uso-admin.png`](caso-uso-admin.png). Fundamentação: [modelo conceitual](modelo-conceitual.md), [RF09–RF13](EstudaAI_RF.md), [RB02, RB03, RB07, RB11, RB13 e RB14](EstudaAI_RB.md) e persona [Mariana Costa](persona2.md).
 
 ![Diagrama de caso de uso do administrador](caso-uso-admin.png)
 
@@ -42,7 +42,7 @@ flowchart TB
 | Manter catálogo → Gerenciar trilhas pré-definidas | «include» | RF10, RB07 |
 | Manter catálogo → Gerenciar etapas | «include» | RF11 |
 | Manter catálogo → Associar etapas e definir sequência | «include» | RF12; a trilha deve ter uma ou mais etapas ordenadas (RB03) |
-| Avaliar impacto da remoção → Gerenciar etapas | «extend» | RB11: remoção de etapa vinculada trata `Progresso` e `ConclusaoEtapa` |
+| Avaliar impacto da remoção → Gerenciar etapas | «extend» | RB11: se a etapa está em uso, a remoção é recusada; `ConclusaoEtapa` permanece |
 
 Não há ator secundário. A gestão do catálogo é restrição de permissão do `Administrador`, não uma associação estrutural persistida no modelo conceitual.
 
@@ -66,15 +66,16 @@ Permitir que o administrador cadastre, consulte, altere e remova categorias, tri
 
 ### Pré-condições
 
-1. Existe uma conta de `Usuario` com perfil de administrador.
-2. O administrador pretende publicar ou revisar conteúdo curado do catálogo (RB07).
+1. Existe uma conta de `Usuario` com perfil de administrador, criada por **seed/script na implantação**. Não há promoção de aluno nem cadastro administrativo distinto nesta versão.
+2. Existe (ou será criada) a categoria sentinela **Personalizada**, exigida por trilhas geradas via LLM.
+3. O administrador pretende publicar ou revisar conteúdo curado do catálogo (RB07) ou o interruptor do LLM (RF13).
 
 ### Pós-condições de sucesso
 
 1. O administrador está autenticado com perfil autorizado (RB02).
 2. Cada `Trilha` pré-definida persistida possui exatamente uma `Categoria` e uma ou mais `Etapa` com `ordem` definida (RB03, RF12).
 3. O catálogo fica disponível para escolha pelos alunos (RF03).
-4. Se houve remoção de etapa vinculada, o impacto sobre `Progresso` e `ConclusaoEtapa` foi tratado antes da conclusão (RB11).
+4. Se houve pedido de remoção de etapa ou categoria em uso, a operação foi recusada e o catálogo permanece íntegro (RB11, RB13).
 
 ### Pós-condição de falha
 
@@ -85,7 +86,7 @@ O catálogo permanece no estado anterior. Operações de criação, alteração 
 Caminho feliz: cadastrar uma trilha pré-definida completa e publicá-la no catálogo.
 
 1. O administrador informa e-mail e senha.
-2. O sistema autentica o `Usuario` e confirma o perfil administrador (RF02, RB02, RNF06).
+2. O sistema autentica o `Usuario` com JWT, confirma o perfil administrador (RF02, RB02, RB14, RNF06) e **não** abre o UC01.
 3. O administrador cadastra uma `Categoria` ou seleciona uma já existente (RF09).
 4. O administrador cadastra uma `Trilha` do tipo `pré-definida`, associada a essa categoria (RF10, RB07).
 5. O administrador cadastra as `Etapa` com titulo, conteúdo e ordem pretendida (RF11).
@@ -105,20 +106,25 @@ Após o passo 2, o administrador apenas consulta categorias, trilhas e etapas, s
 **A3 — Alterar categoria, trilha ou etapa**  
 Após o passo 2, o administrador seleciona um item existente, altera nome, descrição, titulo, conteúdo ou ordem, e o sistema persiste a mudança desde que RB03 continue atendida.
 
-**A4 — Remover categoria, trilha ou etapa sem vínculo de progresso**  
-O administrador solicita a remoção. Se a etapa ou trilha não estiver em `Progresso` ativo de alunos, o sistema conclui a remoção e atualiza o catálogo.
+**A4 — Remover categoria, trilha ou etapa sem vínculo**  
+O administrador solicita a remoção.
+
+- **Etapa:** só conclui se a trilha **não** tiver progresso de alunos **e** restar 1..* etapas (RB11, RB03). `ConclusaoEtapa` já registradas são preservadas.
+- **Categoria:** só conclui se **nenhuma** trilha (inclusive personalizadas na sentinela **Personalizada**) estiver classificada nela (RB13). Sem cascata e sem recategorização.
+- **Trilha pré-definida sem progresso:** o sistema conclui a remoção e atualiza o catálogo.
 
 **A5 — Avaliar impacto da remoção (ponto de extensão, RB11)**  
-No fluxo de remoção de uma `Etapa` já vinculada a uma `Trilha` usada por alunos:
+No pedido de remoção de uma `Etapa` já vinculada a uma `Trilha` com `Progresso` vigente:
 
 1. O sistema identifica os `Progresso` e `ConclusaoEtapa` afetados.
-2. O sistema apresenta o impacto ao administrador.
-3. O administrador confirma ou cancela.
-4. Se confirmar, o sistema trata o impacto (recalcula percentual, preserva histórico ainda válido) e conclui a remoção.
-5. Se cancelar, nada é removido.
+2. O sistema **recusa** a remoção e informa o impacto ao administrador.
+3. Nada é removido; o percentual dos acompanhamentos vigentes não muda.
 
 **A6 — Reordenar etapas de uma trilha já publicada (RF12)**  
 O administrador altera a `ordem` das etapas associadas. O sistema grava a nova sequência. Conclusões já registradas dos alunos permanecem ligadas às etapas correspondentes.
+
+**A7 — Interruptor do LLM (RF13, RNF02)**  
+Após o passo 2, o administrador habilita ou desabilita a função de modelo de linguagem. Com a função desligada, o UC01 segue só pelo catálogo; se o catálogo também estiver vazio, aplica-se UC01-E4.
 
 ### Fluxos de exceção
 
@@ -128,18 +134,18 @@ Se um usuário sem perfil administrador solicitar criação, alteração ou remo
 **E2 — Trilha incompleta (RB03)**  
 No passo 7, se faltar categoria ou não houver etapas associadas, o sistema não publica a trilha e solicita a correção.
 
-**E3 — Remoção cancelada após aviso de impacto (RB11)**  
-Em A5, se o administrador não confirmar, o sistema aborta a remoção e mantém etapas, progressos e conclusões inalterados.
+**E3 — Remoção recusada por vínculo (RB11, RB13)**  
+Em A4/A5, se houver progresso na etapa, se a trilha ficaria sem etapas, ou se a categoria ainda classificar trilhas, o sistema aborta a remoção e mantém etapas, categorias, progressos e conclusões inalterados.
 
 ### Regras de negócio e requisitos
 
 | Item | Papel neste caso de uso |
 |---|---|
-| RF02, RNF05, RNF06 | Autenticação e restrição ao perfil administrador |
-| RF09 | CRUD de `Categoria` |
+| RF02, RNF05, RNF06 | Autenticação JWT e restrição ao perfil administrador |
+| RF09, RB13 | CRUD de `Categoria`; bloqueio se ainda classificar trilhas |
 | RF10, RB07 | CRUD de `Trilha` pré-definida curada |
-| RF11 | CRUD de `Etapa` |
+| RF11, RB11 | CRUD de `Etapa`; bloqueio se houver progresso vigente |
 | RF12, RB03 | Associação e sequência; trilha com categoria e 1..* etapas |
-| RB02 | Somente administrador cria, altera ou remove o catálogo |
-| RB11 | Impacto da remoção sobre progresso dos alunos |
+| RF13, RNF02 | Interruptor do Gemini |
+| RB02, RB14 | Somente administrador cria, altera ou remove o catálogo; XOR de perfil |
 | RB10 | Catálogo curado permanece distinto das sugestões do LLM |

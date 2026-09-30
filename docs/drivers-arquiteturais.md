@@ -20,7 +20,7 @@ Itens como “exibir titulo da etapa” ou “navegação clara” permanecem re
 | ID | Tipo | Driver | Impacto na arquitetura | Prioridade |
 |---|---|---|---|---|
 | AD-C01 | Restrição | Backend Node e frontend React, código modular | Estilo de sistema, API + SPA, recorte em módulos | Alta |
-| AD-C02 | Restrição | LLM via OpenAI **ou** Ollama, e somente se a função estiver habilitada | Porta de integração, configuração, degradabilidade | Alta |
+| AD-C02 | Restrição | LLM via **Gemini**, somente se a função estiver habilitada pelo administrador | Porta de integração, interruptor, degradabilidade | Alta |
 | AD-RF01 | Requisito | Dois modos de trilha: pré-definida (catálogo) e personalizada (LLM) | Dois fluxos de criação, `Trilha.tipo`, isolamento do catálogo curado | Alta |
 | AD-RF02 | Requisito | Autenticação e dois perfis (aluno / administrador) | Identidade, sessão, autorização por operação | Alta |
 | AD-RF03 | Requisito | Progresso individual, conclusão explícita e percentual derivado | Modelo de escrita, cálculo no domínio, histórico | Alta |
@@ -50,9 +50,10 @@ RF01/RF02 cadastram e autenticam `Usuario`. O modelo conceitual especializa em `
 
 | Operação | Aluno autenticado | Administrador autenticado | Anônimo |
 |---|---|---|---|
-| Escolher trilha, criar personalizada, registrar progresso | Sim | Fora do UC01 | Não (RB01, RNF05) |
-| CRUD de categoria, trilha pré-definida, etapa | Não | Sim (RF09–RF12, RB02, RNF06) | Não |
-| Conversar com o LLM sobre a trilha | Sim (RF08) | Não especificado como papel de catálogo | Não |
+| Escolher trilha, criar personalizada, registrar progresso, conversar | Sim | Não (RB14; UC01 exclusivo do aluno) | Não (RB01, RNF05) |
+| Listar catálogo pré-definido | Sim | Sim (consulta de curadoria) | Sim (RF03) |
+| CRUD de categoria, trilha pré-definida, etapa; interruptor LLM | Não | Sim (RF09–RF13, RB02, RNF06) | Não |
+| Conversar com o LLM sobre a trilha em andamento | Sim (RF08) | Não | Não |
 
 **Decisão que o driver força:** um mecanismo único de autenticação e um ponto de autorização por caso de uso / operação de escrita. Perfil não é só atributo de tela; é invariante de fronteira.
 
@@ -68,9 +69,9 @@ O aluno não “está concluído” porque visualizou a etapa. RB05 exige `Concl
 
 ### 3.4 AD-RF04 — Catálogo mutável com alunos em andamento
 
-UC02 inclui gerenciar categorias, trilhas e etapas e **estende** a remoção com avaliação de impacto. RB11 obriga tratar `Progresso` e `ConclusaoEtapa` **antes** de concluir a remoção. RB03 impede publicar trilha sem categoria ou sem etapas ordenadas (RF12).
+UC02 inclui gerenciar categorias, trilhas e etapas e **estende** a remoção com avaliação de impacto. RB11 **recusa** remover etapa com progresso vigente. RB13 recusa remover categoria que ainda classifique trilhas. RB03 impede publicar (ou deixar) trilha sem categoria ou sem etapas ordenadas (RF12).
 
-**Decisão que o driver força:** escritas administrativas passam por regras de invariante (RB03) e por uma política explícita de mutação (bloquear, recascar percentual, ou exigir confirmação). Não basta um CRUD genérico.
+**Decisão que o driver força:** escritas administrativas passam por regras de invariante (RB03) e por uma política explícita de mutação (**bloquear** se houver uso). Não basta um CRUD genérico.
 
 ## 4. Restrições
 
@@ -88,13 +89,14 @@ Implicações:
 
 ### AD-C02 — LLM opcional e substituível (RNF02, RF04, RF08)
 
-**WHERE** a função de modelo de linguagem estiver habilitada, a integração **SHALL** usar OpenAI **ou** Ollama.
+**WHERE** a função de modelo de linguagem estiver habilitada pelo administrador, a integração **SHALL** usar **Gemini**.
 
 Implicações:
 
 - a geração e a conversa **não** podem ficar acopladas a um SDK específico no domínio;
-- deve existir um interruptor de configuração (“LLM habilitado / desabilitado”);
-- com LLM desabilitado, o UC01 permanece viável pelo catálogo pré-definido (pré-condição do UC01: catálogo **ou** LLM).
+- o interruptor vive na interface administrativa (RF13);
+- geração permanece **síncrona** no fluxo do aluno, com timeout de **60 segundos**;
+- com LLM desabilitado, o UC01 permanece viável pelo catálogo pré-definido; se ambos faltarem, UC01-E4.
 
 ### AD-C03 — Canal de entrega web (visão do produto, RNF01, RNF08)
 
@@ -171,7 +173,7 @@ Este AD influencia a arquitetura de apresentação (SPA React responsiva), não 
 | Estímulo | Correção ou extensão |
 | Artefato | Código organizado em módulos Node (API) e em componentes/módulos React (UI) |
 | Resposta | Mudança localizada no módulo correspondente (domínio, autenticação, adaptador LLM ou tela) |
-| Medida | Integração OpenAI/Ollama troca o adaptador sem reescrever `Trilha` / `Progresso` |
+| Medida | Integração Gemini troca o adaptador sem reescrever `Trilha` / `Progresso` |
 
 ## 6. Cenários arquiteturalmente significativos
 
@@ -185,7 +187,7 @@ Estes cenários vêm dos casos de uso. São os que mais “puxam” componentes.
 4. O sistema persiste `SolicitacaoTrilha`, cria `Trilha` personalizada com categoria e etapas ordenadas, e abre `Progresso` do aluno.
 5. Falha: LLM mudo, lento ou incompleto → não cria trilha; oferece catálogo (UC01-E2, UC01-E3).
 
-**O que a arquitetura precisa ter:** orquestração síncrona com limite de tempo, mapeamento da resposta para o modelo conceitual, transação de criação (solicitação + trilha + etapas + progresso) e fallback.
+**O que a arquitetura precisa ter:** orquestração **síncrona** com timeout de **60 s**, mapeamento do JSON `respostaLLM` para o modelo conceitual (categoria sentinela **Personalizada**), transação de criação (solicitação + trilha + etapas + progresso) e fallback.
 
 ### AD-CEN02 — Acompanhar e concluir etapa (UC01 fluxo principal, RF05–RF07)
 
@@ -218,10 +220,9 @@ Estes cenários vêm dos casos de uso. São os que mais “puxam” componentes.
 
 1. Administrador solicita remoção de `Etapa` já associada a trilha com `Progresso` ativo.
 2. Sistema identifica `Progresso` e `ConclusaoEtapa` afetados.
-3. Administrador confirma ou cancela.
-4. Confirmação: impacto tratado; cancelamento: estado inalterado (UC02-E3).
+3. Sistema **recusa** a remoção; estado inalterado (UC02-E3). `ConclusaoEtapa` já gravadas permanecem.
 
-**O que a arquitetura precisa ter:** consulta de dependências antes do delete, operação de confirmação e recálculo de percentual derivado.
+**O que a arquitetura precisa ter:** consulta de dependências antes do delete e recusa explícita — não confirmação que apaga histórico.
 
 ## 7. Tensões que a arquitetura precisa equilibrar
 
@@ -229,20 +230,22 @@ Estes cenários vêm dos casos de uso. São os que mais “puxam” componentes.
 |---|---|---|---|
 | Latência | RNF03 (&lt; 2 s no caminho local) | RF04/RF08 (chamada externa ao LLM) | Separar o caminho local do caminho LLM; não deixar o catálogo esperar o provedor |
 | Origem da verdade | RB07/RB10 (curadoria administrativa) | RF04/RF08 (geração e sugestão) | Duas origens: catálogo publicado versus apoio/personalização; `Trilha.tipo` discrimina |
-| Flexibilidade do admin | RF11 (remover etapa) | RB11/RB12 (progresso e histórico) | Nenhuma remoção silenciosa de etapa vinculada |
-| Substituir o LLM | RNF02 (OpenAI ou Ollama) | AD-CEN01 (mesmo contrato de domínio) | Porta estável: texto in, estrutura de trilha ou mensagem out |
+| Flexibilidade do admin | RF11 (remover etapa) | RB11/RB12/RB13 (progresso, histórico, categoria em uso) | Nenhuma remoção de etapa ou categoria em uso |
+| Substituir o LLM | RNF02 (Gemini + interruptor admin) | AD-CEN01 (mesmo contrato de domínio) | Porta estável: texto in, estrutura de trilha ou mensagem out |
 | Simplicidade de implantação | AD-C01 (Node + React) | Isolamento do LLM | Adaptador interno no backend Node; não é necessário, pelos drivers atuais, um serviço LLM separado |
 
-## 8. Recorte do que os drivers **não** decidem ainda
+## 8. Recorte do que os drivers **não** escolhem sozinhos
 
-Os ADs não escolhem sozinhos, por falta de evidência nos documentos de origem:
+Os ADs não substituem as decisões humanas já registradas. Complementos desta versão (ver [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e [`adr.md`](adr.md)):
 
-- banco de dados específico;
-- fila assíncrona para o LLM (possível, mas não exigida; o UC01 trata a geração no fluxo do aluno);
-- cache de catálogo;
-- provedor de identidade externo.
+- SGBD: MySQL / MariaDB;
+- API HTTP: NestJS; UI: Next.js App Router + Tailwind + shadcn/ui;
+- autenticação: JWT Bearer; primeiro administrador por seed;
+- LLM: Gemini, síncrono, timeout 60 s, interruptor na UI admin.
 
-Essas são decisões de projeto posteriores, desde que respeitem AD-C01, AD-QA01 e AD-C02.
+Ainda **não** decididos pelos documentos de origem (e não inventados aqui): cache de catálogo; provedor de identidade externo.
+
+Essas lacunas restantes não bloqueiam as Specs, desde que respeitem AD-C01, AD-QA01 e AD-C02.
 
 ## 9. Rastreabilidade
 

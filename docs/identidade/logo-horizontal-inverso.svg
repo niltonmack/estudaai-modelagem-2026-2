@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48" role="img" aria-label="EstudaAI">
+  <rect width="48" height="48" rx="12" fill="#1A7A72"/>
+  <path d="M13 33.5 L24 24 L35 14.5" fill="none" stroke="#D7F0ED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="13" cy="33.5" r="3.6" fill="#F7F4EE"/>
+  <circle cx="24" cy="24" r="3.6" fill="#F7F4EE"/>
+  <circle cx="35" cy="14.5" r="4.1" fill="#E3A008"/>
+  <path fill="#E3A008" d="M35 6.2l1.05 3.05 3.15.15-2.45 2.05.85 3.1L35 12.8l-2.6 1.75.85-3.1-2.45-2.05 3.15-.15z"/>
+  <text x="60" y="32" font-family="Segoe UI, system-ui, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.4">
+    <tspan fill="#F7F4EE">Estuda</tspan><tspan fill="#E3A008">AI</tspan>
+  </text>
+</svg>

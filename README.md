@@ -5,7 +5,7 @@ O **EstudaAI** é uma aplicação web de recomendação de trilhas de aprendizag
 O aluno pode:
 
 - seguir **trilhas pré-definidas**, curadas por especialistas e organizadas por categoria;
-- criar **trilhas personalizadas** com o apoio de um agente baseado em LLM (OpenAI ou Ollama).
+- criar **trilhas personalizadas** com o apoio de um agente baseado em LLM (**Gemini**, desligável pelo administrador).
 
 O administrador mantém o catálogo (categorias, trilhas e etapas) sem que as sugestões do LLM substituam a curadoria.
 
@@ -15,9 +15,11 @@ A visão completa está em [`docs/visaodoproduto.md`](docs/visaodoproduto.md).
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | Next.js (React) |
-| Backend | Node |
-| LLM (opcional) | OpenAI ou Ollama |
+| Frontend | Next.js App Router (React) + Tailwind CSS + shadcn/ui |
+| Backend | Node / NestJS |
+| Persistência | MySQL / MariaDB |
+| Autenticação | JWT Bearer |
+| LLM (opcional) | Gemini (interruptor na UI do administrador) |
 
 O código **SHALL** ser organizado em módulos compatíveis com essa arquitetura (RNF07).
 
@@ -36,7 +38,11 @@ O código **SHALL** ser organizado em módulos compatíveis com essa arquitetura
 | Drivers arquiteturais | [`docs/drivers-arquiteturais.md`](docs/drivers-arquiteturais.md) |
 | ADRs | [`docs/adr.md`](docs/adr.md) |
 | Mapa de Specs (SDD) | [`docs/mapa-specs.md`](docs/mapa-specs.md) |
-| Decisões em aberto | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) |
+| Specs completas | [`docs/specs.md`](docs/specs.md) — lista e ordem **aprovadas** (2026-09-30); layout SPEC-001 **aprovado**; demais Specs com layout pendente |
+| Log da aplicação | [`docs/logging.md`](docs/logging.md) (RNF09) |
+| Identidade visual | [`docs/identidade-visual.md`](docs/identidade-visual.md) (RNF10) — **aprovada** (2026-09-30) · amostra [`docs/layout/identidade.html`](docs/layout/identidade.html) |
+| Evidências de layout | [`docs/layout/`](docs/layout/) |
+| Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 23 fechadas |
 
 ## Modelo de IDE (Cursor, Claude Code e VS Code + Copilot)
 

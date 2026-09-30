@@ -20,6 +20,7 @@
  - Atualizar ou remover conteúdos desatualizados sem comprometer a experiência dos alunos.
  - Garantir que o catálogo ofereça percursos claros e úteis para diferentes objetivos de estudo.
  - Preservar a confiança na plataforma, mantendo a curadoria separada das sugestões geradas pelo LLM.
+ - Habilitar ou desabilitar o agente LLM quando a geração personalizada não deve estar disponível.
 
  ### Necessidades
 
@@ -35,7 +36,7 @@
 
  - Manter catálogos em planilhas ou ferramentas desconectadas gera retrabalho.
  - Uma etapa fora de ordem pode prejudicar a compreensão do aluno.
- - Alterações em etapas já utilizadas podem afetar o progresso registrado.
+ - Alterações em etapas já utilizadas **não** podem apagar o progresso: a remoção deve ser recusada enquanto houver alunos na trilha.
  - Não quer que sugestões automáticas sejam confundidas com conteúdo oficialmente curado.
  - Precisa de permissões bem definidas para evitar alterações administrativas indevidas.
 

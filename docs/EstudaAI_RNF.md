@@ -19,7 +19,7 @@ O sistema **SHALL** adaptar o conteúdo da interface para uso em computadores, t
 
 **Tipo EARS:** Optional feature
 
-**WHERE** a funcionalidade de modelo de linguagem estiver habilitada, o sistema **SHALL** permitir a integração com uma API de modelo de linguagem, utilizando a OpenAI ou uma solução local baseada em Ollama.
+**WHERE** a funcionalidade de modelo de linguagem estiver habilitada, o sistema **SHALL** permitir a integração com uma API de modelo de linguagem utilizando **Gemini**. O administrador **SHALL** poder habilitar ou desabilitar essa funcionalidade pela interface administrativa. Chamadas ao LLM **SHALL** aplicar timeout de 60 segundos e **SHALL NOT** entrar no orçamento de 2 segundos do RNF03.
 
 ## RNF03 - Desempenho
 
@@ -56,6 +56,24 @@ O código do sistema **SHALL** ser organizado em módulos e seguir boas prática
 **Tipo EARS:** Ubíquo
 
 O sistema **SHALL** funcionar nas versões atuais dos principais navegadores web utilizados em computadores e dispositivos móveis.
+
+## RNF09 - Registro de operação (log)
+
+**Tipo EARS:** Ubíquo
+
+O sistema **SHALL** registrar em log as operações de identidade, autorização e falhas relevantes da API Nest.
+
+Cada registro **SHALL** incluir data/hora, nível, evento e desfecho. O log **SHALL NOT** conter senha em texto aberto, hash de senha, token JWT completo nem chaves de provedor.
+
+Não há tela de consulta de log nesta versão: o destino é a saída da API (console e, em desenvolvimento, arquivo em `logs/`). Política detalhada: [`logging.md`](logging.md).
+
+## RNF10 - Identidade visual
+
+**Tipo EARS:** Ubíquo
+
+O sistema **SHALL** aplicar o logotipo e a paleta definidos em [`identidade-visual.md`](identidade-visual.md) em toda superfície web (aluno e administrador).
+
+O sistema **SHALL NOT** usar uma segunda paleta de marca nem um segundo símbolo por perfil. Cores de estado (sucesso, perigo) não substituem Ink, Trilha nem Faísca.
 
 ## Observação sobre `SHOULD`
 

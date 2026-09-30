@@ -67,9 +67,9 @@ Substitua ou apague o que não valer no **seu** fork.
 EstudaAI: web de trilhas de aprendizagem. Frontend Next.js (App Router), API Nest, MySQL.
 
 Documentação de modelagem: docs/ (visão, RF, RB, RNF, modelo conceitual, UC, drivers, ADRs).
-Mapa SDD: docs/mapa-specs.md. Decisões humanas: docs/decisoes-em-aberto.md.
+Mapa SDD: docs/mapa-specs.md (ordem aprovada). Specs: docs/specs.md (SPEC-001…007 aprovadas; layout da SPEC-001 aprovado; demais pendente). Decisões humanas: docs/decisoes-em-aberto.md.
 
-Não inventar requisito, entidade ou tecnologia em aberto. Gemini como LLM diverge de RNF02/ADR-002 até a baseline ser alterada.
+Não inventar requisito, entidade ou tecnologia fora da baseline e de docs/decisoes-em-aberto.md (23 OPENs fechadas). LLM desta versão: Gemini, atrás da porta da API Nest. Não implementar Spec com layout pendente. SPEC-001 está liberada para código, sozinha.
 
 Artefatos de handoff do pipeline de skills: pasta context/ na raiz.
 ```
