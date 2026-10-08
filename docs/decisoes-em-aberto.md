@@ -1,6 +1,6 @@
 # Decisões em aberto — EstudaAI
 
-**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25) e a apresentação da etapa e da conversa (OPEN-26). **Absorvido na baseline.**  
+**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25), a apresentação da etapa e da conversa (OPEN-26) e o vídeo do YouTube em lightbox (OPEN-27). **Absorvido na baseline.**  
 **Origem:** [`mapa-specs.md`](mapa-specs.md) §3  
 **Regra:** a implementação **não** reabre o que está `decidido` ou `fora de escopo`. Este arquivo permanece como rastreio da entrevista; RF, RB, RNF, UC, modelo, drivers e ADRs já refletem as respostas.
 
@@ -188,7 +188,7 @@ Legenda de status:
 | **Baseline** | Modelo conceitual: atributo `conteudo`, sem tipo. |
 | **Status** | `decidido` |
 | **Decisão** | `Etapa.conteudo` é Markdown. |
-| **Notas** | Não inclui mídia embutida obrigatória nem tipo URL exclusivo; links podem aparecer no próprio Markdown. |
+| **Notas** | Não inclui mídia embutida obrigatória nem tipo URL exclusivo; links podem aparecer no próprio Markdown. Link de vídeo do YouTube continua nesse Markdown; a abertura em lightbox é OPEN-27. |
 
 ## OPEN-17 — Recomendação inteligente da visão
 
@@ -300,6 +300,17 @@ Legenda de status:
 | **Decisão** | No acompanhamento, cada etapa é uma sanfona: o conteúdo fica oculto até o clique. O enunciado em `## Exercício` fica na etapa. A `## Resposta` só aparece no lightbox **Ver resposta**. **Conversar sobre esta trilha** abre a conversa em lightbox sobre a página. |
 | **Notas** | Não cria entidade nova. A resposta continua dentro de `Etapa.conteudo` (Markdown). Pedido humano 2026-10-08. |
 
+## OPEN-27 — Vídeo do YouTube em lightbox
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | Como o aluno assiste a um vídeo do YouTube citado no Markdown da etapa? |
+| **Specs** | SPEC-004; o armazenamento continua o de OPEN-16 / SPEC-003 |
+| **Baseline** | OPEN-16: `Etapa.conteudo` é Markdown e o link abre fora da página. |
+| **Status** | `decidido` |
+| **Decisão** | Um link de vídeo do YouTube (`youtube.com` ou `youtu.be`) no Markdown da etapa **abre um lightbox sobre a página** com o vídeo. O aluno não sai do acompanhamento. Outros links permanecem links. Não há coluna de mídia nem envio de arquivo. |
+| **Notas** | O endereço fica no Markdown, no corpo, no `## Exercício` ou na `## Resposta`. Layout e implementação aprovados pelo humano em 2026-10-08, depois do vídeo de teste na etapa 1 de Python Júnior. |
+
 ---
 
 ## Resumo
@@ -332,7 +343,8 @@ Legenda de status:
 | OPEN-24 | Gestão administrativa de usuários | `decidido` — RF14 / SPEC-008 |
 | OPEN-25 | Visão administrativa do progresso | `decidido` — RF15 / SPEC-009 |
 | OPEN-26 | Sanfona, resposta e conversa em lightbox | `decidido` — SPEC-004, SPEC-007 |
+| OPEN-27 | Vídeo do YouTube em lightbox | `decidido` — SPEC-004; aprovado pelo humano em 2026-10-08 |
 
-Progresso da entrevista: **26 / 26** fechadas (25 decididas, 1 fora de escopo).
+Progresso da entrevista: **27 / 27** fechadas (26 decididas, 1 fora de escopo).
 
 Nenhuma OPEN permanece `em aberto`. A implementação deve obedecer a este registro **e** à baseline atualizada. A divergência OPEN-06 (Gemini) foi incorporada em RNF02, ADR-002, AD-C02 e RF13.

@@ -51,6 +51,8 @@ No acompanhamento, cada etapa **SHALL** aparecer em sanfona: o título fica vis�
 
 **WHERE** o Markdown da etapa contiver as seções `## Exercício` e `## Resposta`, o sistema **SHALL** mostrar o enunciado na etapa e **SHALL** revelar a resposta somente quando o aluno acionar **Ver resposta**, em um lightbox sobre a página.
 
+**WHEN** o aluno acionar um link de vídeo do YouTube (`youtube.com` ou `youtu.be`) no Markdown da etapa, o sistema **SHALL** abrir esse vídeo em um lightbox sobre a página, sem abandonar o acompanhamento. Os demais links **SHALL** permanecer links.
+
 ## RF06 - Visualizar progresso
 
 **Tipo EARS:** State-driven

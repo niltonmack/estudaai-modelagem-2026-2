@@ -142,7 +142,7 @@ Os testes da API usam `sql.js` em memória e não gravam no MySQL.
 | Log da aplicação | [`docs/logging.md`](docs/logging.md) (RNF09) |
 | Identidade visual | [`docs/identidade-visual.md`](docs/identidade-visual.md) (RNF10) — **aprovada** (2026-09-30) · amostra [`docs/layout/identidade.html`](docs/layout/identidade.html) |
 | Evidências de layout | [`docs/layout/`](docs/layout/) |
-| Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 26 fechadas |
+| Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 27 fechadas |
 
 ## Modelo de IDE (Cursor, Claude Code e VS Code + Copilot)
 

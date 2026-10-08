@@ -65,11 +65,14 @@ Como aprovar o layout: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` p
 | Implementação da home do aluno | `implementada` | 2026-10-08 |
 | Layout do painel do administrador (`/painel`) | `aprovado` — [`layout/painel-admin.html`](layout/painel-admin.html); números e gráficos derivados de RB06, RF14 e RF15, somente leitura, sem API nova | 2026-10-08 |
 | Implementação do painel do administrador | `implementada` | 2026-10-08 |
+| Layout do vídeo do YouTube (OPEN-27) | `aprovado` — [`layout/video-youtube.html`](layout/video-youtube.html); link abre lightbox na página | 2026-10-08 |
+| Implementação do vídeo do YouTube | `implementada` | 2026-10-08 |
+| Aprovação humana OPEN-27 | texto, layout e implementação `aprovados` após o vídeo de teste na etapa 1 de Python Júnior | 2026-10-08 |
 | Acesso Gemini (laboratório) | chave só em `apps/api/.env`; `generateContent` HTTP 200 no modelo `gemini-3.5-flash-lite` | 2026-10-02 |
 | Banco MySQL local | schema `estudaai` em `127.0.0.1:3306` (serviço MySQL80); `dentalapp` intocado | 2026-10-02 |
 | Identidade visual (logo + paleta) | `aprovada` — [`identidade-visual.md`](identidade-visual.md) | 2026-09-30 |
 
-A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-08. Em 2026-10-08 o humano **aprovou** SPEC-008 (gerenciar usuários, RF14) e SPEC-009 (consultar progresso dos alunos, RF15): texto, layout e implementação.
+A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-08. Em 2026-10-08 o humano **aprovou** SPEC-008 (gerenciar usuários, RF14) e SPEC-009 (consultar progresso dos alunos, RF15): texto, layout e implementação. No mesmo dia **aprovou** OPEN-27 depois de ver o lightbox com o vídeo de teste na etapa 1 de Python Júnior. Esse endereço está no Markdown da etapa, no banco local, e não entra no repositório.
 
 ---
 
@@ -436,11 +439,11 @@ AC-002-* e INV-002-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 | **Entidades** | `Categoria`, `Trilha` (`tipo = pré-definida`), `Etapa` |
 | **Drivers** | AD-RF01, AD-RF04, AD-CEN04, AD-C04, AD-QA01 |
 | **ADRs** | ADR-003, ADR-004 |
-| **OPEN fechados** | OPEN-16; OPEN-07 (parte sem progresso) |
+| **OPEN fechados** | OPEN-16; OPEN-07 (parte sem progresso). OPEN-27 não acrescenta coluna: o vídeo é um link Markdown |
 
 ## 3. Escopo
 
-**Incluído:** CRUD de trilha pré-definida e etapas; associação e reordenação; validação RB03 antes de publicar; remoção **somente** se não houver `Progresso` vigente e se restar 1..* etapas; conteúdo Markdown.
+**Incluído:** CRUD de trilha pré-definida e etapas; associação e reordenação; validação RB03 antes de publicar; remoção **somente** se não houver `Progresso` vigente e se restar 1..* etapas; conteúdo Markdown. Um vídeo do YouTube entra como link nesse Markdown (OPEN-27); a abertura em lightbox é da SPEC-004.
 
 **Fora do escopo:** remoção com alunos em andamento (SPEC-005); trilha personalizada (SPEC-006); acompanhamento do aluno (SPEC-004).
 
@@ -564,13 +567,15 @@ AC-003-* e INV-003-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 | **Entidades** | `Aluno`, `Categoria`, `Trilha`, `Etapa`, `Progresso`, `ConclusaoEtapa` |
 | **Drivers** | AD-RF01, AD-RF03, AD-CEN02, AD-QA01, AD-QA04 |
 | **ADRs** | ADR-003, ADR-004 |
-| **OPEN fechados** | OPEN-13, OPEN-15, OPEN-21, OPEN-22 |
+| **OPEN fechados** | OPEN-13, OPEN-15, OPEN-21, OPEN-22, OPEN-26, OPEN-27 |
 
 ## 3. Escopo
 
 **Incluído:** listagem anônima; escolha e progresso só aluno autenticado; percentual derivado; histórico; retomada do mesmo `Progresso`; mensagem de catálogo indisponível (E4, em conjunto com estado do LLM da SPEC-006).
 
 **Apresentação (OPEN-26, 2026-10-08):** no acompanhamento, a etapa é uma sanfona — título e estado visíveis, Markdown oculto até o clique. O trecho `## Exercício` permanece no painel aberto. O trecho `## Resposta`, quando existir, não aparece no fluxo da etapa: o botão **Ver resposta** abre um lightbox sobre a página. Sem `## Resposta`, o botão não aparece. Marcar conclusão continua explícita (RF07).
+
+**Vídeo (OPEN-27, 2026-10-08):** um link de vídeo do YouTube (`youtube.com` ou `youtu.be`) no Markdown da etapa — corpo, `## Exercício` ou `## Resposta` — abre um lightbox sobre a página com o vídeo. O aluno permanece no acompanhamento. Os outros links continuam links. Não há entidade de mídia nem upload. Layout `aprovado` e implementação `implementada` em 2026-10-08.
 
 **Fora do escopo:** criar personalizada (SPEC-006); conversa (SPEC-007); pausar/abandonar/reiniciar; admin como aluno.
 

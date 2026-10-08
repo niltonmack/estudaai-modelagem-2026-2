@@ -1,4 +1,16 @@
-function Inline({ texto }: { texto: string }) {
+"use client";
+
+import { useState } from "react";
+import { Lightbox } from "@/components/lightbox";
+import { idVideoYouTube } from "@/lib/youtube";
+
+function Inline({
+  texto,
+  aoVideo
+}: {
+  texto: string;
+  aoVideo: (id: string, titulo: string) => void;
+}) {
   const partes = texto.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
   return (
     <>
@@ -19,6 +31,19 @@ function Inline({ texto }: { texto: string }) {
         }
         const link = parte.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
         if (link) {
+          const video = idVideoYouTube(link[2]);
+          if (video) {
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => aoVideo(video, link[1])}
+                className="text-brand-trail underline"
+              >
+                {link[1]}
+              </button>
+            );
+          }
           return (
             <a key={i} href={link[2]} className="text-brand-trail underline" target="_blank" rel="noreferrer">
               {link[1]}
@@ -118,13 +143,16 @@ function parsear(texto: string): Bloco[] {
 }
 
 export function MarkdownEtapa({ texto }: { texto: string }) {
+  const [video, setVideo] = useState<{ id: string; titulo: string } | null>(null);
+  const aoVideo = (id: string, titulo: string) => setVideo({ id, titulo });
+
   return (
     <div className="space-y-3 text-sm leading-relaxed text-slate-700">
       {parsear(texto).map((bloco, i) => {
         if (bloco.tipo === "titulo") {
           return (
             <h4 key={i} className="font-semibold text-brand-ink">
-              <Inline texto={bloco.texto} />
+              <Inline texto={bloco.texto} aoVideo={aoVideo} />
             </h4>
           );
         }
@@ -140,7 +168,7 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
             <ul key={i} className="list-disc space-y-1 pl-5">
               {bloco.itens.map((item, j) => (
                 <li key={j}>
-                  <Inline texto={item} />
+                  <Inline texto={item} aoVideo={aoVideo} />
                 </li>
               ))}
             </ul>
@@ -151,7 +179,7 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
             <ol key={i} className="list-decimal space-y-1 pl-5">
               {bloco.itens.map((item, j) => (
                 <li key={j}>
-                  <Inline texto={item} />
+                  <Inline texto={item} aoVideo={aoVideo} />
                 </li>
               ))}
             </ol>
@@ -166,7 +194,7 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
                     <tr key={j} className={j === 0 ? "font-medium text-brand-ink" : ""}>
                       {linha.map((celula, k) => (
                         <td key={k} className="border border-slate-200 px-2 py-1">
-                          <Inline texto={celula} />
+                          <Inline texto={celula} aoVideo={aoVideo} />
                         </td>
                       ))}
                     </tr>
@@ -176,17 +204,41 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
             </div>
           );
         }
+        const linhaUnica = bloco.linhas.length === 1 ? bloco.linhas[0].trim() : "";
+        const videoSolto = linhaUnica ? idVideoYouTube(linhaUnica) : null;
+        if (videoSolto) {
+          return (
+            <p key={i}>
+              <button type="button" onClick={() => aoVideo(videoSolto, "Assistir ao vídeo")} className="text-brand-trail underline">
+                Assistir ao vídeo
+              </button>
+            </p>
+          );
+        }
         return (
           <p key={i}>
             {bloco.linhas.map((linha, j) => (
               <span key={j}>
                 {j > 0 ? <br /> : null}
-                <Inline texto={linha} />
+                <Inline texto={linha} aoVideo={aoVideo} />
               </span>
             ))}
           </p>
         );
       })}
+      {video ? (
+        <Lightbox titulo={video.titulo} sobre onFechar={() => setVideo(null)}>
+          <div className="aspect-video overflow-hidden rounded-md bg-brand-ink">
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube-nocookie.com/embed/${video.id}`}
+              title={video.titulo}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </Lightbox>
+      ) : null}
     </div>
   );
 }

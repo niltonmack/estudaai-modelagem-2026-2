@@ -139,7 +139,7 @@ classDiagram
 | Cadastro e login com perfil (RF01, RF02, RB14) | `Usuario` e especializações XOR `Aluno` / `Administrador` |
 | Catálogo por área e trilhas curadas (RF03, RF09, RF10, RB07) | `Categoria` classifica `Trilha` com `tipo = pré-definida` |
 | Trilha gerada por LLM a partir de objetivo em linguagem natural (RF04, RB08, RB09) | `SolicitacaoTrilha` origina `Trilha` personalizada, depois acompanhada por `Progresso` do aluno |
-| Visualizar etapas, conteúdos e sequência (RF05, RF12) | `Etapa.titulo`, `conteudo` e `ordem` na composição da trilha |
+| Visualizar etapas, conteúdos e sequência (RF05, RF12) | `Etapa.titulo`, `conteudo` e `ordem` na composição da trilha. Link de vídeo do YouTube nesse Markdown abre em lightbox (OPEN-27); não há atributo de mídia |
 | Progresso percentual e conclusão explícita (RF06, RF07, RB05, RB06) | `Progresso` + `ConclusaoEtapa` + atributo derivado |
 | Conversa de dúvidas e sugestões (RF08, RB10) | `Mensagem` associada ao aluno e obrigatoriamente à trilha em andamento |
 | Administração restrita (RF09–RF15, RB02, RB15, RNF06) | Restrição de permissão sobre catálogo, contas e consulta de progresso, registrada na nota do administrador |

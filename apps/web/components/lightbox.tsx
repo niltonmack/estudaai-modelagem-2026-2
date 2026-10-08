@@ -1,47 +1,55 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 
 export function Lightbox({
   titulo,
   onFechar,
   largo,
+  sobre,
   children
 }: {
   titulo: string;
   onFechar: () => void;
   largo?: boolean;
+  sobre?: boolean;
   children: React.ReactNode;
 }) {
+  const tituloId = useId();
+
   useEffect(() => {
     function tecla(evento: KeyboardEvent) {
-      if (evento.key === "Escape") onFechar();
+      if (evento.key !== "Escape") return;
+      if (sobre) evento.stopImmediatePropagation();
+      onFechar();
     }
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", tecla);
+    document.addEventListener("keydown", tecla, sobre);
     return () => {
       document.body.style.overflow = overflow;
-      document.removeEventListener("keydown", tecla);
+      document.removeEventListener("keydown", tecla, sobre);
     };
-  }, [onFechar]);
+  }, [onFechar, sobre]);
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-brand-ink/50 p-4 sm:items-center"
+      className={`fixed inset-0 flex items-end justify-center bg-brand-ink/50 p-4 sm:items-center ${
+        sobre ? "z-[60]" : "z-50"
+      }`}
       onClick={onFechar}
     >
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="lightbox-titulo"
+        aria-labelledby={tituloId}
         className={`max-h-[85vh] w-full overflow-y-auto rounded-xl bg-white p-5 shadow-xl ${
-          largo ? "max-w-2xl" : "max-w-lg"
+          sobre ? "max-w-3xl" : largo ? "max-w-2xl" : "max-w-lg"
         }`}
         onClick={(evento) => evento.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
-          <h3 id="lightbox-titulo" className="text-lg font-semibold text-brand-ink">
+          <h3 id={tituloId} className="text-lg font-semibold text-brand-ink">
             {titulo}
           </h3>
           <button

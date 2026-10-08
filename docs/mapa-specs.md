@@ -6,7 +6,7 @@
 
 Este documento é **somente o índice ordenado**. Não contém o texto completo das Specs e não implementa código.
 
-As 26 questões humanas (`OPEN-01` … `OPEN-26`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso. OPEN-26 registra a sanfona da etapa, o lightbox da resposta e o lightbox da conversa.
+As 27 questões humanas (`OPEN-01` … `OPEN-27`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso. OPEN-26 registra a sanfona da etapa, o lightbox da resposta e o lightbox da conversa. OPEN-27 registra o link de vídeo do YouTube abrindo em lightbox na página; o layout foi `aprovado` e a tela está `implementada` em 2026-10-08.
 
 Para o texto completo (comportamento, invariantes, contratos, Dado/Quando/Então, testes e status): [`specs.md`](specs.md).
 
@@ -99,7 +99,7 @@ RNFs não originam Specs próprias. Associação por Spec está no índice (§2)
 
 ### 1.6 Decisões humanas (OPEN)
 
-As 26 OPENs estão **fechadas** (25 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s, gestão de contas (RF14), consulta administrativa de progresso (RF15) e a apresentação em sanfona e lightbox (RF05, RF08).
+As 27 OPENs estão **fechadas** (26 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s, gestão de contas (RF14), consulta administrativa de progresso (RF15), a apresentação em sanfona e lightbox (RF05, RF08) e o vídeo do YouTube em lightbox (RF05, OPEN-27).
 
 ### 1.7 Inconsistências, lacunas e ambiguidades
 
@@ -186,7 +186,7 @@ Observação: RB13 cobre remoção de categoria com trilhas. A sentinela **Perso
 | **ADRs** | ADR-003, ADR-004 |
 | **Dependências** | SPEC-002 |
 | **Justificativa da ordem** | RF10+RF11+RF12 formam um único comportamento publicável (trilha curada completa). Separar “CRUD de trilha” de “CRUD de etapa” deixaria a Spec sem valor observável para o aluno. Remoção **com** alunos em andamento fica na SPEC-005, porque depende de progresso ainda inexistente e tem critério de validação distinto (RB11). |
-| **OPEN associados** | Resolvidos: OPEN-16; OPEN-07 na parte “ainda não há progresso” |
+| **OPEN associados** | Resolvidos: OPEN-16; OPEN-07 na parte “ainda não há progresso”. OPEN-27 não muda o armazenamento: o vídeo entra como link Markdown |
 
 ### SPEC-004 — Acompanhar trilha pré-definida
 
@@ -205,7 +205,7 @@ Observação: RB13 cobre remoção de categoria com trilhas. A sentinela **Perso
 | **ADRs** | ADR-003, ADR-004 |
 | **Dependências** | SPEC-001, SPEC-003 |
 | **Justificativa da ordem** | É o caminho feliz do produto sem LLM. Agrupa catálogo + visualização + progresso porque UC01 trata acompanhamento como um objetivo único e RF05–RF07 não se validam isolados (percentual precisa de etapas e de conclusões). RF04 e RF08 ficam de fora: origens, falhas e RNF diferentes. |
-| **OPEN associados** | Resolvidos: OPEN-13, OPEN-15, OPEN-21, OPEN-22 |
+| **OPEN associados** | Resolvidos: OPEN-13, OPEN-15, OPEN-21, OPEN-22, OPEN-26, OPEN-27 |
 
 ### SPEC-005 — Tratar impacto da remoção de etapa em uso
 
@@ -336,6 +336,7 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 | OPEN-24 | Gestão administrativa de usuários | SPEC-008 |
 | OPEN-25 | Consulta administrativa do progresso | SPEC-009 |
 | OPEN-26 | Sanfona da etapa, lightbox da resposta e da conversa | SPEC-004, SPEC-007 |
+| OPEN-27 | Link de vídeo do YouTube abre lightbox na página | SPEC-004; armazenamento em SPEC-003 / OPEN-16 |
 
 ---
 
