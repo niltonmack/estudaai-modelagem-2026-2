@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — Layout do painel do administrador (aprovado)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              ink: "#123047",
+              trail: "#1A7A72",
+              trailDark: "#14635D",
+              mint: "#D7F0ED",
+              spark: "#E3A008",
+              paper: "#F7F4EE"
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; }
+    .phone-frame { width: min(390px, 100%); min-height: 640px; max-height: 844px; overflow-x: hidden; overflow-y: auto; }
+    .is-phone .so-desktop { display: none !important; }
+    .is-phone .grid-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .is-phone .grid-graficos, .is-phone .grid-atalhos { grid-template-columns: minmax(0, 1fr) !important; }
+    .is-phone .hero { flex-direction: column !important; align-items: flex-start !important; }
+    .is-phone .hero-titulo { font-size: 1.35rem !important; }
+  </style>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+    <div class="mx-auto flex max-w-6xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <p class="font-medium text-amber-950">
+        Protótipo do painel do administrador (<code>/painel</code>) — layout <strong>aprovado</strong> em 2026-10-08. Casca do administrador da SPEC-001; dados das SPEC-003, 006, 008 e 009. Não é o app em produção.
+        <a class="ml-2 underline" href="inicio-aluno.html">Home do aluno</a>
+      </p>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="text-amber-950">Tela
+          <select id="tela" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="dados">Com alunos estudando</option>
+            <option value="vazio">Nenhum aluno com trilha</option>
+            <option value="carregando">Carregando</option>
+            <option value="erro">Falha ao carregar</option>
+          </select>
+        </label>
+        <label class="text-amber-950">Viewport
+          <select id="vp" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="desktop">Desktop</option>
+            <option value="phone">Smartphone (390px)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl p-4 md:p-8">
+    <div id="stage" class="mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"></div>
+    <section class="mx-auto mt-6 max-w-3xl space-y-2 text-sm leading-relaxed text-slate-700">
+      <h2 class="text-base font-semibold text-brand-ink">O que esta tela mostra</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>Números</strong>: alunos cadastrados, acompanhamentos em andamento, trilhas pré-definidas publicadas e estado do agente LLM.</li>
+        <li><strong>Avanço geral dos alunos</strong>: etapas concluídas ÷ etapas de todos os acompanhamentos (mesma regra do percentual de cada trilha).</li>
+        <li><strong>Novos acompanhamentos por semana</strong>: trilhas iniciadas pelos alunos em cada uma das últimas 8 semanas, pela data de início.</li>
+        <li><strong>Trilhas mais acompanhadas</strong>: quantos alunos acompanham cada trilha e o avanço médio deles.</li>
+        <li>Somente leitura: o painel não marca etapas nem altera contas. A API não muda: <code>GET /acompanhamentos</code>, <code>GET /usuarios</code>, <code>GET /trilhas</code>, <code>GET /configuracao/llm</code>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const tela = document.getElementById("tela");
+    const vp = document.getElementById("vp");
+
+    const ranking = [
+      { titulo: "Cálculo I", categoria: "Cálculo e Geometria Analítica", alunos: 6, media: 58 },
+      { titulo: "Python Júnior", categoria: "Linguagens de Programação", alunos: 5, media: 41 },
+      { titulo: "Inglês para leitura técnica", categoria: "Idiomas", alunos: 3, media: 27 },
+      { titulo: "Organizar a rotina de estudos", categoria: "Personalizada", alunos: 1, media: 80 }
+    ];
+    const semanas = [1, 0, 2, 3, 1, 4, 2, 3];
+    const rotulos = ["17/08", "24/08", "31/08", "07/09", "14/09", "21/09", "28/09", "05/10"];
+
+    function casca(conteudo) {
+      return `
+        <div class="min-h-[640px] bg-slate-50">
+          <header class="border-b border-slate-200 bg-white">
+            <div class="flex items-center justify-between gap-2 px-4 py-3">
+              <div class="flex min-w-0 items-center gap-2">
+                <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-brand-ink">
+                  <svg viewBox="0 0 24 24" class="h-5 w-5"><path d="M5 17 L11 11 L18 6" stroke="#D7F0ED" stroke-width="2" fill="none"/><circle cx="5" cy="17" r="2.2" fill="#D7F0ED"/><circle cx="11" cy="11" r="2.2" fill="#D7F0ED"/><circle cx="18" cy="6" r="2.4" fill="#E3A008"/></svg>
+                </span>
+                <span class="text-sm font-semibold">EstudaAI</span>
+                <span class="so-desktop rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">Administrador</span>
+              </div>
+              <nav class="so-desktop flex items-center gap-1 text-sm">
+                <span class="rounded-md bg-brand-mint px-3 py-1.5 font-medium">Painel</span>
+                <span class="px-2 py-1.5 text-slate-500">Categorias</span>
+                <span class="px-2 py-1.5 text-slate-500">Trilhas</span>
+                <span class="px-2 py-1.5 text-slate-500">Usuários</span>
+                <span class="px-2 py-1.5 text-slate-500">Andamento</span>
+                <span class="px-2 py-1.5 text-slate-500">Agente LLM</span>
+              </nav>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-600">Mariana</span>
+                <span class="rounded-md border border-slate-300 px-3 py-1.5 font-medium">Sair</span>
+              </div>
+            </div>
+          </header>
+          <section class="px-4 py-6 md:px-8">${conteudo}</section>
+        </div>`;
+    }
+
+    function donut(pct, tamanho = 148) {
+      const r = 52, c = 2 * Math.PI * r, cheio = (pct / 100) * c;
+      return `
+        <svg viewBox="0 0 140 140" width="${tamanho}" height="${tamanho}" role="img" aria-label="Avanço geral: ${pct}%">
+          <circle cx="70" cy="70" r="${r}" fill="none" stroke="#D7F0ED" stroke-width="16"/>
+          ${pct > 0 ? `<circle cx="70" cy="70" r="${r}" fill="none" stroke="#1A7A72" stroke-width="16" stroke-linecap="round"
+            stroke-dasharray="${cheio} ${c}" transform="rotate(-90 70 70)"/>` : ""}
+          <text x="70" y="68" text-anchor="middle" font-size="26" font-weight="700" fill="#123047">${pct}%</text>
+          <text x="70" y="88" text-anchor="middle" font-size="11" fill="#5B6B73">concluído</text>
+        </svg>`;
+    }
+
+    function colunas(valores) {
+      const max = Math.max(1, ...valores);
+      return `
+        <div class="flex h-36 items-end gap-2" role="img" aria-label="Novos acompanhamentos por semana">
+          ${valores.map((v, i) => `
+            <div class="flex flex-1 flex-col items-center gap-1">
+              <span class="text-[10px] font-medium text-slate-500">${v || ""}</span>
+              <div class="w-full rounded-t-md ${i === valores.length - 1 ? "bg-brand-trail" : "bg-brand-trail/40"}"
+                style="height:${Math.max(4, (v / max) * 96)}px"></div>
+              <span class="text-[10px] text-slate-400">${rotulos[i]}</span>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    function kpi(rotulo, valor, detalhe, destaque) {
+      return `
+        <div class="rounded-xl border border-slate-200 bg-white p-4">
+          <p class="text-xs font-medium uppercase tracking-wide text-slate-500">${rotulo}</p>
+          <p class="mt-1 text-2xl font-bold ${destaque ? "text-brand-trail" : ""}">${valor}</p>
+          <p class="text-xs text-slate-500">${detalhe}</p>
+        </div>`;
+    }
+
+    function atalhos() {
+      const itens = [
+        ["Categorias", "Organizar o catálogo por área de estudo."],
+        ["Trilhas e etapas", "Publicar percursos com etapas em ordem."],
+        ["Usuários", "Cadastrar, alterar e remover alunos e administradores."],
+        ["Andamento dos alunos", "Ver quais trilhas cada aluno faz e o percentual."],
+        ["Agente LLM", "Ligar ou desligar a geração de trilhas personalizadas."]
+      ];
+      return `
+        <h3 class="mt-8 font-semibold">Gestão</h3>
+        <div class="grid-atalhos mt-3 grid gap-3" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
+          ${itens.map(([t, d]) => `
+            <div class="rounded-xl border border-slate-200 bg-white p-4 hover:border-brand-trail">
+              <p class="font-semibold">${t}</p>
+              <p class="mt-1 text-sm text-slate-500">${d}</p>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    function hero(titulo, texto, cta) {
+      return `
+        <div class="hero flex items-center justify-between gap-4 rounded-2xl bg-brand-ink p-6 text-white">
+          <div>
+            <p class="text-sm text-brand-mint">Olá, Mariana</p>
+            <h2 class="hero-titulo mt-1 text-2xl font-semibold leading-snug">${titulo}</h2>
+            <p class="mt-2 max-w-lg text-sm text-slate-200">${texto}</p>
+          </div>
+          <span class="inline-flex shrink-0 rounded-md bg-brand-trail px-4 py-2 text-sm font-medium text-white">${cta}</span>
+        </div>`;
+    }
+
+    const telas = {
+      dados: () => casca(`
+        ${hero("9 alunos acompanham 4 trilhas", "15 acompanhamentos no total; 11 ainda têm etapas pendentes. O avanço geral está em 47%.", "Ver andamento dos alunos")}
+        <div class="grid-kpi mt-6 grid gap-3" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
+          ${kpi("Alunos", 12, "2 administradores")}
+          ${kpi("Em andamento", 11, "de 15 acompanhamentos")}
+          ${kpi("Trilhas publicadas", 3, "de 4 pré-definidas")}
+          ${kpi("Agente LLM", "Ligado", "trilhas personalizadas", true)}
+        </div>
+        <div class="grid-graficos mt-6 grid gap-4" style="grid-template-columns: minmax(0, 1fr) minmax(0, 2fr)">
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <h3 class="font-semibold">Avanço geral dos alunos</h3>
+            <p class="text-xs text-slate-500">Todos os acompanhamentos</p>
+            <div class="mt-3 flex justify-center">${donut(47)}</div>
+            <p class="mt-2 text-center text-sm text-slate-600">38 de 81 etapas</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <h3 class="font-semibold">Novos acompanhamentos por semana</h3>
+            <p class="text-xs text-slate-500">Trilhas iniciadas pelos alunos nas últimas 8 semanas</p>
+            <div class="mt-4">${colunas(semanas)}</div>
+          </div>
+        </div>
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="font-semibold">Trilhas mais acompanhadas</h3>
+            <span class="text-sm text-brand-trail underline">Andamento dos alunos</span>
+          </div>
+          <ul class="mt-4 space-y-4">
+            ${ranking.map((t) => `
+              <li>
+                <div class="flex items-baseline justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="truncate font-medium">${t.titulo}</p>
+                    <p class="truncate text-xs text-slate-500">${t.categoria} · ${t.alunos} ${t.alunos === 1 ? "aluno" : "alunos"}</p>
+                  </div>
+                  <span class="shrink-0 text-sm font-semibold">${t.media}% <span class="font-normal text-slate-500">médio</span></span>
+                </div>
+                <div class="mt-2 h-2.5 overflow-hidden rounded-full bg-brand-mint">
+                  <div class="h-full rounded-full bg-brand-trail" style="width:${t.media}%"></div>
+                </div>
+              </li>`).join("")}
+          </ul>
+        </div>
+        ${atalhos()}
+      `),
+      vazio: () => casca(`
+        ${hero("Nenhum aluno começou uma trilha ainda", "Os gráficos aparecem quando um aluno escolher uma trilha. Confira se há trilhas publicadas no catálogo.", "Ver trilhas")}
+        <div class="grid-kpi mt-6 grid gap-3" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
+          ${kpi("Alunos", 3, "1 administrador")}
+          ${kpi("Em andamento", 0, "de 0 acompanhamentos")}
+          ${kpi("Trilhas publicadas", 2, "de 2 pré-definidas")}
+          ${kpi("Agente LLM", "Desligado", "trilhas personalizadas")}
+        </div>
+        <div class="mt-6 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
+          <div class="flex justify-center">${donut(0, 120)}</div>
+          <p class="mt-3 text-sm text-slate-600">Nenhum acompanhamento ainda.</p>
+        </div>
+        ${atalhos()}
+      `),
+      carregando: () => casca(`
+        <div class="h-32 animate-pulse rounded-2xl bg-slate-200"></div>
+        <div class="grid-kpi mt-6 grid gap-3" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
+          ${[1, 2, 3, 4].map(() => `<div class="h-24 animate-pulse rounded-xl bg-slate-200"></div>`).join("")}
+        </div>
+        <div class="grid-graficos mt-6 grid gap-4" style="grid-template-columns: minmax(0, 1fr) minmax(0, 2fr)">
+          <div class="h-64 animate-pulse rounded-xl bg-slate-200"></div>
+          <div class="h-64 animate-pulse rounded-xl bg-slate-200"></div>
+        </div>
+        <p class="mt-4 text-sm text-slate-500">Carregando o painel…</p>
+      `),
+      erro: () => casca(`
+        <div role="alert" class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          Não foi possível carregar os números do painel. Tente de novo em instantes. Nada foi alterado.
+        </div>
+        ${atalhos()}
+      `)
+    };
+
+    function render() {
+      const phone = vp.value === "phone";
+      stage.className = phone
+        ? "mx-auto overflow-hidden rounded-[2rem] border-8 border-slate-800 bg-white shadow-sm phone-frame is-phone"
+        : "mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm";
+      stage.innerHTML = telas[tela.value]();
+      location.hash = tela.value;
+    }
+
+    const inicial = location.hash.replace("#", "");
+    if (telas[inicial]) tela.value = inicial;
+    tela.addEventListener("change", render);
+    vp.addEventListener("change", render);
+    render();
+  </script>
+</body>
+</html>

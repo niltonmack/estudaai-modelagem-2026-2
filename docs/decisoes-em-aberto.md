@@ -1,6 +1,6 @@
 # Decisões em aberto — EstudaAI
 
-**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25). **Absorvido na baseline.**  
+**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25) e a apresentação da etapa e da conversa (OPEN-26). **Absorvido na baseline.**  
 **Origem:** [`mapa-specs.md`](mapa-specs.md) §3  
 **Regra:** a implementação **não** reabre o que está `decidido` ou `fora de escopo`. Este arquivo permanece como rastreio da entrevista; RF, RB, RNF, UC, modelo, drivers e ADRs já refletem as respostas.
 
@@ -289,6 +289,17 @@ Legenda de status:
 | **Decisão** | Sim, somente leitura (RF15 / UC04). Lista alunos, trilhas em acompanhamento e percentual derivado. O administrador não registra conclusão, não inicia progresso e não conversa no lugar do aluno. |
 | **Notas** | Não reabre OPEN-21. Percentual continua derivado (RB06). Pedido humano 2026-10-08. |
 
+## OPEN-26 — Sanfona da etapa, resposta e conversa em lightbox
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | Como o aluno vê o conteúdo da etapa, a resposta do exercício e a conversa com o agente? |
+| **Specs** | SPEC-004, SPEC-007 |
+| **Baseline** | RF05 exibia etapas e Markdown em sequência. RF08 abria a conversa em tela própria. |
+| **Status** | `decidido` |
+| **Decisão** | No acompanhamento, cada etapa é uma sanfona: o conteúdo fica oculto até o clique. O enunciado em `## Exercício` fica na etapa. A `## Resposta` só aparece no lightbox **Ver resposta**. **Conversar sobre esta trilha** abre a conversa em lightbox sobre a página. |
+| **Notas** | Não cria entidade nova. A resposta continua dentro de `Etapa.conteudo` (Markdown). Pedido humano 2026-10-08. |
+
 ---
 
 ## Resumo
@@ -320,7 +331,8 @@ Legenda de status:
 | OPEN-23 | Remover categoria em uso | `decidido` — bloquear enquanto houver trilhas |
 | OPEN-24 | Gestão administrativa de usuários | `decidido` — RF14 / SPEC-008 |
 | OPEN-25 | Visão administrativa do progresso | `decidido` — RF15 / SPEC-009 |
+| OPEN-26 | Sanfona, resposta e conversa em lightbox | `decidido` — SPEC-004, SPEC-007 |
 
-Progresso da entrevista: **25 / 25** fechadas (24 decididas, 1 fora de escopo).
+Progresso da entrevista: **26 / 26** fechadas (25 decididas, 1 fora de escopo).
 
 Nenhuma OPEN permanece `em aberto`. A implementação deve obedecer a este registro **e** à baseline atualizada. A divergência OPEN-06 (Gemini) foi incorporada em RNF02, ADR-002, AD-C02 e RF13.

@@ -6,7 +6,7 @@
 
 Este documento é **somente o índice ordenado**. Não contém o texto completo das Specs e não implementa código.
 
-As 25 questões humanas (`OPEN-01` … `OPEN-25`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso.
+As 26 questões humanas (`OPEN-01` … `OPEN-26`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso. OPEN-26 registra a sanfona da etapa, o lightbox da resposta e o lightbox da conversa.
 
 Para o texto completo (comportamento, invariantes, contratos, Dado/Quando/Então, testes e status): [`specs.md`](specs.md).
 
@@ -99,7 +99,7 @@ RNFs não originam Specs próprias. Associação por Spec está no índice (§2)
 
 ### 1.6 Decisões humanas (OPEN)
 
-As 25 OPENs estão **fechadas** (24 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s, gestão de contas (RF14) e consulta administrativa de progresso (RF15).
+As 26 OPENs estão **fechadas** (25 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s, gestão de contas (RF14), consulta administrativa de progresso (RF15) e a apresentação em sanfona e lightbox (RF05, RF08).
 
 ### 1.7 Inconsistências, lacunas e ambiguidades
 
@@ -335,6 +335,7 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 | OPEN-23 | Bloquear remoção de categoria com trilhas | SPEC-002 |
 | OPEN-24 | Gestão administrativa de usuários | SPEC-008 |
 | OPEN-25 | Consulta administrativa do progresso | SPEC-009 |
+| OPEN-26 | Sanfona da etapa, lightbox da resposta e da conversa | SPEC-004, SPEC-007 |
 
 ---
 

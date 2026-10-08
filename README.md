@@ -23,25 +23,102 @@ A visão completa está em [`docs/visaodoproduto.md`](docs/visaodoproduto.md).
 
 O código **SHALL** ser organizado em módulos compatíveis com essa arquitetura (RNF07).
 
-## Como executar
+## Como executar localmente
 
-Dois artefatos: API Nest (`apps/api`, porta 3001) e UI Next.js (`apps/web`, porta 3000).
+A interface sobe em http://localhost:3000 e a API em http://localhost:3001. Os comandos abaixo são executados na raiz do repositório, onde está o `package.json` dos workspaces.
 
-Laboratório local (2026-10-02): o MySQL da máquina é o serviço **MySQL80** em `127.0.0.1:3306` (não há listener em `3336`). O schema do EstudaAI é o banco **`estudaai`**, separado do `dentalapp` (`avaliacoes`, `imagens`, `respostas`), que permanece intocado.
+### Pré-requisitos
+
+- Node.js 20 ou superior (o `npm` acompanha a instalação)
+- MySQL 8 ou MariaDB na porta `3306`, ou Docker para subir o banco deste projeto
+
+### 1. Instalar dependências
 
 ```bash
 npm install
-npm run seed
+```
+
+### 2. Preparar o banco `estudaai`
+
+Use somente o schema `estudaai`. Se a máquina já tiver outro banco na mesma instância, deixe-o como está.
+
+**MySQL já instalado.** No cliente `mysql`, como administrador:
+
+```sql
+CREATE DATABASE IF NOT EXISTS estudaai CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'estudaai'@'localhost' IDENTIFIED BY 'estudaai';
+CREATE USER IF NOT EXISTS 'estudaai'@'127.0.0.1' IDENTIFIED BY 'estudaai';
+GRANT ALL PRIVILEGES ON estudaai.* TO 'estudaai'@'localhost';
+GRANT ALL PRIVILEGES ON estudaai.* TO 'estudaai'@'127.0.0.1';
+FLUSH PRIVILEGES;
+```
+
+**Docker.** Se a porta `3306` estiver livre:
+
+```bash
+docker compose up -d
+```
+
+O Compose cria o banco `estudaai`, o usuário `estudaai` e a senha `estudaai`. As tabelas são criadas pela API na primeira conexão (`synchronize` fora de produção).
+
+### 3. Configurar o ambiente
+
+Copie o exemplo para o arquivo que a API lê. Esse arquivo fica de fora do Git.
+
+```bash
+cp .env.example apps/api/.env
+```
+
+No PowerShell:
+
+```powershell
+Copy-Item .env.example apps\api\.env
+```
+
+Os valores de laboratório já apontam para `127.0.0.1:3306`, banco `estudaai` e o administrador inicial. Para o agente LLM, preencha `GEMINI_API_KEY` nesse arquivo. O modelo padrão é `gemini-3.5-flash-lite`. A chave fica só na API.
+
+A interface usa `http://localhost:3001` quando `apps/web/.env.local` não existe. Crie esse arquivo apenas se a API estiver em outro endereço:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+### 4. Subir API e interface
+
+Em um terminal:
+
+```bash
 npm run api
+```
+
+Em outro terminal:
+
+```bash
 npm run web
 ```
 
-- UI: http://localhost:3000
-- Admin seed: `mariana@estudaai.local` / `AdminTemp1`
-- Testes da Spec: `npm test` (usam `sql.js` em memória; não gravam no MySQL)
-- Gemini: chave só em `apps/api/.env` (`GEMINI_API_KEY`). Acesso `generateContent` validado em 2026-10-02 no modelo `gemini-3.5-flash-lite`. Ligue o interruptor em `/agente`.
+`npm run api` aplica o seed se ele ainda não existir: a conta da administradora, a categoria sentinela **Personalizada** e o interruptor do LLM desligado. `npm run seed` repete esse passo sem deixar a API no ar. Trilhas e etapas do catálogo são criadas depois, pela área administrativa.
 
-`docker compose` continua opcional se você quiser um MySQL só do EstudaAI; neste laboratório o banco local compartilhado já está em uso.
+### 5. Entrar no sistema
+
+| Onde | Endereço |
+|---|---|
+| Interface | http://localhost:3000 |
+| Cadastro de aluno | http://localhost:3000/cadastro |
+| Login | http://localhost:3000/login |
+| API | http://localhost:3001 |
+
+Administradora inicial: `mariana@estudaai.local` / `AdminTemp1`.
+
+Com a chave do Gemini preenchida, ligue o agente em http://localhost:3000/agente. Sem a chave, o catálogo e o acompanhamento funcionam com o agente desligado.
+
+### Testes
+
+```bash
+npm test
+```
+
+Os testes da API usam `sql.js` em memória e não gravam no MySQL.
 
 ## Documentação
 
@@ -65,7 +142,7 @@ npm run web
 | Log da aplicação | [`docs/logging.md`](docs/logging.md) (RNF09) |
 | Identidade visual | [`docs/identidade-visual.md`](docs/identidade-visual.md) (RNF10) — **aprovada** (2026-09-30) · amostra [`docs/layout/identidade.html`](docs/layout/identidade.html) |
 | Evidências de layout | [`docs/layout/`](docs/layout/) |
-| Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 25 fechadas |
+| Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 26 fechadas |
 
 ## Modelo de IDE (Cursor, Claude Code e VS Code + Copilot)
 

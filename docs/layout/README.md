@@ -71,3 +71,19 @@ O layout da SPEC-008 está `aprovado` em [`specs.md`](../specs.md). A implementa
 Abrir [`spec-009.html`](spec-009.html). Telas: lista de alunos e andamento, detalhe do aluno, detalhe de uma trilha (somente leitura), aluno sem progresso. Viewport desktop e smartphone.
 
 O layout da SPEC-009 está `aprovado` em [`specs.md`](../specs.md). A implementação da SPEC-009 está `implementada` (2026-10-08).
+
+## Home do aluno — layout aprovado (2026-10-08)
+
+Abrir [`inicio-aluno.html`](inicio-aluno.html). Telas: com trilhas em andamento, sem nenhuma trilha, todas as etapas concluídas, carregando, falha ao carregar. Viewport desktop e smartphone.
+
+Redesenho de `/inicio` (casca da SPEC-001, dados da SPEC-004): avanço geral, avanço por trilha, ritmo semanal a partir do histórico (RB12) e atalho para continuar. Percentuais seguem RB06. Sem API nova nem dado novo.
+
+O layout foi `aprovado` pelo humano em 2026-10-08 e a home está `implementada` em `apps/web/app/inicio/page.tsx`.
+
+## Painel do administrador — layout aprovado (2026-10-08)
+
+Abrir [`painel-admin.html`](painel-admin.html). Telas: com alunos estudando, nenhum aluno com trilha, carregando, falha ao carregar. Viewport desktop e smartphone.
+
+Redesenho de `/painel` no mesmo estilo da home do aluno: números de contas, acompanhamentos, trilhas publicadas e agente LLM; avanço geral dos alunos (RB06); novos acompanhamentos por semana pela data de início; trilhas mais acompanhadas com avanço médio. Somente leitura (RB18). Sem API nova.
+
+O layout foi `aprovado` pelo humano em 2026-10-08 e o painel está `implementado` em `apps/web/app/painel/page.tsx`.
