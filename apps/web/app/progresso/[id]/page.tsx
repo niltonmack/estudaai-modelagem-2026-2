@@ -5,8 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Alerta } from "@/components/auth-ui";
+import { ConversaPainel } from "@/components/conversa-painel";
+import { Lightbox } from "@/components/lightbox";
 import { BarraProgresso, MarkdownEtapa } from "@/components/markdown-etapa";
 import { chamarApi, mensagemErro, ErroApi } from "@/lib/api";
+import { partirConteudo } from "@/lib/etapa-conteudo";
 import { dataPt, EtapaProgresso, ProgressoDetalhe } from "@/lib/progresso";
 import { lerSessao, Sessao } from "@/lib/sessao";
 
@@ -31,6 +34,9 @@ export default function ProgressoDetalhePage() {
   const [detalhe, setDetalhe] = useState<ProgressoDetalhe | null>(null);
   const [alerta, setAlerta] = useState<{ texto: string; tom: "red" | "green" } | null>(null);
   const [marcando, setMarcando] = useState(false);
+  const [abertas, setAbertas] = useState<Record<string, boolean>>({});
+  const [resposta, setResposta] = useState<{ titulo: string; texto: string } | null>(null);
+  const [conversaAberta, setConversaAberta] = useState(false);
 
   useEffect(() => {
     const atual = lerSessao();
@@ -117,49 +123,97 @@ export default function ProgressoDetalhePage() {
           </div>
           {detalhe.ativo ? (
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <Link
-                href={`/progresso/${detalhe.id}/conversa`}
+              <button
+                type="button"
+                onClick={() => setConversaAberta(true)}
                 className="inline-flex items-center justify-center rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark"
               >
                 Conversar sobre esta trilha
-              </Link>
+              </button>
             </div>
           ) : null}
           <div className="mt-6 space-y-3">
             {detalhe.trilha.etapas.map((etapa) => {
               const atual = detalhe.proximaEtapa?.id === etapa.id;
+              const aberta = abertas[etapa.id] === true;
+              const partes = partirConteudo(etapa.conteudo);
               return (
                 <article
                   key={etapa.id}
-                  className={`rounded-lg border border-slate-200 bg-white p-4 ${atual ? "ring-2 ring-brand-trail" : ""}`}
+                  className={`rounded-lg border border-slate-200 bg-white ${atual ? "ring-2 ring-brand-trail" : ""}`}
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-xs font-medium uppercase tracking-wide text-brand-trail">Etapa {etapa.ordem}</p>
-                    {selo(etapa, atual)}
-                  </div>
-                  <h3 className="mt-2 text-base font-semibold">{etapa.titulo}</h3>
-                  <div className="mt-2">
-                    <MarkdownEtapa texto={etapa.conteudo} />
-                  </div>
-                  {atual ? (
-                    <button
-                      type="button"
-                      disabled={marcando}
-                      onClick={() => void concluir(etapa.id, etapa.titulo)}
-                      className="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark disabled:opacity-60"
-                    >
-                      {marcando ? "Registrando…" : "Marcar como concluída"}
-                    </button>
-                  ) : null}
-                  {etapa.concluida ? (
-                    <p className="mt-3 text-xs text-slate-500">
-                      Já marcada. Marcar de novo não duplica o registro.
-                    </p>
+                  <button
+                    type="button"
+                    aria-expanded={aberta}
+                    onClick={() => setAbertas((atualMapa) => ({ ...atualMapa, [etapa.id]: !aberta }))}
+                    className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left"
+                  >
+                    <span>
+                      <span className="text-xs font-medium uppercase tracking-wide text-brand-trail">
+                        Etapa {etapa.ordem}
+                      </span>
+                      <span className="mt-1 block text-base font-semibold text-brand-ink">{etapa.titulo}</span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-2">
+                      {selo(etapa, atual)}
+                      <span className="text-sm text-slate-500" aria-hidden="true">
+                        {aberta ? "–" : "+"}
+                      </span>
+                    </span>
+                  </button>
+                  {aberta ? (
+                    <div className="border-t border-slate-100 px-4 py-3">
+                      {partes.corpo ? <MarkdownEtapa texto={partes.corpo} /> : null}
+                      {partes.exercicio ? (
+                        <div className="mt-4 rounded-md bg-slate-50 p-3">
+                          <p className="text-sm font-semibold text-brand-ink">Exercício</p>
+                          <div className="mt-2">
+                            <MarkdownEtapa texto={partes.exercicio} />
+                          </div>
+                          {partes.resposta ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setResposta({ titulo: etapa.titulo, texto: partes.resposta ?? "" })
+                              }
+                              className="mt-3 inline-flex rounded-md border border-brand-trail bg-white px-3 py-2 text-sm font-medium text-brand-trail hover:bg-brand-mint"
+                            >
+                              Ver resposta
+                            </button>
+                          ) : null}
+                        </div>
+                      ) : null}
+                      {atual ? (
+                        <button
+                          type="button"
+                          disabled={marcando}
+                          onClick={() => void concluir(etapa.id, etapa.titulo)}
+                          className="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark disabled:opacity-60"
+                        >
+                          {marcando ? "Registrando…" : "Marcar como concluída"}
+                        </button>
+                      ) : null}
+                      {etapa.concluida ? (
+                        <p className="mt-3 text-xs text-slate-500">
+                          Já marcada. Marcar de novo não duplica o registro.
+                        </p>
+                      ) : null}
+                    </div>
                   ) : null}
                 </article>
               );
             })}
           </div>
+          {resposta ? (
+            <Lightbox titulo={`Resposta · ${resposta.titulo}`} onFechar={() => setResposta(null)}>
+              <MarkdownEtapa texto={resposta.texto} />
+            </Lightbox>
+          ) : null}
+          {conversaAberta && sessao ? (
+            <Lightbox titulo="Conversar sobre esta trilha" largo onFechar={() => setConversaAberta(false)}>
+              <ConversaPainel progressoId={detalhe.id} token={sessao.accessToken} />
+            </Lightbox>
+          ) : null}
           <section className="mt-8">
             <h3 className="text-lg font-semibold">Histórico</h3>
             <p className="text-sm text-slate-600">

@@ -47,6 +47,10 @@ Os requisitos seguem o modelo EARS (Easy Approach to Requirements Syntax). As pa
 
 **WHEN** o aluno selecionar uma trilha pré-definida ou personalizada, o sistema **SHALL** exibir suas etapas, conteúdos e sequência.
 
+No acompanhamento, cada etapa **SHALL** aparecer em sanfona: o título fica visível e o conteúdo permanece oculto até o aluno clicar na etapa.
+
+**WHERE** o Markdown da etapa contiver as seções `## Exercício` e `## Resposta`, o sistema **SHALL** mostrar o enunciado na etapa e **SHALL** revelar a resposta somente quando o aluno acionar **Ver resposta**, em um lightbox sobre a página.
+
 ## RF06 - Visualizar progresso
 
 **Tipo EARS:** State-driven
@@ -64,6 +68,8 @@ Os requisitos seguem o modelo EARS (Easy Approach to Requirements Syntax). As pa
 **Tipo EARS:** Event-driven
 
 **WHEN** o aluno autenticado, com uma trilha em andamento, enviar uma mensagem na interface de conversa, o sistema **SHALL** permitir a solicitação de sugestões, o esclarecimento de dúvidas e o recebimento de apoio relacionado a essa trilha.
+
+**WHEN** o aluno acionar **Conversar sobre esta trilha** no acompanhamento, o sistema **SHALL** abrir essa conversa em um lightbox sobre a página, sem abandonar a trilha.
 
 **IF** não houver trilha em andamento, o sistema **SHALL** recusar a conversa.
 

@@ -60,6 +60,11 @@ Como aprovar o layout: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` p
 | Layout SPEC-009 | `aprovado` — [`layout/spec-009.html`](layout/spec-009.html) | 2026-10-08 |
 | Implementação SPEC-009 | `implementada` | 2026-10-08 |
 | Aprovação humana SPEC-008 e SPEC-009 | texto, layout e implementação `aprovados` | 2026-10-08 |
+| Apresentação da etapa e da conversa (OPEN-26) | sanfona, lightbox da resposta e lightbox da conversa | 2026-10-08 |
+| Layout da home do aluno (`/inicio`) | `aprovado` — [`layout/inicio-aluno.html`](layout/inicio-aluno.html); gráficos derivados de RB06 e RB12, sem API nova | 2026-10-08 |
+| Implementação da home do aluno | `implementada` | 2026-10-08 |
+| Layout do painel do administrador (`/painel`) | `aprovado` — [`layout/painel-admin.html`](layout/painel-admin.html); números e gráficos derivados de RB06, RF14 e RF15, somente leitura, sem API nova | 2026-10-08 |
+| Implementação do painel do administrador | `implementada` | 2026-10-08 |
 | Acesso Gemini (laboratório) | chave só em `apps/api/.env`; `generateContent` HTTP 200 no modelo `gemini-3.5-flash-lite` | 2026-10-02 |
 | Banco MySQL local | schema `estudaai` em `127.0.0.1:3306` (serviço MySQL80); `dentalapp` intocado | 2026-10-02 |
 | Identidade visual (logo + paleta) | `aprovada` — [`identidade-visual.md`](identidade-visual.md) | 2026-09-30 |
@@ -565,6 +570,8 @@ AC-003-* e INV-003-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 **Incluído:** listagem anônima; escolha e progresso só aluno autenticado; percentual derivado; histórico; retomada do mesmo `Progresso`; mensagem de catálogo indisponível (E4, em conjunto com estado do LLM da SPEC-006).
 
+**Apresentação (OPEN-26, 2026-10-08):** no acompanhamento, a etapa é uma sanfona — título e estado visíveis, Markdown oculto até o clique. O trecho `## Exercício` permanece no painel aberto. O trecho `## Resposta`, quando existir, não aparece no fluxo da etapa: o botão **Ver resposta** abre um lightbox sobre a página. Sem `## Resposta`, o botão não aparece. Marcar conclusão continua explícita (RF07).
+
 **Fora do escopo:** criar personalizada (SPEC-006); conversa (SPEC-007); pausar/abandonar/reiniciar; admin como aluno.
 
 ## Telas e evidência de layout
@@ -956,6 +963,8 @@ AC-006-* e INV-006-* atendidos; testes da §12 aprovados; RNFs verificados; chav
 ## 3. Escopo
 
 **Incluído:** persistir turnos `origem ∈ {aluno, agente LLM}`; exigir `Progresso.ativo` e `Trilha`; recusar sem trilha; timeout 60 s; não escrever em trilha pré-definida.
+
+**Apresentação (OPEN-26, 2026-10-08):** **Conversar sobre esta trilha** abre a conversa em lightbox sobre o acompanhamento. A rota direta `/progresso/:id/conversa` continua válida. O contrato da API não muda.
 
 **Fora do escopo:** gerar nova trilha (SPEC-006); conversa anônima; admin no chat de estudo.
 

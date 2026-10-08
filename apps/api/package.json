@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start": "nest start --env-file .env",
+    "start:dev": "nest start --watch --env-file .env",
     "build": "nest build",
-    "seed": "ts-node src/seed.ts",
+    "seed": "node --env-file=.env -r ts-node/register src/seed.ts",
     "test": "jest --runInBand"
   },
   "dependencies": {

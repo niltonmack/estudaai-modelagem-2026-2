@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — Layout da home do aluno (aprovado)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              ink: "#123047",
+              trail: "#1A7A72",
+              trailDark: "#14635D",
+              mint: "#D7F0ED",
+              spark: "#E3A008",
+              paper: "#F7F4EE"
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; }
+    .phone-frame { width: min(390px, 100%); min-height: 640px; max-height: 844px; overflow-x: hidden; overflow-y: auto; }
+    .is-phone .so-desktop { display: none !important; }
+    .is-phone .grid-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .is-phone .grid-graficos { grid-template-columns: minmax(0, 1fr) !important; }
+    .is-phone .hero { flex-direction: column !important; align-items: flex-start !important; }
+    .is-phone .hero-titulo { font-size: 1.35rem !important; }
+  </style>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+    <div class="mx-auto flex max-w-6xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <p class="font-medium text-amber-950">
+        Protótipo da home do aluno (<code>/inicio</code>) — layout <strong>aprovado</strong> em 2026-10-08. Casca do aluno da SPEC-001; dados da SPEC-004. Não é o app em produção.
+        <a class="ml-2 underline" href="identidade.html">Identidade</a>
+      </p>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="text-amber-950">Tela
+          <select id="tela" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="andamento">Com trilhas em andamento</option>
+            <option value="vazia">Sem nenhuma trilha</option>
+            <option value="finalizada">Todas as etapas concluídas</option>
+            <option value="carregando">Carregando</option>
+            <option value="erro">Falha ao carregar</option>
+          </select>
+        </label>
+        <label class="text-amber-950">Viewport
+          <select id="vp" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="desktop">Desktop</option>
+            <option value="phone">Smartphone (390px)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl p-4 md:p-8">
+    <div id="stage" class="mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"></div>
+    <section class="mx-auto mt-6 max-w-3xl space-y-2 text-sm leading-relaxed text-slate-700">
+      <h2 class="text-base font-semibold text-brand-ink">O que esta tela mostra</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>Avanço geral</strong>: etapas concluídas ÷ etapas de todas as trilhas acompanhadas (mesma regra do percentual de cada trilha).</li>
+        <li><strong>Avanço por trilha</strong>: percentual de cada acompanhamento, com a próxima etapa.</li>
+        <li><strong>Ritmo das últimas 8 semanas</strong>: quantas etapas foram marcadas em cada semana, a partir das datas do histórico.</li>
+        <li><strong>Continuar de onde parou</strong>: abre o acompanhamento da trilha com etapa pendente mais recente.</li>
+        <li>Nenhum dado novo é criado. A API não muda: <code>GET /progresso</code> e <code>GET /progresso/:id</code>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const tela = document.getElementById("tela");
+    const vp = document.getElementById("vp");
+
+    const trilhas = [
+      { titulo: "Cálculo I", categoria: "Cálculo e Geometria Analítica", feitas: 4, total: 6, proxima: "Máximos e mínimos" },
+      { titulo: "Python Júnior", categoria: "Linguagens de Programação", feitas: 2, total: 6, proxima: "Repetição" },
+      { titulo: "Inglês para leitura técnica", categoria: "Idiomas", feitas: 1, total: 5, proxima: "Falsos cognatos" }
+    ];
+    const semanas = [0, 1, 0, 2, 1, 3, 0, 2];
+    const rotulos = ["17/08", "24/08", "31/08", "07/09", "14/09", "21/09", "28/09", "05/10"];
+
+    function casca(conteudo) {
+      return `
+        <div class="min-h-[640px] bg-slate-50">
+          <header class="border-b border-slate-200 bg-white">
+            <div class="flex items-center justify-between gap-2 px-4 py-3">
+              <div class="flex min-w-0 items-center gap-2">
+                <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-brand-ink">
+                  <svg viewBox="0 0 24 24" class="h-5 w-5"><path d="M5 17 L11 11 L18 6" stroke="#D7F0ED" stroke-width="2" fill="none"/><circle cx="5" cy="17" r="2.2" fill="#D7F0ED"/><circle cx="11" cy="11" r="2.2" fill="#D7F0ED"/><circle cx="18" cy="6" r="2.4" fill="#E3A008"/></svg>
+                </span>
+                <span class="text-sm font-semibold">EstudaAI</span>
+                <span class="so-desktop rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">Aluno</span>
+              </div>
+              <nav class="so-desktop flex items-center gap-1 text-sm">
+                <span class="rounded-md bg-brand-mint px-3 py-1.5 font-medium">Início</span>
+                <span class="px-3 py-1.5 text-slate-500">Catálogo</span>
+                <span class="px-3 py-1.5 text-slate-500">Trilha personalizada</span>
+                <span class="px-3 py-1.5 text-slate-500">Meu progresso</span>
+              </nav>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-600">Lucas</span>
+                <span class="rounded-md border border-slate-300 px-3 py-1.5 font-medium">Sair</span>
+              </div>
+            </div>
+          </header>
+          <section class="px-4 py-6 md:px-8">${conteudo}</section>
+        </div>`;
+    }
+
+    function donut(pct, tamanho = 148) {
+      const r = 52, c = 2 * Math.PI * r, cheio = (pct / 100) * c;
+      return `
+        <svg viewBox="0 0 140 140" width="${tamanho}" height="${tamanho}" role="img" aria-label="Avanço geral: ${pct}%">
+          <circle cx="70" cy="70" r="${r}" fill="none" stroke="#D7F0ED" stroke-width="16"/>
+          <circle cx="70" cy="70" r="${r}" fill="none" stroke="#1A7A72" stroke-width="16" stroke-linecap="round"
+            stroke-dasharray="${cheio} ${c}" transform="rotate(-90 70 70)"/>
+          <text x="70" y="68" text-anchor="middle" font-size="26" font-weight="700" fill="#123047">${pct}%</text>
+          <text x="70" y="88" text-anchor="middle" font-size="11" fill="#5B6B73">concluído</text>
+        </svg>`;
+    }
+
+    function colunas(valores) {
+      const max = Math.max(1, ...valores);
+      return `
+        <div class="flex h-36 items-end gap-2" role="img" aria-label="Etapas concluídas por semana">
+          ${valores.map((v, i) => `
+            <div class="flex flex-1 flex-col items-center gap-1">
+              <span class="text-[10px] font-medium text-slate-500">${v || ""}</span>
+              <div class="w-full rounded-t-md ${i === valores.length - 1 ? "bg-brand-trail" : "bg-brand-trail/40"}"
+                style="height:${Math.max(4, (v / max) * 96)}px"></div>
+              <span class="text-[10px] text-slate-400">${rotulos[i]}</span>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    function kpi(rotulo, valor, detalhe) {
+      return `
+        <div class="rounded-xl border border-slate-200 bg-white p-4">
+          <p class="text-xs font-medium uppercase tracking-wide text-slate-500">${rotulo}</p>
+          <p class="mt-1 text-2xl font-bold">${valor}</p>
+          <p class="text-xs text-slate-500">${detalhe}</p>
+        </div>`;
+    }
+
+    function atalhos() {
+      return `
+        <div class="mt-6 grid gap-3 sm:grid-cols-2 grid-graficos" style="grid-template-columns: repeat(2, minmax(0, 1fr))">
+          <div class="rounded-xl border border-slate-200 bg-white p-4 hover:border-brand-trail">
+            <p class="font-semibold">Explorar o catálogo</p>
+            <p class="mt-1 text-sm text-slate-500">Trilhas pré-definidas por categoria.</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-4 hover:border-brand-trail">
+            <p class="font-semibold">Trilha personalizada</p>
+            <p class="mt-1 text-sm text-slate-500">Descreva um objetivo; o agente monta um percurso para você.</p>
+          </div>
+        </div>`;
+    }
+
+    function hero(titulo, texto, cta) {
+      return `
+        <div class="hero flex items-center justify-between gap-4 rounded-2xl bg-brand-ink p-6 text-white">
+          <div>
+            <p class="text-sm text-brand-mint">Olá, Lucas</p>
+            <h2 class="hero-titulo mt-1 text-2xl font-semibold leading-snug">${titulo}</h2>
+            <p class="mt-2 max-w-lg text-sm text-slate-200">${texto}</p>
+          </div>
+          ${cta ? `<span class="inline-flex shrink-0 rounded-md bg-brand-trail px-4 py-2 text-sm font-medium text-white">${cta}</span>` : ""}
+        </div>`;
+    }
+
+    function andamento(lista, semanasValores) {
+      const feitas = lista.reduce((s, t) => s + t.feitas, 0);
+      const total = lista.reduce((s, t) => s + t.total, 0);
+      const pct = total ? Math.round((feitas / total) * 100) : 0;
+      const finalizadas = lista.filter((t) => t.feitas === t.total).length;
+      const pendente = lista.find((t) => t.feitas < t.total);
+      return casca(`
+        ${pendente
+          ? hero(`Continue em ${pendente.titulo}`, `Próxima etapa: <strong>${pendente.proxima}</strong>. Você já concluiu ${pendente.feitas} de ${pendente.total}.`, "Continuar de onde parei")
+          : hero("Todas as etapas concluídas", "Você terminou todas as trilhas que acompanha. Escolha outra no catálogo para seguir estudando.", "Ver o catálogo")}
+        <div class="grid-kpi mt-6 grid gap-3" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
+          ${kpi("Em andamento", lista.length - finalizadas, "trilhas")}
+          ${kpi("Etapas concluídas", feitas, `de ${total}`)}
+          ${kpi("Nesta semana", semanasValores[semanasValores.length - 1], "etapas marcadas")}
+          ${kpi("Trilhas finalizadas", finalizadas, "100% das etapas")}
+        </div>
+        <div class="grid-graficos mt-6 grid gap-4" style="grid-template-columns: minmax(0, 1fr) minmax(0, 2fr)">
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <h3 class="font-semibold">Avanço geral</h3>
+            <p class="text-xs text-slate-500">Todas as trilhas que você acompanha</p>
+            <div class="mt-3 flex justify-center">${donut(pct)}</div>
+            <p class="mt-2 text-center text-sm text-slate-600">${feitas} de ${total} etapas</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <h3 class="font-semibold">Ritmo das últimas 8 semanas</h3>
+            <p class="text-xs text-slate-500">Etapas marcadas como concluídas em cada semana</p>
+            <div class="mt-4">${colunas(semanasValores)}</div>
+          </div>
+        </div>
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="font-semibold">Avanço por trilha</h3>
+            <span class="text-sm text-brand-trail underline">Meu progresso</span>
+          </div>
+          <ul class="mt-4 space-y-4">
+            ${lista.map((t) => {
+              const p = Math.round((t.feitas / t.total) * 100);
+              return `
+                <li>
+                  <div class="flex items-baseline justify-between gap-2">
+                    <div class="min-w-0">
+                      <p class="truncate font-medium">${t.titulo}</p>
+                      <p class="truncate text-xs text-slate-500">${t.categoria} · ${t.feitas === t.total ? "todas as etapas concluídas" : `próxima: ${t.proxima}`}</p>
+                    </div>
+                    <span class="shrink-0 text-sm font-semibold">${p}%</span>
+                  </div>
+                  <div class="mt-2 h-2.5 overflow-hidden rounded-full bg-brand-mint">
+                    <div class="h-full rounded-full bg-brand-trail" style="width:${p}%"></div>
+                  </div>
+                </li>`;
+            }).join("")}
+          </ul>
+        </div>
+        ${atalhos()}
+      `);
+    }
+
+    const telas = {
+      andamento: () => andamento(trilhas, semanas),
+      finalizada: () => andamento(trilhas.map((t) => ({ ...t, feitas: t.total })), [1, 2, 1, 3, 2, 3, 1, 0]),
+      vazia: () => casca(`
+        ${hero("Comece sua primeira trilha", "Escolha uma trilha no catálogo ou descreva um objetivo para o agente. Os gráficos de avanço aparecem quando você marcar a primeira etapa.", "Ver o catálogo")}
+        <div class="mt-6 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
+          <div class="flex justify-center">${donut(0, 120)}</div>
+          <p class="mt-3 text-sm text-slate-600">Nenhum acompanhamento ainda.</p>
+        </div>
+        ${atalhos()}
+      `),
+      carregando: () => casca(`
+        <div class="h-32 animate-pulse rounded-2xl bg-slate-200"></div>
+        <div class="grid-kpi mt-6 grid gap-3" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
+          ${[1, 2, 3, 4].map(() => `<div class="h-24 animate-pulse rounded-xl bg-slate-200"></div>`).join("")}
+        </div>
+        <div class="grid-graficos mt-6 grid gap-4" style="grid-template-columns: minmax(0, 1fr) minmax(0, 2fr)">
+          <div class="h-64 animate-pulse rounded-xl bg-slate-200"></div>
+          <div class="h-64 animate-pulse rounded-xl bg-slate-200"></div>
+        </div>
+        <p class="mt-4 text-sm text-slate-500">Carregando seu avanço…</p>
+      `),
+      erro: () => casca(`
+        <div role="alert" class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          Não foi possível carregar seu avanço. Tente de novo em instantes. Suas conclusões não foram alteradas.
+        </div>
+        ${atalhos()}
+      `)
+    };
+
+    function render() {
+      const phone = vp.value === "phone";
+      stage.className = phone
+        ? "mx-auto overflow-hidden rounded-[2rem] border-8 border-slate-800 bg-white shadow-sm phone-frame is-phone"
+        : "mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm";
+      stage.innerHTML = telas[tela.value]();
+      location.hash = tela.value;
+    }
+
+    const inicial = location.hash.replace("#", "");
+    if (telas[inicial]) tela.value = inicial;
+    tela.addEventListener("change", render);
+    vp.addEventListener("change", render);
+    render();
+  </script>
+</body>
+</html>
