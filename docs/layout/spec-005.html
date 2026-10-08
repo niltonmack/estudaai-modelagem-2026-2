@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — Layout SPEC-005 (aprovado)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              ink: "#123047",
+              trail: "#1A7A72",
+              trailDark: "#14635D",
+              mint: "#D7F0ED",
+              spark: "#E3A008",
+              paper: "#F7F4EE"
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; }
+    .phone-frame {
+      width: min(390px, 100%);
+      min-height: 640px;
+      max-height: 844px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .is-phone h2, .is-phone p, .is-phone [role="alert"], .is-phone button, .is-phone li,
+    .is-phone label, .is-phone textarea, .is-phone select {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .is-phone .app-bar {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+    .is-phone .app-brand { min-width: 0; flex: 1 1 auto; }
+    .is-phone .app-papel,
+    .is-phone .app-nav-desktop { display: none !important; }
+    .is-phone .app-nav-mobile { display: flex !important; }
+    .is-phone .app-session {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+      max-width: 58%;
+    }
+    .is-phone .app-user {
+      display: inline !important;
+      min-width: 0;
+      max-width: 6.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .is-phone .app-sair { flex-shrink: 0; white-space: nowrap; }
+  </style>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+    <div class="mx-auto flex max-w-6xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <p class="font-medium text-amber-950">
+        Protótipo SPEC-005 — layout <strong>aprovado</strong> em 2026-10-01. Casca da administradora da SPEC-001; formulário de etapas da SPEC-003. Não é o app em produção.
+        <a class="ml-2 underline" href="identidade.html">Identidade</a>
+        · <a class="underline" href="spec-003.html#editar">Trilhas SPEC-003</a>
+        · <a class="underline" href="spec-004.html#progresso">Progresso SPEC-004</a>
+      </p>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="text-amber-950">Tela
+          <select id="tela" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="editar">Editar trilha (contexto)</option>
+            <option value="recusa">Recusa — etapa em uso</option>
+            <option value="recusa-varios">Recusa — vários alunos</option>
+            <option value="recusa-ultima">Recusa — última etapa com progresso</option>
+          </select>
+        </label>
+        <label class="text-amber-950">Viewport
+          <select id="vp" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="desktop">Desktop</option>
+            <option value="phone">Smartphone (390px)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl p-4 md:p-8">
+    <div id="stage" class="mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"></div>
+  </main>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const tela = document.getElementById("tela");
+    const vp = document.getElementById("vp");
+
+    const hashToTela = {
+      editar: "editar",
+      recusa: "recusa",
+      "recusa-varios": "recusa-varios",
+      "recusa-ultima": "recusa-ultima"
+    };
+
+    function applyHash() {
+      const key = (location.hash || "#recusa").slice(1);
+      if (hashToTela[key]) tela.value = hashToTela[key];
+    }
+
+    function navAdmin() {
+      return `
+        <span class="rounded-md px-3 py-1.5 text-sm text-slate-500">Painel</span>
+        <span class="rounded-md px-3 py-1.5 text-sm text-slate-500">Categorias</span>
+        <span class="rounded-md bg-brand-mint px-3 py-1.5 text-sm font-medium text-brand-ink">Trilhas</span>`;
+    }
+
+    function casca(inner) {
+      return `<div class="min-h-[640px] bg-slate-50">
+        <header class="border-b border-slate-200 bg-white">
+          <div class="app-bar mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+            <div class="app-brand flex min-w-0 items-center gap-3">
+              <img src="../identidade/marca.svg" alt="" class="h-8 w-8 shrink-0" />
+              <span class="text-sm font-semibold text-brand-ink">EstudaAI</span>
+              <span class="app-papel hidden rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 sm:inline">Administrador</span>
+            </div>
+            <nav class="app-nav-desktop hidden items-center gap-1 sm:flex">${navAdmin()}</nav>
+            <div class="app-session flex min-w-0 items-center gap-2">
+              <span class="app-user hidden max-w-[9rem] truncate text-sm text-slate-600 sm:inline">Mariana Costa</span>
+              <button type="button" class="app-sair shrink-0 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50">Sair</button>
+            </div>
+          </div>
+          <nav class="app-nav-mobile flex gap-1 overflow-x-auto border-t border-slate-100 px-4 py-2 sm:hidden">${navAdmin()}</nav>
+        </header>
+        <section class="mx-auto max-w-5xl px-4 py-8">${inner}</section>
+      </div>`;
+    }
+
+    function alerta(texto, tom = "red") {
+      const cls = tom === "red"
+        ? "border-red-200 bg-red-50 text-red-800"
+        : tom === "amber"
+          ? "border-amber-200 bg-amber-50 text-amber-950"
+          : "border-emerald-200 bg-emerald-50 text-emerald-800";
+      return `<div class="rounded-md border px-3 py-2 text-sm leading-relaxed ${cls}" role="alert">${texto}</div>`;
+    }
+
+    function campo(label, name, value) {
+      return `<label class="block text-sm font-medium leading-snug text-slate-700">${label}
+        <input type="text" name="${name}" value="${value}"
+          class="mt-1 w-full min-w-0 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none ring-brand-trail focus:border-brand-trail focus:ring-2" />
+      </label>`;
+    }
+
+    function area(label, name, value) {
+      return `<label class="block text-sm font-medium leading-snug text-slate-700">${label}
+        <textarea name="${name}" rows="3"
+          class="mt-1 w-full min-w-0 rounded-md border border-slate-300 bg-white px-3 py-2 font-mono text-sm shadow-sm outline-none ring-brand-trail focus:border-brand-trail focus:ring-2">${value}</textarea>
+      </label>`;
+    }
+
+    function impacto(itens) {
+      return `<div class="mt-3 rounded-lg border border-slate-200 bg-white p-4">
+        <p class="text-sm font-semibold text-brand-ink">Impacto identificado</p>
+        <p class="mt-1 text-xs text-slate-500">Consulta de dependências na API, antes de qualquer exclusão. Não há confirmação que apague etapa em uso (OPEN-07 / ADR-004).</p>
+        <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-700">
+          ${itens.map((i) => `<li>${i}</li>`).join("")}
+        </ul>
+      </div>`;
+    }
+
+    function cardEtapa({ ordem, titulo, conteudo, hrefRemover, destacada }) {
+      return `<article class="rounded-lg border border-slate-200 bg-white p-4 ${destacada ? "ring-2 ring-red-300" : ""}">
+        <p class="text-xs font-medium uppercase tracking-wide text-brand-trail">Etapa <span class="tabular-nums">${ordem}</span></p>
+        <div class="mt-3 space-y-3">
+          ${campo("Título da etapa", "etapa-titulo-" + ordem, titulo)}
+          ${area("Conteúdo (Markdown)", "etapa-conteudo-" + ordem, conteudo)}
+        </div>
+        <p class="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+          <span>ordem = ${ordem}</span>
+          <a class="text-red-700 underline" href="${hrefRemover}">Remover</a>
+        </p>
+      </article>`;
+    }
+
+    function formulario({ unica, alertaHtml, impactoHtml, hrefRemover }) {
+      const tituloTrilha = unica ? "Condicionais" : "Lógica de programação";
+      const desc = unica ? "Primeiro desvio de fluxo em código." : "Percurso curado de fundamentos de código.";
+      const etapas = unica
+        ? cardEtapa({
+            ordem: 1,
+            titulo: "Se e senão",
+            conteudo: "## Condicionais\n\nCompare valores e desvie o fluxo.\n\n- `if`\n- `else`",
+            hrefRemover,
+            destacada: Boolean(alertaHtml)
+          })
+        : [
+            cardEtapa({
+              ordem: 1,
+              titulo: "Variáveis e tipos",
+              conteudo: "## Variáveis\n\nNomes e tipos primitivos.\n\n- `let`\n- `const`",
+              hrefRemover: "#recusa"
+            }),
+            cardEtapa({
+              ordem: 2,
+              titulo: "Condicionais",
+              conteudo: "## Se e senão\n\nDesvio de fluxo com comparação.",
+              hrefRemover: hrefRemover || "#recusa",
+              destacada: Boolean(alertaHtml)
+            }),
+            cardEtapa({
+              ordem: 3,
+              titulo: "Laços",
+              conteudo: "## Repetição\n\n`for` e `while` com um exemplo curto.",
+              hrefRemover: "#recusa"
+            })
+          ].join("");
+
+      return `
+        <p class="text-sm text-slate-500"><a class="text-brand-trail underline" href="spec-003.html#lista">← Trilhas pré-definidas</a></p>
+        <h2 class="mt-2 text-2xl font-semibold leading-snug">Editar trilha e etapas</h2>
+        <p class="mt-1 max-w-xl text-sm leading-relaxed text-slate-600">
+          Estado da UI da SPEC-003. Remover uma etapa consulta <strong>Progresso</strong> e <strong>ConclusaoEtapa</strong> na API.
+          Se houver acompanhamento vigente, a operação é recusada e o catálogo permanece igual (UC02-A5 / E3).
+        </p>
+        ${alertaHtml ? `<div class="mt-4">${alertaHtml}${impactoHtml || ""}</div>` : ""}
+        <form class="mt-6 max-w-2xl space-y-4">
+          ${campo("Título", "titulo", tituloTrilha)}
+          ${area("Descrição", "descricao", desc)}
+          <label class="block text-sm font-medium leading-snug text-slate-700">Categoria
+            <select class="mt-1 w-full min-w-0 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">
+              <option selected>Programação</option>
+            </select>
+          </label>
+          <p class="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600">
+            Tipo: <strong>pré-definida</strong>. Publicada. Há aluno em acompanhamento — o percentual derivado não se edita aqui (RB06).
+          </p>
+          <div class="border-t border-slate-200 pt-4">
+            <h3 class="text-lg font-semibold">Etapas</h3>
+            <p class="text-sm text-slate-600">A etapa em uso permanece. Não há exclusão lógica nesta Spec.</p>
+            <div class="mt-4 space-y-3">${etapas}</div>
+          </div>
+          <div class="flex flex-col gap-2 pt-2 sm:flex-row">
+            <button type="button" class="w-full rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark sm:w-auto">Salvar e publicar</button>
+            <a href="spec-003.html#lista" class="inline-block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-50 sm:w-auto">Cancelar</a>
+          </div>
+        </form>
+        <p class="mt-6 text-xs text-slate-500">O aluno não vê esta tela (INV-005-05). Sem pausar, abandonar ou reiniciar progresso (OPEN-15). Categoria em uso continua na SPEC-002 / RB13.</p>`;
+    }
+
+    function render() {
+      stage.className = vp.value === "phone"
+        ? "is-phone phone-frame mx-auto rounded-[1.5rem] border-8 border-slate-900 bg-white shadow-lg"
+        : "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm";
+
+      const v = tela.value;
+      let inner = "";
+
+      if (v === "editar") {
+        inner = formulario({ hrefRemover: "#recusa" });
+      }
+
+      if (v === "recusa") {
+        inner = formulario({
+          hrefRemover: "#recusa",
+          alertaHtml: alerta("Remoção recusada: a etapa «Condicionais» pertence a uma trilha com progresso vigente (RB11). Nada foi apagado."),
+          impactoHtml: impacto([
+            "1 <strong>Progresso</strong> vigente na trilha (Lucas Almeida).",
+            "1 <strong>ConclusaoEtapa</strong> desta etapa, em 01/10/2026 — permanece no histórico (INV-005-02).",
+            "Percentual vigente de Lucas: <strong>1 de 3</strong> — idêntico ao de antes do pedido (INV-005-04 / RB06).",
+            "As três etapas continuam na trilha, na mesma ordem."
+          ])
+        });
+      }
+
+      if (v === "recusa-varios") {
+        inner = formulario({
+          hrefRemover: "#recusa-varios",
+          alertaHtml: alerta("Remoção recusada: há 2 acompanhamentos vigentes em «Lógica de programação» (RB11). Nenhuma etapa, progresso ou conclusão foi alterada."),
+          impactoHtml: impacto([
+            "2 <strong>Progresso</strong> vigentes: Lucas Almeida e Ana Souza.",
+            "Lucas já concluiu «Condicionais» (01/10/2026). Essa <strong>ConclusaoEtapa</strong> permanece.",
+            "Ana ainda não marcou esta etapa — ela <strong>não</strong> entra no percentual dela (RB05).",
+            "Percentuais inalterados: Lucas <strong>2 de 3</strong>; Ana <strong>0 de 3</strong>."
+          ])
+        });
+      }
+
+      if (v === "recusa-ultima") {
+        inner = formulario({
+          unica: true,
+          hrefRemover: "#recusa-ultima",
+          alertaHtml: alerta("Remoção recusada: a trilha «Condicionais» tem progresso vigente (RB11) e ficaria sem etapas (RB03). Nada foi apagado."),
+          impactoHtml: impacto([
+            "1 <strong>Progresso</strong> vigente (Lucas Almeida).",
+            "A única etapa («Se e senão») permanece; o aluno conserva a <strong>ConclusaoEtapa</strong> já gravada.",
+            "Percentual vigente: <strong>1 de 1</strong> — não recalculado, porque a etapa em uso não sai."
+          ])
+        });
+      }
+
+      const wrap = document.createElement("div");
+      wrap.innerHTML = casca(inner);
+      stage.replaceChildren(wrap);
+      stage.querySelectorAll("a[href^='#']").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = a.getAttribute("href").slice(1);
+          if (hashToTela[id]) {
+            tela.value = hashToTela[id];
+            history.replaceState(null, "", "#" + tela.value);
+            render();
+          }
+        });
+      });
+    }
+
+    tela.addEventListener("change", () => {
+      history.replaceState(null, "", "#" + tela.value);
+      render();
+    });
+    vp.addEventListener("change", render);
+    window.addEventListener("hashchange", () => { applyHash(); render(); });
+    applyHash();
+    render();
+  </script>
+</body>
+</html>

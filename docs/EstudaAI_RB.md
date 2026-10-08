@@ -104,3 +104,33 @@ Não há cascata nem recategorização automática.
 **Tipo EARS:** Ubiquitous
 
 Todo `Usuario` **SHALL** ser **somente** aluno **ou** **somente** administrador. O sistema **SHALL NOT** acumular os dois perfis na mesma conta. O fluxo de acompanhamento de trilhas (UC01) é exclusivo do aluno.
+
+A consulta administrativa do progresso dos alunos (RF15) **SHALL NOT** ser tratada como execução do UC01: o administrador vê o andamento, não estuda no lugar do aluno.
+
+## RB15 - Gestão de usuários restrita
+
+**Tipo EARS:** Conditional
+
+**IF** uma pessoa usuária solicitar a criação, alteração ou remoção de uma conta de `Usuario`, o sistema **SHALL** permitir a operação somente quando ela possuir perfil de administrador.
+
+## RB16 - Persistência do último administrador
+
+**Tipo EARS:** Conditional
+
+**IF** a remoção de uma conta ou a alteração de perfil deixaria o sistema sem nenhum administrador, o sistema **SHALL NOT** concluir a operação.
+
+O sistema **SHALL NOT** permitir que o administrador remova a própria conta.
+
+## RB17 - Integridade da conta do aluno
+
+**Tipo EARS:** Conditional
+
+**IF** uma pessoa usuária solicitar a remoção de um aluno que possua `Progresso`, o sistema **SHALL NOT** concluir a remoção.
+
+**IF** uma pessoa usuária solicitar a alteração do perfil de um aluno para administrador **WHILE** existir `Progresso` desse aluno, o sistema **SHALL NOT** concluir a alteração.
+
+## RB18 - Consulta administrativa somente leitura
+
+**Tipo EARS:** State-driven
+
+**WHILE** o administrador consultar o progresso de um aluno, o sistema **SHALL NOT** criar, alterar nem remover `Progresso` nem `ConclusaoEtapa`.

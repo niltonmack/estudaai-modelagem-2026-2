@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — Layout SPEC-006 (aprovado)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              ink: "#123047",
+              trail: "#1A7A72",
+              trailDark: "#14635D",
+              mint: "#D7F0ED",
+              spark: "#E3A008",
+              paper: "#F7F4EE"
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; }
+    .phone-frame {
+      width: min(390px, 100%);
+      min-height: 640px;
+      max-height: 844px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .is-phone h2, .is-phone p, .is-phone [role="alert"], .is-phone button, .is-phone li,
+    .is-phone label, .is-phone textarea {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .is-phone .app-bar {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+    .is-phone .app-brand { min-width: 0; flex: 1 1 auto; }
+    .is-phone .app-papel,
+    .is-phone .app-nav-desktop { display: none !important; }
+    .is-phone .app-nav-mobile { display: flex !important; }
+    .is-phone .app-session {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+      max-width: 58%;
+    }
+    .is-phone .app-user {
+      display: inline !important;
+      min-width: 0;
+      max-width: 6.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .is-phone .app-sair { flex-shrink: 0; white-space: nowrap; }
+  </style>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+    <div class="mx-auto flex max-w-6xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <p class="font-medium text-amber-950">
+        Protótipo SPEC-006 — <strong>aprovado</strong> em 2026-10-02. Casca da SPEC-001; resultado reusa o acompanhamento da SPEC-004. Não é o app em produção.
+        <a class="ml-2 underline" href="identidade.html">Identidade</a>
+        · <a class="underline" href="spec-004.html#progresso">Progresso SPEC-004</a>
+      </p>
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="text-amber-950">Tela
+          <select id="tela" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="pedido">Pedido — objetivo</option>
+            <option value="espera">Espera (até 60 s)</option>
+            <option value="timeout">Falha — timeout (E2)</option>
+            <option value="json">Falha — JSON insuficiente (E3)</option>
+            <option value="off">Recusa — LLM desligado</option>
+            <option value="e4">Catálogo vazio + LLM off (E4)</option>
+            <option value="resultado">Resultado — trilha personalizada</option>
+            <option value="interruptor">Interruptor — Gemini ligado</option>
+            <option value="interruptor-off">Interruptor — Gemini desligado</option>
+            <option value="recusa-anonimo">Recusa — anônimo</option>
+          </select>
+        </label>
+        <label class="text-amber-950">Viewport
+          <select id="vp" class="ml-1 rounded-md border border-amber-400 bg-white px-2 py-1">
+            <option value="desktop">Desktop</option>
+            <option value="phone">Smartphone (390px)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl p-4 md:p-8">
+    <div id="stage" class="mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"></div>
+  </main>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const tela = document.getElementById("tela");
+    const vp = document.getElementById("vp");
+
+    const hashToTela = {
+      pedido: "pedido",
+      espera: "espera",
+      timeout: "timeout",
+      json: "json",
+      off: "off",
+      e4: "e4",
+      resultado: "resultado",
+      interruptor: "interruptor",
+      "interruptor-off": "interruptor-off",
+      "recusa-anonimo": "recusa-anonimo"
+    };
+
+    function applyHash() {
+      const key = (location.hash || "#pedido").slice(1);
+      if (hashToTela[key]) tela.value = hashToTela[key];
+    }
+
+    function navAluno(ativo) {
+      const item = (id, label, href) => {
+        const on = ativo === id;
+        return `<a href="${href}" class="${on ? "rounded-md bg-brand-mint px-3 py-1.5 text-sm font-medium text-brand-ink" : "rounded-md px-3 py-1.5 text-sm text-slate-500"}">${label}</a>`;
+      };
+      return `${item("inicio", "Início", "spec-001.html#inicio")}${item("catalogo", "Catálogo", "spec-004.html#catalogo")}${item("personalizada", "Trilha personalizada", "#pedido")}${item("progresso", "Meu progresso", "spec-004.html#progresso")}`;
+    }
+
+    function navAdmin(ativo) {
+      const item = (id, label) => {
+        const on = ativo === id;
+        return `<span class="${on ? "rounded-md bg-brand-mint px-3 py-1.5 text-sm font-medium text-brand-ink" : "rounded-md px-3 py-1.5 text-sm text-slate-500"}">${label}</span>`;
+      };
+      return `${item("painel", "Painel")}${item("categorias", "Categorias")}${item("trilhas", "Trilhas")}${item("llm", "Agente LLM")}`;
+    }
+
+    function cascaAluno(ativo, inner) {
+      return `<div class="min-h-[640px] bg-slate-50">
+        <header class="border-b border-slate-200 bg-white">
+          <div class="app-bar mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+            <div class="app-brand flex min-w-0 items-center gap-3">
+              <img src="../identidade/marca.svg" alt="" class="h-8 w-8 shrink-0" />
+              <span class="text-sm font-semibold text-brand-ink">EstudaAI</span>
+              <span class="app-papel hidden rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 sm:inline">Aluno</span>
+            </div>
+            <nav class="app-nav-desktop hidden items-center gap-1 sm:flex">${navAluno(ativo)}</nav>
+            <div class="app-session flex min-w-0 items-center gap-2">
+              <span class="app-user hidden max-w-[9rem] truncate text-sm text-slate-600 sm:inline">Lucas Almeida</span>
+              <button type="button" class="app-sair shrink-0 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50">Sair</button>
+            </div>
+          </div>
+          <nav class="app-nav-mobile flex gap-1 overflow-x-auto border-t border-slate-100 px-4 py-2 sm:hidden">${navAluno(ativo)}</nav>
+        </header>
+        <section class="mx-auto max-w-5xl px-4 py-8">${inner}</section>
+      </div>`;
+    }
+
+    function cascaAdmin(inner) {
+      return `<div class="min-h-[640px] bg-slate-50">
+        <header class="border-b border-slate-200 bg-white">
+          <div class="app-bar mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+            <div class="app-brand flex min-w-0 items-center gap-3">
+              <img src="../identidade/marca.svg" alt="" class="h-8 w-8 shrink-0" />
+              <span class="text-sm font-semibold text-brand-ink">EstudaAI</span>
+              <span class="app-papel hidden rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 sm:inline">Administrador</span>
+            </div>
+            <nav class="app-nav-desktop hidden items-center gap-1 sm:flex">${navAdmin("llm")}</nav>
+            <div class="app-session flex min-w-0 items-center gap-2">
+              <span class="app-user hidden max-w-[9rem] truncate text-sm text-slate-600 sm:inline">Mariana Costa</span>
+              <button type="button" class="app-sair shrink-0 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50">Sair</button>
+            </div>
+          </div>
+          <nav class="app-nav-mobile flex gap-1 overflow-x-auto border-t border-slate-100 px-4 py-2 sm:hidden">${navAdmin("llm")}</nav>
+        </header>
+        <section class="mx-auto max-w-5xl px-4 py-8">${inner}</section>
+      </div>`;
+    }
+
+    function cascaAnonima(inner) {
+      const nav = `
+        <a href="spec-004.html#catalogo-anonimo" class="rounded-md px-3 py-1.5 text-sm text-slate-500">Catálogo</a>
+        <span class="rounded-md bg-brand-mint px-3 py-1.5 text-sm font-medium text-brand-ink">Trilha personalizada</span>`;
+      return `<div class="min-h-[640px] bg-slate-50">
+        <header class="border-b border-slate-200 bg-white">
+          <div class="app-bar mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+            <div class="app-brand flex min-w-0 items-center gap-3">
+              <img src="../identidade/marca.svg" alt="" class="h-8 w-8 shrink-0" />
+              <span class="text-sm font-semibold text-brand-ink">EstudaAI</span>
+            </div>
+            <nav class="app-nav-desktop hidden items-center gap-1 sm:flex">${nav}</nav>
+            <div class="app-session flex min-w-0 items-center gap-2">
+              <a href="spec-001.html#login" class="app-sair shrink-0 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50">Entrar</a>
+            </div>
+          </div>
+          <nav class="app-nav-mobile flex gap-1 overflow-x-auto border-t border-slate-100 px-4 py-2 sm:hidden">${nav}</nav>
+        </header>
+        <section class="mx-auto max-w-5xl px-4 py-8">${inner}</section>
+      </div>`;
+    }
+
+    function alerta(texto, tom = "red") {
+      const cls = tom === "red"
+        ? "border-red-200 bg-red-50 text-red-800"
+        : tom === "amber"
+          ? "border-amber-200 bg-amber-50 text-amber-950"
+          : "border-emerald-200 bg-emerald-50 text-emerald-800";
+      return `<div class="rounded-md border px-3 py-2 text-sm leading-relaxed ${cls}" role="alert">${texto}</div>`;
+    }
+
+    function barra(feitos, total) {
+      const pct = total ? Math.round((feitos / total) * 100) : 0;
+      return `<div>
+        <p class="text-sm font-medium text-brand-ink">Progresso: ${feitos} de ${total} etapas <span class="font-normal text-slate-500">(${pct}%)</span></p>
+        <p class="text-xs text-slate-500">Valor derivado. Não há campo para editar o percentual (RB06).</p>
+        <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-200" aria-hidden="true">
+          <div class="h-full rounded-full bg-brand-trail" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+    }
+
+    const objetivoPadrao = "Quero analisar planilhas de vendas com SQL e montar consultas simples para totais por mês.";
+
+    function formPedido({ disabled, botao }) {
+      return `<form class="mt-6 max-w-2xl space-y-4">
+        <label class="block text-sm font-medium leading-snug text-slate-700">Objetivo de estudo
+          <textarea name="textoObjetivo" rows="5" ${disabled ? "disabled" : ""}
+            class="mt-1 w-full min-w-0 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none ring-brand-trail focus:border-brand-trail focus:ring-2 disabled:bg-slate-50">${objetivoPadrao}</textarea>
+        </label>
+        <p class="text-xs leading-relaxed text-slate-500">A categoria é sempre a sentinela <strong>Personalizada</strong>. O aluno e o Gemini <strong>não</strong> escolhem categoria (INV-006-05 / OPEN-08).</p>
+        <p class="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600">A chamada sai só da API Nest (Gemini). Nenhuma chave aparece neste navegador (ADR-002 / AC-006-07). Geração síncrona, sem fila, até 60 s — fora do SLA de 2 s (RNF03).</p>
+        <div class="flex flex-col gap-2 sm:flex-row">
+          <a href="${botao.href}" class="inline-flex w-full items-center justify-center rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark sm:w-auto ${disabled ? "pointer-events-none opacity-60" : ""}">${botao.label}</a>
+          <a href="spec-004.html#catalogo" class="inline-flex w-full items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:w-auto">Ir ao catálogo</a>
+        </div>
+      </form>`;
+    }
+
+    function pedidoInner(extra = "") {
+      return `
+        <h2 class="text-2xl font-semibold">Trilha personalizada</h2>
+        <p class="mt-1 max-w-xl text-sm leading-relaxed text-slate-600">Descreva o objetivo em linguagem natural. O agente devolve um percurso persistido (título, descrição e etapas em Markdown) e abre o mesmo acompanhamento da SPEC-004.</p>
+        ${extra}
+        ${formPedido({ disabled: false, botao: { href: "#espera", label: "Gerar trilha" } })}
+        <p class="mt-6 text-xs text-slate-500">O administrador não usa esta tela (RB14). Conversa com o agente entra na SPEC-007. Trilhas pré-definidas não são alteradas (RB10).</p>`;
+    }
+
+    function esperaInner() {
+      return `
+        <h2 class="text-2xl font-semibold">Trilha personalizada</h2>
+        <p class="mt-1 max-w-xl text-sm leading-relaxed text-slate-600">A geração é síncrona. Não há fila nem tela de “job” em segundo plano (OPEN-19).</p>
+        <div class="mt-4">${alerta("Gerando a trilha… Pode levar até 60 segundos. Nenhuma trilha foi gravada ainda. O catálogo e o progresso já existentes continuam disponíveis (RNF03).", "amber")}</div>
+        ${formPedido({ disabled: true, botao: { href: "#espera", label: "Gerando…" } })}
+        <p class="mt-4 text-sm"><a class="text-brand-trail underline" href="spec-004.html#catalogo">Abrir o catálogo enquanto espera</a></p>`;
+    }
+
+    function timeoutInner() {
+      return `
+        <h2 class="text-2xl font-semibold">Trilha personalizada</h2>
+        <div class="mt-4">${alerta("O agente não respondeu em 60 segundos. Nenhuma trilha personalizada foi criada (E2 / OPEN-20). Você pode tentar de novo ou usar o catálogo pré-definido.")}</div>
+        ${formPedido({ disabled: false, botao: { href: "#espera", label: "Tentar de novo" } })}`;
+    }
+
+    function jsonInner() {
+      return `
+        <h2 class="text-2xl font-semibold">Trilha personalizada</h2>
+        <div class="mt-4">${alerta("A resposta do agente veio sem título, descrição ou etapas suficientes (E3 / RB03). Nada foi persistido. Descreva o objetivo de outro modo ou cancele. A categoria não vem do Gemini.")}</div>
+        ${formPedido({ disabled: false, botao: { href: "#espera", label: "Enviar nova descrição" } })}`;
+    }
+
+    function offInner() {
+      return `
+        <h2 class="text-2xl font-semibold">Trilha personalizada</h2>
+        <div class="mt-4">${alerta("O agente está desligado pela administradora. Nenhuma trilha nova foi criada (AC-006-02). Use o catálogo pré-definido.")}</div>
+        ${formPedido({ disabled: true, botao: { href: "#off", label: "Gerar trilha" } })}
+        <p class="mt-4 text-sm"><a class="text-brand-trail underline" href="spec-004.html#catalogo">Ir ao catálogo</a></p>`;
+    }
+
+    function e4Inner() {
+      return `
+        <h2 class="text-2xl font-semibold">Trilha personalizada</h2>
+        <div class="mt-4">${alerta("O catálogo está indisponível: não há trilhas pré-definidas publicadas e o agente de apoio está desligado. Nenhuma trilha nova foi criada (E4 / OPEN-22).", "amber")}</div>
+        <p class="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">Quando Mariana publicar um percurso ou ligar o agente, esta tela deixa de aparecer vazia.</p>`;
+    }
+
+    function resultadoInner() {
+      return `
+        <p class="text-sm text-slate-500"><a class="text-brand-trail underline" href="spec-004.html#catalogo">← Catálogo</a></p>
+        <div class="mt-4">${alerta("Trilha personalizada criada a partir do seu objetivo. O acompanhamento é o mesmo da SPEC-004. As trilhas pré-definidas não foram alteradas (RB10 / AC-006-05).", "green")}</div>
+        <h2 class="mt-4 text-2xl font-semibold leading-snug">SQL para totais mensais</h2>
+        <p class="mt-1 text-sm text-slate-500">Personalizada · trilha personalizada</p>
+        <p class="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">Percurso gerado para analisar planilhas de vendas com consultas SQL simples. Conteúdo em Markdown.</p>
+        <div class="mt-6 rounded-lg border border-slate-200 bg-white p-4">${barra(0, 3)}</div>
+        <div class="mt-6 space-y-3">
+          <article class="rounded-lg border border-slate-200 bg-white p-4 ring-2 ring-brand-trail">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-xs font-medium uppercase tracking-wide text-brand-trail">Etapa 1</p>
+              <span class="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800">Próxima</span>
+            </div>
+            <h3 class="mt-2 text-base font-semibold">SELECT e filtros</h3>
+            <div class="mt-2 space-y-2 text-sm leading-relaxed text-slate-700">
+              <h4 class="font-semibold">Consultas básicas</h4>
+              <p>Leia colunas e aplique <code class="rounded bg-slate-100 px-1 font-mono text-[0.85em]">WHERE</code>.</p>
+            </div>
+            <button type="button" class="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark">Marcar como concluída</button>
+          </article>
+          <article class="rounded-lg border border-slate-200 bg-white p-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-xs font-medium uppercase tracking-wide text-brand-trail">Etapa 2</p>
+              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">A seguir</span>
+            </div>
+            <h3 class="mt-2 text-base font-semibold">Agrupar por mês</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1 font-mono text-[0.85em]">GROUP BY</code> e totais.</p>
+          </article>
+          <article class="rounded-lg border border-slate-200 bg-white p-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-xs font-medium uppercase tracking-wide text-brand-trail">Etapa 3</p>
+              <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">A seguir</span>
+            </div>
+            <h3 class="mt-2 text-base font-semibold">Junções simples</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-700">Relacionar vendas e produtos.</p>
+          </article>
+        </div>
+        <section class="mt-8">
+          <h3 class="text-lg font-semibold">Histórico</h3>
+          <p class="mt-2 text-sm text-slate-500">Nenhuma conclusão ainda. Etapas sem marcação <strong>não</strong> entram no percentual (RB05).</p>
+        </section>
+        <p class="mt-6 text-xs text-slate-500">A sentinela Personalizada não aparece como escolha no catálogo curado. Conversa com o agente entra na SPEC-007.</p>`;
+    }
+
+    function interruptorInner(ligado) {
+      const selo = ligado
+        ? `<span class="inline-flex items-center gap-1 rounded-full bg-brand-spark/20 px-2 py-0.5 text-xs font-medium text-brand-ink"><span class="h-1.5 w-1.5 rounded-full bg-brand-spark" aria-hidden="true"></span>Gemini ligado</span>`
+        : `<span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">Gemini desligado</span>`;
+      const alertaHtml = ligado
+        ? alerta("Novas solicitações de trilha personalizada serão encaminhadas à API Nest. A chave não aparece nesta tela.", "green")
+        : alerta("Novas gerações serão recusadas (AC-006-06). O catálogo pré-definido continua utilizável. Se ele estiver vazio, vale E4.");
+      return `
+        <h2 class="text-2xl font-semibold">Agente LLM</h2>
+        <p class="mt-1 max-w-xl text-sm leading-relaxed text-slate-600">Interruptor da administradora (RF13 / RNF02). Só este perfil liga ou desliga. O aluno não vê esta tela. Não há ícone extra de “modo LLM” — a Faísca marca o estado ligado.</p>
+        <div class="mt-6 max-w-xl rounded-lg border border-slate-200 bg-white p-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-sm font-semibold text-brand-ink">Geração de trilha personalizada</p>
+              <p class="mt-1 text-xs text-slate-500">Provedor: Gemini · timeout 60 s · síncrono, sem fila.</p>
+            </div>
+            ${selo}
+          </div>
+          <div class="mt-4 flex items-center gap-3">
+            <a href="${ligado ? "#interruptor-off" : "#interruptor"}" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full ${ligado ? "bg-brand-trail" : "bg-slate-300"}" role="switch" aria-checked="${ligado ? "true" : "false"}">
+              <span class="inline-block h-5 w-5 rounded-full bg-white shadow" style="margin-left:${ligado ? "1.25rem" : "0.125rem"}"></span>
+            </a>
+            <span class="text-sm text-slate-700">${ligado ? "Habilitado" : "Desabilitado"}</span>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">A chamada sai somente do backend. Trocar o adaptador não redesenha Trilha nem Progresso (RNF07).</p>
+        </div>
+        <div class="mt-4 max-w-xl">${alertaHtml}</div>
+        <p class="mt-6 text-xs text-slate-500">O administrador não gera trilha personalizada nem acompanha progresso (RB14 / AC-006-08).</p>`;
+    }
+
+    function recusaAnonimoInner() {
+      return `
+        <h2 class="text-2xl font-semibold">Trilha personalizada</h2>
+        <div class="mt-4">${alerta("Para criar uma trilha personalizada, entre como aluno. A listagem do catálogo continua visível (E1 / RB01).")}</div>
+        <p class="mt-3 text-sm"><a class="text-brand-trail underline" href="spec-001.html#login">Ir para o login</a></p>
+        <p class="mt-4 text-sm"><a class="text-slate-600 underline" href="spec-004.html#catalogo-anonimo">Ver catálogo sem conta</a></p>`;
+    }
+
+    function render() {
+      stage.className = vp.value === "phone"
+        ? "is-phone phone-frame mx-auto rounded-[1.5rem] border-8 border-slate-900 bg-white shadow-lg"
+        : "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm";
+
+      const v = tela.value;
+      let html = "";
+      if (v === "pedido") html = cascaAluno("personalizada", pedidoInner());
+      if (v === "espera") html = cascaAluno("personalizada", esperaInner());
+      if (v === "timeout") html = cascaAluno("personalizada", timeoutInner());
+      if (v === "json") html = cascaAluno("personalizada", jsonInner());
+      if (v === "off") html = cascaAluno("personalizada", offInner());
+      if (v === "e4") html = cascaAluno("personalizada", e4Inner());
+      if (v === "resultado") html = cascaAluno("personalizada", resultadoInner());
+      if (v === "interruptor") html = cascaAdmin(interruptorInner(true));
+      if (v === "interruptor-off") html = cascaAdmin(interruptorInner(false));
+      if (v === "recusa-anonimo") html = cascaAnonima(recusaAnonimoInner());
+
+      const wrap = document.createElement("div");
+      wrap.innerHTML = html;
+      stage.replaceChildren(wrap);
+      stage.querySelectorAll("a[href^='#']").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = a.getAttribute("href").slice(1);
+          if (hashToTela[id]) {
+            tela.value = hashToTela[id];
+            history.replaceState(null, "", "#" + tela.value);
+            render();
+          }
+        });
+      });
+    }
+
+    tela.addEventListener("change", () => {
+      history.replaceState(null, "", "#" + tela.value);
+      render();
+    });
+    vp.addEventListener("change", render);
+    window.addEventListener("hashchange", () => { applyHash(); render(); });
+    applyHash();
+    render();
+  </script>
+</body>
+</html>

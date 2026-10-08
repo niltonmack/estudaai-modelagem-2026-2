@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: estudaai-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: estudaai
+      MYSQL_USER: estudaai
+      MYSQL_PASSWORD: estudaai
+      MYSQL_ROOT_PASSWORD: estudaai_root
+    ports:
+      - "3306:3306"
+    volumes:
+      - estudaai_mysql:/var/lib/mysql
+
+volumes:
+  estudaai_mysql:

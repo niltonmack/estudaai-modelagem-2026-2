@@ -1,64 +1,73 @@
- # Persona 2 — Administrador do Sistema
+# Persona 2 — Administrador do Sistema
 
- ## Mariana Costa
+## Mariana Costa
 
- > **“Quero manter trilhas confiáveis e bem organizadas para que os alunos encontrem percursos de aprendizagem consistentes.”**
+> **“Quero manter trilhas confiáveis e bem organizadas para que os alunos encontrem percursos de aprendizagem consistentes.”**
 
- ### Perfil
+### Perfil
 
- - **Idade:** 34 anos
- - **Ocupação:** coordenadora pedagógica e responsável pelo conteúdo da plataforma
- - **Nível de familiaridade com tecnologia:** intermediário a avançado
- - **Contexto de uso:** utiliza o EstudaAI pelo computador para cadastrar e revisar conteúdos
- - **Frequência esperada:** semanalmente ou sempre que uma trilha precisar de atualização
+- **Idade:** 34 anos
+- **Ocupação:** coordenadora pedagógica e responsável pelo conteúdo da plataforma
+- **Nível de familiaridade com tecnologia:** intermediário a avançado
+- **Contexto de uso:** utiliza o EstudaAI pelo computador para cadastrar e revisar conteúdos
+- **Frequência esperada:** semanalmente ou sempre que uma trilha precisar de atualização
 
- ### Objetivos
+### Objetivos
 
- - Organizar o catálogo de aprendizagem por categorias relevantes.
- - Publicar trilhas pré-definidas curadas por especialistas.
- - Estruturar cada trilha com etapas ordenadas e conteúdos coerentes.
- - Atualizar ou remover conteúdos desatualizados sem comprometer a experiência dos alunos.
- - Garantir que o catálogo ofereça percursos claros e úteis para diferentes objetivos de estudo.
- - Preservar a confiança na plataforma, mantendo a curadoria separada das sugestões geradas pelo LLM.
- - Habilitar ou desabilitar o agente LLM quando a geração personalizada não deve estar disponível.
+- Organizar o catálogo de aprendizagem por categorias relevantes.
+- Publicar trilhas pré-definidas curadas por especialistas.
+- Estruturar cada trilha com etapas ordenadas e conteúdos coerentes.
+- Atualizar ou remover conteúdos desatualizados sem comprometer a experiência dos alunos.
+- Garantir que o catálogo ofereça percursos claros e úteis para diferentes objetivos de estudo.
+- Preservar a confiança na plataforma, mantendo a curadoria separada das sugestões geradas pelo LLM.
+- Habilitar ou desabilitar o agente LLM quando a geração personalizada não deve estar disponível.
+- Manter as contas de alunos e de administradores (criar, consultar, alterar e remover, com as restrições de integridade).
+- Ver quais trilhas cada aluno acompanha e o percentual de progresso, sem estudar no lugar dele.
 
- ### Necessidades
+### Necessidades
 
- - Acesso administrativo protegido por autenticação e controle de perfil.
- - Operações de cadastro, consulta, alteração e remoção de categorias.
- - Operações de cadastro, consulta, alteração e remoção de trilhas pré-definidas.
- - Operações de cadastro, consulta, alteração e remoção de etapas.
- - Associação de etapas às trilhas e definição explícita da sequência.
- - Interface clara para revisar os dados antes de disponibilizá-los aos alunos.
- - Código modular e manutenível (frontend React e backend Node) para permitir a evolução das funcionalidades administrativas.
+- Acesso administrativo protegido por autenticação e controle de perfil.
+- Operações de cadastro, consulta, alteração e remoção de categorias.
+- Operações de cadastro, consulta, alteração e remoção de trilhas pré-definidas.
+- Operações de cadastro, consulta, alteração e remoção de etapas.
+- Associação de etapas às trilhas e definição explícita da sequência.
+- Interface clara para revisar os dados antes de disponibilizá-los aos alunos.
+- Operações de cadastro, consulta, alteração e remoção de contas de aluno e de administrador.
+- Consulta somente leitura do progresso dos alunos (trilhas e percentual).
+- Código modular e manutenível (frontend React e backend Node) para permitir a evolução das funcionalidades administrativas.
 
- ### Dores e frustrações
+### Dores e frustrações
 
- - Manter catálogos em planilhas ou ferramentas desconectadas gera retrabalho.
- - Uma etapa fora de ordem pode prejudicar a compreensão do aluno.
- - Alterações em etapas já utilizadas **não** podem apagar o progresso: a remoção deve ser recusada enquanto houver alunos na trilha.
- - Não quer que sugestões automáticas sejam confundidas com conteúdo oficialmente curado.
- - Precisa de permissões bem definidas para evitar alterações administrativas indevidas.
+- Manter catálogos em planilhas ou ferramentas desconectadas gera retrabalho.
+- Uma etapa fora de ordem pode prejudicar a compreensão do aluno.
+- Alterações em etapas já utilizadas **não** podem apagar o progresso: a remoção deve ser recusada enquanto houver alunos na trilha.
+- Não quer que sugestões automáticas sejam confundidas com conteúdo oficialmente curado.
+- Precisa de permissões bem definidas para evitar alterações administrativas indevidas.
 
- ### Comportamento no EstudaAI
+### Comportamento no EstudaAI
 
- 1. Autentica-se com uma conta de administradora.
- 2. Cadastra ou atualiza categorias de aprendizagem.
- 3. Cadastra trilhas pré-definidas e associa cada uma a uma categoria.
- 4. Cadastra etapas e associa-as às trilhas na sequência adequada.
- 5. Consulta e revisa o catálogo para corrigir informações ou remover conteúdos obsoletos.
- 6. Avalia o impacto da remoção de etapas vinculadas antes de concluir a alteração.
+1. Autentica-se com uma conta de administradora.
+2. Cadastra ou atualiza categorias de aprendizagem.
+3. Cadastra trilhas pré-definidas e associa cada uma a uma categoria.
+4. Cadastra etapas e associa-as às trilhas na sequência adequada.
+5. Consulta e revisa o catálogo para corrigir informações ou remover conteúdos obsoletos.
+6. Avalia o impacto da remoção de etapas vinculadas antes de concluir a alteração.
+7. Cadastra ou revisa contas de alunos e de administradores.
+8. Consulta o andamento dos alunos nas trilhas, sem marcar conclusão nem conversar no lugar deles.
 
- ### Requisitos relacionados
+### Requisitos relacionados
 
- - **RF02:** autenticar-se para acessar as funcionalidades do seu perfil.
- - **RF09:** gerenciar categorias.
- - **RF10:** gerenciar trilhas pré-definidas.
- - **RF11 e RF12:** gerenciar etapas e associá-las às trilhas em uma sequência definida.
- - **RNF05 e RNF06:** proteger operações administrativas e restringi-las ao perfil de administrador.
- - **RNF04 e RNF07:** manter uma interface consistente e uma base de código organizada em módulos React (frontend) e Node (backend).
- - **RB02, RB03, RB07 e RB11:** garantir administração restrita, integridade do catálogo e tratamento do impacto de remoções.
+- **RF02:** autenticar-se para acessar as funcionalidades do seu perfil.
+- **RF09:** gerenciar categorias.
+- **RF10:** gerenciar trilhas pré-definidas.
+- **RF11 e RF12:** gerenciar etapas e associá-las às trilhas em uma sequência definida.
+- **RF14:** gerenciar contas de aluno e de administrador.
+- **RF15:** consultar o progresso dos alunos (somente leitura).
+- **RNF05 e RNF06:** proteger operações administrativas e restringi-las ao perfil de administrador.
+- **RNF04 e RNF07:** manter uma interface consistente e uma base de código organizada em módulos React (frontend) e Node (backend).
+- **RB02, RB03, RB07 e RB11:** garantir administração restrita, integridade do catálogo e tratamento do impacto de remoções.
+- **RB14–RB18:** XOR de perfil, gestão de contas só pelo administrador, preservação do último administrador, recusa de remoção de aluno com progresso e consulta de andamento somente leitura.
 
- ### Critérios de sucesso
+### Critérios de sucesso
 
- Mariana consegue manter categorias, trilhas e etapas de forma centralizada, definir sequências sem ambiguidades e realizar alterações com segurança, sem permitir acesso administrativo a alunos nem comprometer o progresso existente.
+Mariana consegue manter categorias, trilhas e etapas de forma centralizada, definir sequências sem ambiguidades, gerenciar contas e consultar o andamento dos alunos, sem permitir acesso administrativo a alunos nem comprometer o progresso existente.

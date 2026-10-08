@@ -6,7 +6,7 @@
 
 Este documento é **somente o índice ordenado**. Não contém o texto completo das Specs e não implementa código.
 
-As 23 questões humanas (`OPEN-01` … `OPEN-23`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões.
+As 25 questões humanas (`OPEN-01` … `OPEN-25`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso.
 
 Para o texto completo (comportamento, invariantes, contratos, Dado/Quando/Então, testes e status): [`specs.md`](specs.md).
 
@@ -25,6 +25,8 @@ Artefatos lidos: visão do produto, personas (Lucas / Mariana), RF, RB, RNF, mod
 5. Aluno descreve um objetivo em linguagem natural e obtém uma trilha personalizada via agente LLM, depois a acompanha como qualquer outra trilha.
 6. Aluno conversa com o agente LLM para apoio ao estudo, sem alterar o catálogo curado.
 7. Administrador, ao remover etapa já usada por alunos, avalia e trata o impacto sobre progresso e conclusões.
+8. Administrador cadastra, consulta, altera e remove contas de alunos e de administradores.
+9. Administrador consulta quais trilhas cada aluno acompanha e o percentual de progresso, sem estudar no lugar do aluno.
 
 ### 1.2 Dependências entre comportamentos
 
@@ -35,6 +37,7 @@ Identidade
       → Acompanhar trilha pré-definida (catálogo + visualização + progresso)
         → Integridade na remoção de etapa em uso
         → Trilha personalizada (LLM)  →  Conversa com o agente
+        → Gerenciar usuários  →  Consultar progresso dos alunos
 ```
 
 - RB01 e RB02 tornam autenticação pré-requisito de trilhas, progresso e administração.
@@ -61,6 +64,12 @@ Identidade
 | RB10 | Sugestão do LLM não substitui nem altera o catálogo curado |
 | RB11 | Remoção de etapa vinculada trata impacto em progresso antes de concluir |
 | RB12 | Histórico de conclusões permanece enquanto o progresso estiver ativo |
+| RB13 | Remoção de categoria com trilhas é recusada |
+| RB14 | Perfil XOR; UC01 exclusivo do aluno |
+| RB15 | Criar, alterar ou remover conta só com perfil administrador |
+| RB16 | Não remover o último administrador nem a própria conta |
+| RB17 | Não remover aluno com progresso; não promover aluno com progresso |
+| RB18 | Consulta administrativa de progresso não altera `Progresso` nem `ConclusaoEtapa` |
 
 ### 1.4 Requisitos não funcionais aplicáveis
 
@@ -90,7 +99,7 @@ RNFs não originam Specs próprias. Associação por Spec está no índice (§2)
 
 ### 1.6 Decisões humanas (OPEN)
 
-As 23 OPENs estão **fechadas** (22 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s e demais respostas.
+As 25 OPENs estão **fechadas** (24 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s, gestão de contas (RF14) e consulta administrativa de progresso (RF15).
 
 ### 1.7 Inconsistências, lacunas e ambiguidades
 
@@ -118,7 +127,7 @@ Tratadas pela entrevista; não devem ser reabertas na implementação.
 
 ## 2. Mapa ordenado de Specs
 
-Decomposição **vertical por capacidade**. RF09–RF13 não viraram “implementar admin”; RF03–RF07 não viraram “implementar aluno”. RNFs transversais foram associados, não transformados em Specs. A porta LLM entra na primeira capacidade que a exige (SPEC-006), não como Spec isolada de infraestrutura.
+Decomposição **vertical por capacidade**. RF09–RF13 não viraram “implementar admin”; RF03–RF07 não viraram “implementar aluno”; RF14 e RF15 viraram SPEC-008 e SPEC-009. RNFs transversais foram associados, não transformados em Specs. A porta LLM entra na primeira capacidade que a exige (SPEC-006), não como Spec isolada de infraestrutura.
 
 ### SPEC-001 — Cadastrar, autenticar e autorizar por perfil
 
@@ -255,6 +264,44 @@ Observação: RB13 cobre remoção de categoria com trilhas. A sentinela **Perso
 | **Justificativa da ordem** | Apoio opcional (relação «extend»). Depende do acompanhamento e da porta já introduzida. Separada da SPEC-006 porque o resultado é `Mensagem`, não `Trilha`, e RB10 é o invariante central distinto da criação personalizada. |
 | **OPEN associados** | Resolvidos: OPEN-06, OPEN-14, OPEN-20 |
 
+### SPEC-008 — Gerenciar usuários
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-008 |
+| **Nome** | Gerenciar usuários |
+| **Objetivo** | Permitir que o administrador cadastre, consulte, altere e remova contas de aluno e de administrador, com e-mail único, senha em hash, XOR de perfil, preservação do último administrador e recusa de remoção (ou promoção) de aluno com `Progresso`. |
+| **Valor** | Mariana mantém quem acessa a plataforma sem depender só do seed e do cadastro público. |
+| **RF** | RF14 |
+| **RB** | RB14, RB15, RB16, RB17 |
+| **RNF** | RNF05, RNF06, RNF03, RNF04, RNF07, RNF09 |
+| **UC / fluxo** | UC03 fluxo principal; A1 consultar; A2 alterar; A3 remover; E1–E4 |
+| **Entidades** | `Usuario`, `Aluno`, `Administrador` |
+| **Drivers** | AD-RF02, AD-QA02 |
+| **ADRs** | ADR-004 |
+| **Dependências** | SPEC-001 |
+| **Justificativa da ordem** | Identidade já existe (SPEC-001). O cadastro público continua só aluno; esta Spec é a gestão administrativa das contas. Precisa existir antes da SPEC-009 listar alunos com andamento. |
+| **OPEN associados** | Resolvidos: OPEN-24; reusa OPEN-10, OPEN-11, OPEN-12 |
+
+### SPEC-009 — Consultar progresso dos alunos
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-009 |
+| **Nome** | Consultar progresso dos alunos |
+| **Objetivo** | Permitir que o administrador consulte, somente leitura, quais trilhas cada aluno acompanha e o percentual derivado, sem executar o UC01. |
+| **Valor** | Mariana vê o andamento da turma sem marcar conclusão nem conversar no lugar do aluno. |
+| **RF** | RF15; reutiliza RF06 (percentual já definido) |
+| **RB** | RB04, RB06, RB14, RB18 |
+| **RNF** | RNF05, RNF06, RNF03, RNF04, RNF07, RNF09 |
+| **UC / fluxo** | UC04 fluxo principal; A1 aluno sem progresso; A2 só lista; E1–E2 |
+| **Entidades** | `Aluno`, `Progresso`, `Trilha`, `Etapa`, `ConclusaoEtapa` |
+| **Drivers** | AD-RF02, AD-RF03, AD-QA02 |
+| **ADRs** | ADR-004 |
+| **Dependências** | SPEC-004, SPEC-008 |
+| **Justificativa da ordem** | O acompanhamento do aluno (SPEC-004) já calcula o percentual. A lista de contas (SPEC-008) dá o ponto de entrada. Separada da SPEC-008 porque o resultado é consulta de `Progresso`, não mutação de `Usuario`. |
+| **OPEN associados** | Resolvidos: OPEN-25; não reabre OPEN-21 |
+
 ---
 
 ## 3. Questões humanas (OPEN) — resolvidas
@@ -286,6 +333,8 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 | OPEN-21 | UC01 exclusivo do aluno | SPEC-001, SPEC-004 |
 | OPEN-22 | Catálogo vazio + LLM off: mensagem; não cria trilha | SPEC-004, SPEC-006 |
 | OPEN-23 | Bloquear remoção de categoria com trilhas | SPEC-002 |
+| OPEN-24 | Gestão administrativa de usuários | SPEC-008 |
+| OPEN-25 | Consulta administrativa do progresso | SPEC-009 |
 
 ---
 
@@ -301,8 +350,8 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 
 ## 5. Texto completo das Specs
 
-O índice deste mapa permanece a ordem de implementação **aprovada**: SPEC-001 → … → SPEC-007. O conteúdo completo está em [`specs.md`](specs.md). Status em 2026-09-30: Specs `aprovada`; layout da SPEC-001 `aprovado`; layout das demais `pendente`.
+O índice deste mapa permanece a ordem de implementação **aprovada**: SPEC-001 → … → SPEC-009. O conteúdo completo está em [`specs.md`](specs.md). Status em 2026-10-08: SPEC-001 … SPEC-009 `implementadas`. Aprovação humana de SPEC-008 e SPEC-009 (texto, layout e implementação): 2026-10-08.
 
-**Portão:** o código de uma Spec só começa depois do layout `aprovado` (evidências em [`layout/`](layout/)). A SPEC-001 está liberada.
+**Portão:** o código de uma Spec só começa depois do layout `aprovado`.
 
-**Próximo passo:** implementar a SPEC-001, sozinha. Não misturar SPEC-002.
+**Próximo passo humano:** nenhuma Spec desta versão aguarda aprovação. OPEN-17 (motor de recomendação) permanece fora de escopo.
