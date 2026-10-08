@@ -31,7 +31,7 @@ O sistema **SHALL** adaptar o conteúdo da interface para uso em computadores, t
 
 **Tipo EARS:** Ubíquo
 
-A interface **SHALL** apresentar navegação clara e consistente, permitindo que o aluno localize trilhas, etapas e informações de progresso sem exigir conhecimento técnico.
+A interface **SHALL** apresentar navegação clara e consistente, permitindo que o aluno localize trilhas, etapas e informações de progresso, e que o administrador localize contas e o andamento dos alunos, sem exigir conhecimento técnico.
 
 ## RNF05 - Segurança de acesso
 
@@ -43,7 +43,7 @@ A interface **SHALL** apresentar navegação clara e consistente, permitindo que
 
 **Tipo EARS:** Unwanted behavior
 
-**IF** uma pessoa usuária solicitar uma operação administrativa de categorias, trilhas ou etapas, o sistema **SHALL** permitir a operação somente quando ela possuir perfil de administrador.
+**IF** uma pessoa usuária solicitar uma operação administrativa de categorias, trilhas, etapas, contas de usuário ou consulta de progresso dos alunos, o sistema **SHALL** permitir a operação somente quando ela possuir perfil de administrador.
 
 ## RNF07 - Manutenibilidade
 

@@ -53,6 +53,8 @@ RF01/RF02 cadastram e autenticam `Usuario`. O modelo conceitual especializa em `
 | Escolher trilha, criar personalizada, registrar progresso, conversar | Sim | Não (RB14; UC01 exclusivo do aluno) | Não (RB01, RNF05) |
 | Listar catálogo pré-definido | Sim | Sim (consulta de curadoria) | Sim (RF03) |
 | CRUD de categoria, trilha pré-definida, etapa; interruptor LLM | Não | Sim (RF09–RF13, RB02, RNF06) | Não |
+| CRUD de contas de aluno e administrador | Não | Sim (RF14, RB15–RB17) | Não |
+| Consultar progresso dos alunos (somente leitura) | Não (vê só o próprio, RF06) | Sim (RF15, RB18; não é o UC01) | Não |
 | Conversar com o LLM sobre a trilha em andamento | Sim (RF08) | Não | Não |
 
 **Decisão que o driver força:** um mecanismo único de autenticação e um ponto de autorização por caso de uso / operação de escrita. Perfil não é só atributo de tela; é invariante de fronteira.
@@ -252,7 +254,7 @@ Essas lacunas restantes não bloqueiam as Specs, desde que respeitem AD-C01, AD-
 | Driver | RF | RNF | RB | Modelo conceitual | Caso de uso |
 |---|---|---|---|---|---|
 | AD-RF01 | RF03, RF04, RF10 | RNF02 | RB07, RB08, RB09, RB10 | `Trilha.tipo`, `SolicitacaoTrilha` | UC01-A3, UC02 |
-| AD-RF02 | RF01, RF02, RF09–RF12 | RNF05, RNF06 | RB01, RB02 | `Usuario`, `Aluno`, `Administrador` | UC01 include autenticar; UC02 |
+| AD-RF02 | RF01, RF02, RF09–RF15 | RNF05, RNF06 | RB01, RB02, RB14–RB18 | `Usuario`, `Aluno`, `Administrador` | UC01 include autenticar; UC02; UC03; UC04 |
 | AD-RF03 | RF05, RF06, RF07 | — | RB04, RB05, RB06, RB12 | `Progresso`, `ConclusaoEtapa` | UC01 include progresso |
 | AD-RF04 | RF09–RF12 | — | RB03, RB11 | `Categoria`, `Trilha`, `Etapa` + impacto em progresso | UC02, extend impacto |
 | AD-C01 | — | RNF07 | — | — | ambos (implementação) |

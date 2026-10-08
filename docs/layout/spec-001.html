@@ -46,6 +46,38 @@
       word-break: break-word;
       white-space: normal;
     }
+    .is-phone .app-bar {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+    .is-phone .app-brand { min-width: 0; flex: 1 1 auto; }
+    .is-phone .app-papel,
+    .is-phone .app-nav-desktop { display: none !important; }
+    .is-phone .app-nav-mobile { display: flex !important; }
+    .is-phone .app-session {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+      max-width: 58%;
+    }
+    .is-phone .app-user {
+      display: inline !important;
+      min-width: 0;
+      max-width: 6.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .is-phone .app-sair {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body class="bg-brand-paper text-brand-ink">
@@ -168,19 +200,19 @@
         <span class="rounded-md px-3 py-1.5 text-sm text-slate-400" title="SPEC-003">Trilhas</span>`;
       return `<div class="min-h-[640px] bg-slate-50">
         <header class="border-b border-slate-200 bg-white">
-          <div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-            <div class="flex items-center gap-3">
-              <img src="../identidade/marca.svg" alt="" class="h-8 w-8" />
+          <div class="app-bar mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+            <div class="app-brand flex min-w-0 items-center gap-3">
+              <img src="../identidade/marca.svg" alt="" class="h-8 w-8 shrink-0" />
               <span class="text-sm font-semibold text-brand-ink">EstudaAI</span>
-              <span class="hidden rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 sm:inline">${papel}</span>
+              <span class="app-papel hidden rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 sm:inline">${papel}</span>
             </div>
-            <nav class="hidden items-center gap-1 sm:flex">${isAdmin ? navAdmin : navAluno}</nav>
-            <div class="flex items-center gap-2">
-              <span class="hidden max-w-[9rem] truncate text-sm text-slate-600 sm:inline">${nome}</span>
-              <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50">Sair</button>
+            <nav class="app-nav-desktop hidden items-center gap-1 sm:flex">${isAdmin ? navAdmin : navAluno}</nav>
+            <div class="app-session flex min-w-0 items-center gap-2">
+              <span class="app-user hidden max-w-[9rem] truncate text-sm text-slate-600 sm:inline">${nome}</span>
+              <button type="button" class="app-sair shrink-0 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50">Sair</button>
             </div>
           </div>
-          <nav class="flex gap-1 overflow-x-auto border-t border-slate-100 px-4 py-2 sm:hidden">${isAdmin ? navAdmin : navAluno}</nav>
+          <nav class="app-nav-mobile flex gap-1 overflow-x-auto border-t border-slate-100 px-4 py-2 sm:hidden">${isAdmin ? navAdmin : navAluno}</nav>
         </header>
         <section class="mx-auto max-w-5xl px-4 py-8" data-body></section>
       </div>`;

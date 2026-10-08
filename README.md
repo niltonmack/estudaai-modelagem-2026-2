@@ -7,7 +7,7 @@ O aluno pode:
 - seguir **trilhas pré-definidas**, curadas por especialistas e organizadas por categoria;
 - criar **trilhas personalizadas** com o apoio de um agente baseado em LLM (**Gemini**, desligável pelo administrador).
 
-O administrador mantém o catálogo (categorias, trilhas e etapas) sem que as sugestões do LLM substituam a curadoria.
+O administrador mantém o catálogo (categorias, trilhas e etapas), gerencia contas e consulta o andamento dos alunos, sem que as sugestões do LLM substituam a curadoria.
 
 A visão completa está em [`docs/visaodoproduto.md`](docs/visaodoproduto.md).
 
@@ -23,6 +23,26 @@ A visão completa está em [`docs/visaodoproduto.md`](docs/visaodoproduto.md).
 
 O código **SHALL** ser organizado em módulos compatíveis com essa arquitetura (RNF07).
 
+## Como executar
+
+Dois artefatos: API Nest (`apps/api`, porta 3001) e UI Next.js (`apps/web`, porta 3000).
+
+Laboratório local (2026-10-02): o MySQL da máquina é o serviço **MySQL80** em `127.0.0.1:3306` (não há listener em `3336`). O schema do EstudaAI é o banco **`estudaai`**, separado do `dentalapp` (`avaliacoes`, `imagens`, `respostas`), que permanece intocado.
+
+```bash
+npm install
+npm run seed
+npm run api
+npm run web
+```
+
+- UI: http://localhost:3000
+- Admin seed: `mariana@estudaai.local` / `AdminTemp1`
+- Testes da Spec: `npm test` (usam `sql.js` em memória; não gravam no MySQL)
+- Gemini: chave só em `apps/api/.env` (`GEMINI_API_KEY`). Acesso `generateContent` validado em 2026-10-02 no modelo `gemini-3.5-flash-lite`. Ligue o interruptor em `/agente`.
+
+`docker compose` continua opcional se você quiser um MySQL só do EstudaAI; neste laboratório o banco local compartilhado já está em uso.
+
 ## Documentação
 
 | Artefato | Arquivo |
@@ -35,14 +55,17 @@ O código **SHALL** ser organizado em módulos compatíveis com essa arquitetura
 | Modelo conceitual | [`docs/modelo-conceitual.md`](docs/modelo-conceitual.md) · [`docs/modelo-conceitual.png`](docs/modelo-conceitual.png) |
 | Caso de uso do aluno (UC01) | [`docs/caso-uso-aluno.md`](docs/caso-uso-aluno.md) · [`docs/caso-uso-aluno.png`](docs/caso-uso-aluno.png) |
 | Caso de uso do administrador (UC02) | [`docs/caso-uso-admin.md`](docs/caso-uso-admin.md) · [`docs/caso-uso-admin.png`](docs/caso-uso-admin.png) |
+| Caso de uso gerenciar usuários (UC03) | [`docs/caso-uso-usuarios.md`](docs/caso-uso-usuarios.md) |
+| Caso de uso consultar progresso (UC04) | [`docs/caso-uso-acompanhamento-admin.md`](docs/caso-uso-acompanhamento-admin.md) |
 | Drivers arquiteturais | [`docs/drivers-arquiteturais.md`](docs/drivers-arquiteturais.md) |
 | ADRs | [`docs/adr.md`](docs/adr.md) |
 | Mapa de Specs (SDD) | [`docs/mapa-specs.md`](docs/mapa-specs.md) |
-| Specs completas | [`docs/specs.md`](docs/specs.md) — lista e ordem **aprovadas** (2026-09-30); layout SPEC-001 **aprovado**; demais Specs com layout pendente |
+| Specs completas | [`docs/specs.md`](docs/specs.md) — SPEC-001 … SPEC-009 `implementadas` (2026-10-08); layouts em [`docs/layout/`](docs/layout/) |
+| Handoff de implementação | [`context/05-implementation.md`](context/05-implementation.md) — paths HTTP, MySQL local, Gemini de laboratório |
 | Log da aplicação | [`docs/logging.md`](docs/logging.md) (RNF09) |
 | Identidade visual | [`docs/identidade-visual.md`](docs/identidade-visual.md) (RNF10) — **aprovada** (2026-09-30) · amostra [`docs/layout/identidade.html`](docs/layout/identidade.html) |
 | Evidências de layout | [`docs/layout/`](docs/layout/) |
-| Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 23 fechadas |
+| Registro das decisões (OPEN) | [`docs/decisoes-em-aberto.md`](docs/decisoes-em-aberto.md) — 25 fechadas |
 
 ## Modelo de IDE (Cursor, Claude Code e VS Code + Copilot)
 

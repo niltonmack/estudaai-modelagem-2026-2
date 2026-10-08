@@ -97,6 +97,24 @@ Os requisitos seguem o modelo EARS (Easy Approach to Requirements Syntax). As pa
 
 **WHILE** uma pessoa usuária administradora estiver autenticada, o sistema **SHALL** permitir habilitar ou desabilitar a funcionalidade de modelo de linguagem (RNF02).
 
+## RF14 - Gerenciar usuários
+
+**Tipo EARS:** State-driven
+
+**WHILE** uma pessoa usuária administradora estiver autenticada, o sistema **SHALL** permitir o cadastro, a consulta, a alteração e a remoção de contas de aluno e de administrador, observada a exclusividade de perfil (RB14) e a preservação de ao menos um administrador (RB16).
+
+**IF** o e-mail informado já estiver cadastrado, o sistema **SHALL** recusar o cadastro.
+
+O cadastro público (RF01) continua criando somente aluno. Contas de administrador além do seed nascem nesta operação.
+
+## RF15 - Consultar progresso dos alunos
+
+**Tipo EARS:** State-driven
+
+**WHILE** uma pessoa usuária administradora estiver autenticada, o sistema **SHALL** disponibilizar a consulta das trilhas que cada aluno acompanha e o percentual de progresso correspondente.
+
+O administrador **SHALL NOT** registrar conclusão de etapa, iniciar acompanhamento nem conversar com o agente no lugar do aluno. Essa consulta **não** é o UC01.
+
 ## Observação sobre `SHOULD` e `IF`
 
 `SHOULD` não foi usado no corpo dos RFs porque o arquivo descreve capacidades obrigatórias. `IF` aparece onde a entrevista humana definiu condição excepcional (e-mail duplicado, conversa sem trilha).

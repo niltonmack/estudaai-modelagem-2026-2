@@ -1,6 +1,6 @@
 # Decisões em aberto — EstudaAI
 
-**Status do registro:** entrevista concluída (23 / 23) e **absorvida na baseline**  
+**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25). **Absorvido na baseline.**  
 **Origem:** [`mapa-specs.md`](mapa-specs.md) §3  
 **Regra:** a implementação **não** reabre o que está `decidido` ou `fora de escopo`. Este arquivo permanece como rastreio da entrevista; RF, RB, RNF, UC, modelo, drivers e ADRs já refletem as respostas.
 
@@ -23,7 +23,7 @@ Legenda de status:
 | **Baseline** | Drivers §8 e ADRs: banco específico ainda não tinha sido escolhido; agora MySQL/MariaDB consta como complemento reversível em [`adr.md`](adr.md). |
 | **Status** | `decidido` |
 | **Decisão** | MySQL / MariaDB |
-| **Notas** | Esquema físico permanece derivado do modelo conceitual; esta decisão escolhe o SGBD, não o desenho das tabelas. |
+| **Notas** | Esquema físico permanece derivado do modelo conceitual; esta decisão escolhe o SGBD, não o desenho das tabelas. Laboratório 2026-10-02: MySQL80 em `127.0.0.1:3306`, banco `estudaai` (usuário `estudaai`), ao lado de `dentalapp` sem compartilhá-lo. Tabelas em `apps/api/src/db/schema.sql`. |
 
 ## OPEN-02 — Framework HTTP da API Node
 
@@ -78,7 +78,7 @@ Legenda de status:
 | **Baseline** | RNF02/ADR-002 restringiam OpenAI ou Ollama. A entrevista escolheu Gemini; a baseline foi atualizada. |
 | **Status** | `decidido` (baseline atualizada) |
 | **Decisão** | Provedor: Gemini. Interruptor: interface do administrador. |
-| **Notas** | RNF02, ADR-002, AD-C02 e RF13 passam a registrar Gemini e o interruptor administrativo. A porta (texto in → estrutura out) permanece; o domínio não acopla o SDK. |
+| **Notas** | RNF02, ADR-002, AD-C02 e RF13 passam a registrar Gemini e o interruptor administrativo. A porta (texto in → estrutura out) permanece; o domínio não acopla o SDK. Nome da versão da API Gemini é configuração do adaptador (`GEMINI_MODEL`), sem entidade de domínio (SPEC-006 §13). Laboratório 2026-10-02: `gemini-3.5-flash-lite`. |
 
 ## OPEN-07 — Política concreta de RB11 após confirmação
 
@@ -243,7 +243,7 @@ Legenda de status:
 | **Baseline** | AD-RF02 marca UC01 como “fora” para o administrador. Não há RF que permita nem proíba. |
 | **Status** | `decidido` |
 | **Decisão** | UC01 é exclusivo do aluno. Administrador não acompanha trilhas. |
-| **Notas** | Coerente com OPEN-12 (XOR). Confirma AD-RF02 (“fora do UC01” para o administrador). |
+| **Notas** | Coerente com OPEN-12 (XOR). Confirma AD-RF02 (“fora do UC01” para o administrador). Em 2026-10-08, RF15 / SPEC-009 passou a permitir que o administrador **consulte** o progresso dos alunos (somente leitura). Isso **não** reabre o UC01: o administrador não escolhe trilha, não marca conclusão e não conversa no lugar do aluno. |
 
 ## OPEN-22 — Catálogo vazio e LLM desligado
 
@@ -266,6 +266,29 @@ Legenda de status:
 | **Status** | `decidido` |
 | **Decisão** | Bloquear a remoção da `Categoria` enquanto houver trilhas classificadas nela. |
 | **Notas** | Sem cascata e sem recategorização automática. Alinha-se a OPEN-07 (não destruir catálogo em uso). A sentinela **Personalizada** (OPEN-08) também não pode ser removida se houver trilhas personalizadas. |
+
+## OPEN-24 — Gestão administrativa de usuários
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | O administrador gerencia contas de alunos e de administradores nesta versão? |
+| **Specs** | SPEC-008 |
+| **Baseline** | SPEC-001 e UC02: primeiro admin por seed; cadastro público só cria aluno; promoção fora de escopo. |
+| **Status** | `decidido` |
+| **Decisão** | Sim. RF14: cadastro, consulta, alteração e remoção de contas de aluno e de administrador. O cadastro público (RF01) permanece só aluno. O seed (OPEN-10) continua criando o primeiro administrador. |
+| **Notas** | XOR (RB14) permanece. Recusa: e-mail duplicado; último administrador; auto-remoção; aluno com `Progresso`; promoção a administrador enquanto houver `Progresso`. Pedido humano 2026-10-08. |
+
+## OPEN-25 — Visão administrativa do progresso
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | O administrador vê quais trilhas os alunos fazem e o percentual de progresso? |
+| **Specs** | SPEC-009 |
+| **Baseline** | RF06 e SPEC-004 são do próprio aluno. OPEN-21: UC01 exclusivo do aluno. |
+| **Status** | `decidido` |
+| **Decisão** | Sim, somente leitura (RF15 / UC04). Lista alunos, trilhas em acompanhamento e percentual derivado. O administrador não registra conclusão, não inicia progresso e não conversa no lugar do aluno. |
+| **Notas** | Não reabre OPEN-21. Percentual continua derivado (RB06). Pedido humano 2026-10-08. |
+
 ---
 
 ## Resumo
@@ -295,7 +318,9 @@ Legenda de status:
 | OPEN-21 | Admin no UC01 | `decidido` — exclusivo do aluno |
 | OPEN-22 | Catálogo vazio + LLM off | `decidido` — mensagem de indisponível; não cria trilha |
 | OPEN-23 | Remover categoria em uso | `decidido` — bloquear enquanto houver trilhas |
+| OPEN-24 | Gestão administrativa de usuários | `decidido` — RF14 / SPEC-008 |
+| OPEN-25 | Visão administrativa do progresso | `decidido` — RF15 / SPEC-009 |
 
-Progresso da entrevista: **23 / 23** fechadas (22 decididas, 1 fora de escopo).
+Progresso da entrevista: **25 / 25** fechadas (24 decididas, 1 fora de escopo).
 
 Nenhuma OPEN permanece `em aberto`. A implementação deve obedecer a este registro **e** à baseline atualizada. A divergência OPEN-06 (Gemini) foi incorporada em RNF02, ADR-002, AD-C02 e RF13.

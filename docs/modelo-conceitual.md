@@ -10,13 +10,15 @@ O diagrama em PNG está em [`modelo-conceitual.png`](modelo-conceitual.png). Se 
 
 Representar as entidades do domínio, seus atributos essenciais e as associações com cardinalidade, **sem** decisões de implementação (chaves primárias, frameworks ou esquema físico). Operações administrativas de catálogo aparecem como restrição de permissão, não como associação persistida.
 
+Tabelas só de implementação (`token_revogado`, `recuperacao_senha`, `configuracao_llm`) **não** entram neste modelo. O esquema físico está em `apps/api/src/db/schema.sql`.
+
 ## 2. Entidades
 
 | Entidade | Responsabilidade | Atributos | Origem |
 |---|---|---|---|
 | **Usuario** | Conta autenticável da plataforma | `nome`, `email` (único), `senha` (armazenada com hash) | RF01, RF02, RNF05 |
 | **Aluno** | Especialização XOR de Usuario que estuda e acompanha trilhas | — | persona 1, RB01, RB04, RB14 |
-| **Administrador** | Especialização XOR de Usuario autorizada a manter o catálogo e o interruptor do LLM | — | persona 2, RF09–RF13, RB02, RB14 |
+| **Administrador** | Especialização XOR de Usuario autorizada a manter o catálogo, o interruptor do LLM, as contas e a consulta do progresso dos alunos | — | persona 2, RF09–RF15, RB02, RB14–RB18 |
 | **Categoria** | Organização do catálogo por área de aprendizagem | `nome`, `descricao` | RF03, RF09, RB03 |
 | **Trilha** | Percurso de aprendizagem pré-definido ou personalizado | `titulo`, `descricao`, `tipo` | RF03–RF05, RF10, RB03, RB07, RB08 |
 | **Etapa** | Unidade ordenada de conteúdo dentro de uma trilha | `titulo`, `conteudo` (Markdown), `ordem` | RF05, RF11, RF12, RB03 |
@@ -54,7 +56,7 @@ Valores de domínio:
 | ConclusaoEtapa | conclui | Etapa | 1 : 1 | Conclusão explícita; sem marcação a etapa não conta (RB05) |
 | Mensagem | refere-se a | Trilha | 0..* : 1 | Conversa exige trilha em andamento (RF08) |
 
-O administrador **não** possui associação estrutural com Categoria, Trilha ou Etapa. RF09–RF12 e RB02 definem uma restrição de permissão: apenas o perfil administrador altera o catálogo.
+O administrador **não** possui associação estrutural com Categoria, Trilha, Etapa ou Progresso. RF09–RF15, RB02 e RB15 definem restrição de permissão: apenas o perfil administrador altera o catálogo, gerencia contas e consulta o andamento dos alunos.
 
 ## 4. Regras de domínio que o modelo precisa respeitar
 
@@ -62,7 +64,7 @@ O administrador **não** possui associação estrutural com Categoria, Trilha ou
 2. **RB04 / RB06** — `Progresso` é individual por aluno; o percentual é derivado.
 3. **RB05 / RB12** — `Etapa` só entra no percentual se existir `ConclusaoEtapa`; o histórico permanece enquanto `Progresso.ativo` for verdadeiro.
 4. **RB08 / RB09** — Trilha `personalizada` é criada a partir de `SolicitacaoTrilha` (texto do aluno + `respostaLLM` JSON) e fica associada a esse aluno via `Progresso`.
-5. **RB01 / RB02 / RB07 / RB14** — Uso de trilhas e progresso exige autenticação; listagem do catálogo pode ser anônima; cadastro de trilhas pré-definidas é exclusivo do administrador; perfis são XOR.
+5. **RB01 / RB02 / RB07 / RB14–RB18** — Uso de trilhas e progresso exige autenticação; listagem do catálogo pode ser anônima; cadastro de trilhas pré-definidas e gestão de contas são exclusivos do administrador; perfis são XOR; o último administrador não é removido; aluno com progresso não é removido; consulta administrativa de progresso é somente leitura.
 6. **RB10** — Mensagens do agente são apoio ao estudo, exigem trilha em andamento e não substituem a curadoria.
 7. **RB11 / RB13** — Não se remove etapa com progresso vigente nem categoria que ainda classifique trilhas. `ConclusaoEtapa` já gravadas são preservadas. Recusa-se remoção que deixaria a trilha sem etapas.
 
@@ -140,5 +142,7 @@ classDiagram
 | Visualizar etapas, conteúdos e sequência (RF05, RF12) | `Etapa.titulo`, `conteudo` e `ordem` na composição da trilha |
 | Progresso percentual e conclusão explícita (RF06, RF07, RB05, RB06) | `Progresso` + `ConclusaoEtapa` + atributo derivado |
 | Conversa de dúvidas e sugestões (RF08, RB10) | `Mensagem` associada ao aluno e obrigatoriamente à trilha em andamento |
-| Administração restrita (RF09–RF12, RB02, RNF06) | Restrição de permissão sobre o catálogo, registrada na nota do administrador |
+| Administração restrita (RF09–RF15, RB02, RB15, RNF06) | Restrição de permissão sobre catálogo, contas e consulta de progresso, registrada na nota do administrador |
+| Gestão de contas (RF14, RB16, RB17) | `Usuario` com XOR `Aluno` / `Administrador`; remoção recusada se for o último admin ou se o aluno tiver `Progresso` |
+| Consulta do andamento (RF15, RF06, RB04, RB18) | Leitura de `Progresso` e `/percentualProgresso` alheios, sem criar nem alterar fatos de conclusão |
 | Integridade ao remover etapa ou categoria (RB11, RB13) | `ConclusaoEtapa` e `Progresso` tornam visível o uso; remoção é recusada enquanto houver vínculo |

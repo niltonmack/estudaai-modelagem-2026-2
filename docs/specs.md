@@ -37,11 +37,34 @@ Como aprovar o layout: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` p
 | Lista SPEC-001 … SPEC-007 | `aprovada` | 2026-09-30 |
 | Ordem de execução | 001 → 002 → 003 → 004 → 005 → 006 → 007 | 2026-09-30 |
 | Primeira Spec a implementar | SPEC-001 | 2026-09-30 |
-| Layout (todas as Specs) | SPEC-002 … SPEC-007 permanecem `pendente` | — |
+| Layout (todas as Specs) | SPEC-001 … SPEC-007 `aprovado` | 2026-10-02 |
 | Layout SPEC-001 | `aprovado` — [`layout/spec-001.html`](layout/spec-001.html) | 2026-09-30 |
+| Implementação SPEC-001 | `implementada` | 2026-10-08 |
+| Layout SPEC-002 | `aprovado` — [`layout/spec-002.html`](layout/spec-002.html) | 2026-10-01 |
+| Implementação SPEC-002 | `implementada` | 2026-10-08 |
+| Layout SPEC-003 | `aprovado` — [`layout/spec-003.html`](layout/spec-003.html) | 2026-10-01 |
+| Implementação SPEC-003 | `implementada` | 2026-10-08 |
+| Layout SPEC-004 | `aprovado` — [`layout/spec-004.html`](layout/spec-004.html) | 2026-10-01 |
+| Implementação SPEC-004 | `implementada` | 2026-10-08 |
+| Layout SPEC-005 | `aprovado` — [`layout/spec-005.html`](layout/spec-005.html) | 2026-10-01 |
+| Implementação SPEC-005 | `implementada` | 2026-10-08 |
+| Layout SPEC-006 | `aprovado` — [`layout/spec-006.html`](layout/spec-006.html) | 2026-10-02 |
+| Implementação SPEC-006 | `implementada` | 2026-10-08 |
+| Layout SPEC-007 | `aprovado` — [`layout/spec-007.html`](layout/spec-007.html) | 2026-10-02 |
+| Implementação SPEC-007 | `implementada` | 2026-10-08 |
+| Implementação SPEC-001 … SPEC-007 | conjunto `implementado` | 2026-10-08 |
+| Lista SPEC-008 e SPEC-009 | `aprovada` | 2026-10-08 |
+| Ordem estendida | 001 → … → 007 → 008 → 009 | 2026-10-08 |
+| Layout SPEC-008 | `aprovado` — [`layout/spec-008.html`](layout/spec-008.html) | 2026-10-08 |
+| Implementação SPEC-008 | `implementada` | 2026-10-08 |
+| Layout SPEC-009 | `aprovado` — [`layout/spec-009.html`](layout/spec-009.html) | 2026-10-08 |
+| Implementação SPEC-009 | `implementada` | 2026-10-08 |
+| Aprovação humana SPEC-008 e SPEC-009 | texto, layout e implementação `aprovados` | 2026-10-08 |
+| Acesso Gemini (laboratório) | chave só em `apps/api/.env`; `generateContent` HTTP 200 no modelo `gemini-3.5-flash-lite` | 2026-10-02 |
+| Banco MySQL local | schema `estudaai` em `127.0.0.1:3306` (serviço MySQL80); `dentalapp` intocado | 2026-10-02 |
 | Identidade visual (logo + paleta) | `aprovada` — [`identidade-visual.md`](identidade-visual.md) | 2026-09-30 |
 
-A aprovação da **lista e da ordem** não substitui o portão de layout das Specs ainda `pendente`. A SPEC-001 está liberada para implementação.
+A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-08. Em 2026-10-08 o humano **aprovou** SPEC-008 (gerenciar usuários, RF14) e SPEC-009 (consultar progresso dos alunos, RF15): texto, layout e implementação.
 
 ---
 
@@ -49,13 +72,15 @@ A aprovação da **lista e da ordem** não substitui o portão de layout das Spe
 
 | Ordem | ID | Nome | Dependências | Status | Layout |
 |---|---|---|---|---|---|
-| 1 | SPEC-001 | Cadastrar, autenticar e autorizar por perfil | — | `aprovada` | `aprovado` |
-| 2 | SPEC-002 | Gerenciar categorias de aprendizagem | SPEC-001 | `aprovada` | `pendente` |
-| 3 | SPEC-003 | Publicar trilha pré-definida com etapas ordenadas | SPEC-002 | `aprovada` | `pendente` |
-| 4 | SPEC-004 | Acompanhar trilha pré-definida | SPEC-001, SPEC-003 | `aprovada` | `pendente` |
-| 5 | SPEC-005 | Tratar impacto da remoção de etapa em uso | SPEC-003, SPEC-004 | `aprovada` | `pendente` |
-| 6 | SPEC-006 | Criar trilha personalizada com agente LLM | SPEC-002, SPEC-004 | `aprovada` | `pendente` |
-| 7 | SPEC-007 | Conversar com o agente LLM sobre a trilha | SPEC-004, SPEC-006 | `aprovada` | `pendente` |
+| 1 | SPEC-001 | Cadastrar, autenticar e autorizar por perfil | — | `implementada` | `aprovado` |
+| 2 | SPEC-002 | Gerenciar categorias de aprendizagem | SPEC-001 | `implementada` | `aprovado` |
+| 3 | SPEC-003 | Publicar trilha pré-definida com etapas ordenadas | SPEC-002 | `implementada` | `aprovado` |
+| 4 | SPEC-004 | Acompanhar trilha pré-definida | SPEC-001, SPEC-003 | `implementada` | `aprovado` |
+| 5 | SPEC-005 | Tratar impacto da remoção de etapa em uso | SPEC-003, SPEC-004 | `implementada` | `aprovado` |
+| 6 | SPEC-006 | Criar trilha personalizada com agente LLM | SPEC-002, SPEC-004 | `implementada` | `aprovado` |
+| 7 | SPEC-007 | Conversar com o agente LLM sobre a trilha | SPEC-004, SPEC-006 | `implementada` | `aprovado` |
+| 8 | SPEC-008 | Gerenciar usuários | SPEC-001 | `implementada` | `aprovado` |
+| 9 | SPEC-009 | Consultar progresso dos alunos | SPEC-004, SPEC-008 | `implementada` | `aprovado` |
 | — | — | Motor de recomendação da visão (OPEN-17) | — | `fora de escopo` | `não se aplica` |
 
 ```
@@ -65,13 +90,14 @@ SPEC-001 Identidade
       → SPEC-004 Acompanhar trilha pré-definida
         → SPEC-005 Integridade na remoção de etapa em uso
         → SPEC-006 Trilha personalizada (LLM)  →  SPEC-007 Conversa
+        → SPEC-008 Gerenciar usuários  →  SPEC-009 Consultar progresso dos alunos
 ```
 
 ---
 
 # SPEC-001 — Cadastrar, autenticar e autorizar por perfil
 
-**Status:** `aprovada`  
+**Status:** `implementada`  
 **Layout:** `aprovado`
 
 ## 1. Identificação
@@ -109,14 +135,14 @@ SPEC-001 Identidade
 **Fora do escopo**
 
 - Catálogo, progresso, LLM (SPECs seguintes).
-- Promoção de aluno a administrador; conta que acumula os dois perfis.
+- Conta que acumula os dois perfis (RB14). Gestão administrativa de contas: SPEC-008.
 - Provedor de identidade externo; política numérica de comprimento de senha (não foi decidida).
 - Motor de recomendação (OPEN-17).
 - Tela para consultar logs (RNF09 grava na API; não é RF nem entidade).
 
 ## Telas e evidência de layout
 
-**Gate:** Layout `aprovado` em 2026-09-30. Implementação desta Spec **liberada**. Specs seguintes continuam bloqueadas até o próprio layout.
+**Gate:** Layout `aprovado` em 2026-09-30. Implementação `implementada` em 2026-10-08.
 
 Toolkit (já decidido, não é o desenho): Next.js App Router, Tailwind CSS, shadcn/ui. Marca e cores: [`identidade-visual.md`](identidade-visual.md) (RNF10), identidade **aprovada**.
 
@@ -260,8 +286,8 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da §12 aprovad
 
 # SPEC-002 — Gerenciar categorias de aprendizagem
 
-**Status:** `aprovada`  
-**Layout:** `pendente`
+**Status:** `implementada`  
+**Layout:** `aprovado`
 
 ## 1. Identificação
 
@@ -293,15 +319,15 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da §12 aprovad
 
 ## Telas e evidência de layout
 
-**Gate:** com Layout `pendente`, **não** implementar esta Spec.
+**Gate:** Layout `aprovado` em 2026-10-01. Implementação `implementada` em 2026-10-08.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Lista de categorias (admin) | `docs/layout/spec-002-lista.*` | [ ] | [ ] | — | — |
-| Formulário criar/editar categoria | `docs/layout/spec-002-formulario.*` | [ ] | [ ] | — | — |
-| Recusa de remoção (categoria em uso / sentinela) | `docs/layout/spec-002-recusa.*` | [ ] | [ ] | — | — |
+| Lista de categorias (admin) | [`spec-002.html#lista`](layout/spec-002.html#lista) | [x] | [x] | humano | 2026-10-01 |
+| Formulário criar/editar categoria | [`#criar`](layout/spec-002.html#criar) · [`#editar`](layout/spec-002.html#editar) | [x] | [x] | humano | 2026-10-01 |
+| Recusa de remoção (categoria em uso / sentinela) | [`#recusa-uso`](layout/spec-002.html#recusa-uso) · [`#recusa-sentinela`](layout/spec-002.html#recusa-sentinela) | [x] | [x] | humano | 2026-10-01 |
 
-Reutiliza a casca admin aprovada na SPEC-001. Checklist RNF01/RNF04/RNF08. Ao concluir, Layout → `aprovado`.
+Protótipo: [`docs/layout/spec-002.html`](layout/spec-002.html). Reutiliza a casca admin da SPEC-001 e a paleta RNF10. Layout desta Spec: `aprovado`.
 
 ## 4. Dependências
 
@@ -382,8 +408,8 @@ AC-002-* e INV-002-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-003 — Publicar trilha pré-definida com etapas ordenadas
 
-**Status:** `aprovada`  
-**Layout:** `pendente`
+**Status:** `implementada`  
+**Layout:** `aprovado`
 
 ## 1. Identificação
 
@@ -415,16 +441,16 @@ AC-002-* e INV-002-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ## Telas e evidência de layout
 
-**Gate:** com Layout `pendente`, **não** implementar esta Spec.
+**Gate:** Layout `aprovado` em 2026-10-01. Implementação `implementada` em 2026-10-08.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Lista de trilhas pré-definidas (admin) | `docs/layout/spec-003-lista.*` | [ ] | [ ] | — | — |
-| Formulário de trilha + etapas ordenadas | `docs/layout/spec-003-formulario.*` | [ ] | [ ] | — | — |
-| Reordenar etapas | `docs/layout/spec-003-ordem.*` | [ ] | [ ] | — | — |
-| Recusa: trilha incompleta ou última etapa | `docs/layout/spec-003-recusa.*` | [ ] | [ ] | — | — |
+| Lista de trilhas pré-definidas (admin) | [`spec-003.html#lista`](layout/spec-003.html#lista) | [x] | [x] | humano | 2026-10-01 |
+| Formulário de trilha + etapas ordenadas | [`#criar`](layout/spec-003.html#criar) · [`#editar`](layout/spec-003.html#editar) | [x] | [x] | humano | 2026-10-01 |
+| Reordenar etapas | [`spec-003.html#ordem`](layout/spec-003.html#ordem) | [x] | [x] | humano | 2026-10-01 |
+| Recusa: trilha incompleta ou última etapa | [`#recusa-incompleta`](layout/spec-003.html#recusa-incompleta) · [`#recusa-ultima`](layout/spec-003.html#recusa-ultima) | [x] | [x] | humano | 2026-10-01 |
 
-Reutiliza a casca admin da SPEC-001. Ao concluir, Layout → `aprovado`.
+Protótipo: [`docs/layout/spec-003.html`](layout/spec-003.html). Reutiliza a casca admin da SPEC-001 e a paleta RNF10. Layout desta Spec: `aprovado`.
 
 ## 4. Dependências
 
@@ -510,8 +536,8 @@ AC-003-* e INV-003-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-004 — Acompanhar trilha pré-definida
 
-**Status:** `aprovada`  
-**Layout:** `pendente`
+**Status:** `implementada`  
+**Layout:** `aprovado`
 
 ## 1. Identificação
 
@@ -543,18 +569,18 @@ AC-003-* e INV-003-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ## Telas e evidência de layout
 
-**Gate:** com Layout `pendente`, **não** implementar esta Spec.
+**Gate:** Layout `aprovado` em 2026-10-01. Implementação `implementada` em 2026-10-08.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Catálogo por categoria (anônimo e autenticado) | `docs/layout/spec-004-catalogo.*` | [ ] | [ ] | — | — |
-| Detalhe da trilha (etapas Markdown, sequência) | `docs/layout/spec-004-trilha.*` | [ ] | [ ] | — | — |
-| Progresso, percentual e histórico | `docs/layout/spec-004-progresso.*` | [ ] | [ ] | — | — |
-| Marcar etapa concluída | `docs/layout/spec-004-conclusao.*` | [ ] | [ ] | — | — |
-| Catálogo indisponível (E4) | `docs/layout/spec-004-indisponivel.*` | [ ] | [ ] | — | — |
-| Recusa anônimo ao escolher trilha (conduz ao login) | `docs/layout/spec-004-recusa.*` | [ ] | [ ] | — | — |
+| Catálogo por categoria (anônimo e autenticado) | [`spec-004.html#catalogo-anonimo`](layout/spec-004.html#catalogo-anonimo) · [`#catalogo`](layout/spec-004.html#catalogo) | [x] | [x] | humano | 2026-10-01 |
+| Detalhe da trilha (etapas Markdown, sequência) | [`spec-004.html#trilha`](layout/spec-004.html#trilha) | [x] | [x] | humano | 2026-10-01 |
+| Progresso, percentual e histórico | [`spec-004.html#progresso`](layout/spec-004.html#progresso) | [x] | [x] | humano | 2026-10-01 |
+| Marcar etapa concluída | [`spec-004.html#conclusao`](layout/spec-004.html#conclusao) | [x] | [x] | humano | 2026-10-01 |
+| Catálogo indisponível (E4) | [`spec-004.html#indisponivel`](layout/spec-004.html#indisponivel) | [x] | [x] | humano | 2026-10-01 |
+| Recusa anônimo ao escolher trilha (conduz ao login) | [`spec-004.html#recusa`](layout/spec-004.html#recusa) | [x] | [x] | humano | 2026-10-01 |
 
-Personas Lucas (celular e desktop). RNF04: localizar trilha, etapa e progresso sem conhecimento técnico. Ao concluir, Layout → `aprovado`.
+Protótipo: [`docs/layout/spec-004.html`](layout/spec-004.html). Casca do aluno da SPEC-001 e paleta RNF10. Layout desta Spec: `aprovado`.
 
 ## 4. Dependências
 
@@ -643,8 +669,8 @@ AC-004-* e INV-004-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-005 — Tratar impacto da remoção de etapa em uso
 
-**Status:** `aprovada`  
-**Layout:** `pendente`
+**Status:** `implementada`  
+**Layout:** `aprovado`
 
 ## 1. Identificação
 
@@ -676,13 +702,13 @@ AC-004-* e INV-004-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ## Telas e evidência de layout
 
-**Gate:** com Layout `pendente`, **não** implementar esta Spec.
+**Gate:** Layout `aprovado` em 2026-10-01. Implementação `implementada` em 2026-10-08.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Recusa de remoção de etapa em uso (impacto visível ao admin) | `docs/layout/spec-005-recusa.*` | [ ] | [ ] | — | — |
+| Recusa de remoção de etapa em uso (impacto visível ao admin) | [`spec-005.html#recusa`](layout/spec-005.html#recusa) · [`spec-005-recusa.html`](layout/spec-005-recusa.html) | [x] | [x] | humano | 2026-10-01 |
 
-Pode ser estado da UI da SPEC-003; ainda assim precisa evidência **desta** recusa aprovada. Ao concluir, Layout → `aprovado`.
+Protótipo: [`docs/layout/spec-005.html`](layout/spec-005.html). Telas extras: vários alunos (`#recusa-varios`) e última etapa com progresso (`#recusa-ultima`). Estado da UI da SPEC-003. **Não** há confirmação que apague etapa em uso. Layout desta Spec: `aprovado`.
 
 ## 4. Dependências
 
@@ -755,8 +781,8 @@ AC-005-* e INV-005-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 # SPEC-006 — Criar trilha personalizada com agente LLM
 
-**Status:** `aprovada`  
-**Layout:** `pendente`
+**Status:** `implementada`  
+**Layout:** `aprovado`
 
 ## 1. Identificação
 
@@ -788,16 +814,16 @@ AC-005-* e INV-005-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ## Telas e evidência de layout
 
-**Gate:** com Layout `pendente`, **não** implementar esta Spec.
+**Gate:** Layout `aprovado` em 2026-10-02. Implementação `implementada` em 2026-10-08.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Pedido de trilha personalizada (objetivo em linguagem natural) | `docs/layout/spec-006-pedido.*` | [ ] | [ ] | — | — |
-| Espera / timeout / falha da geração | `docs/layout/spec-006-espera.*` | [ ] | [ ] | — | — |
-| Interruptor LLM (admin) | `docs/layout/spec-006-interruptor.*` | [ ] | [ ] | — | — |
-| Resultado: trilha personalizada (reusa SPEC-004 se o detalhe for o mesmo) | `docs/layout/spec-006-resultado.*` | [ ] | [ ] | — | — |
+| Pedido de trilha personalizada (objetivo em linguagem natural) | [`spec-006.html#pedido`](layout/spec-006.html#pedido) · [`spec-006-pedido.html`](layout/spec-006-pedido.html) | [x] | [x] | humano | 2026-10-02 |
+| Espera / timeout / falha da geração | [`spec-006.html#espera`](layout/spec-006.html#espera) · [`#timeout`](layout/spec-006.html#timeout) · [`#json`](layout/spec-006.html#json) | [x] | [x] | humano | 2026-10-02 |
+| Interruptor LLM (admin) | [`spec-006.html#interruptor`](layout/spec-006.html#interruptor) · [`spec-006-interruptor.html`](layout/spec-006-interruptor.html) | [x] | [x] | humano | 2026-10-02 |
+| Resultado: trilha personalizada (reusa SPEC-004 se o detalhe for o mesmo) | [`spec-006.html#resultado`](layout/spec-006.html#resultado) · [`spec-006-resultado.html`](layout/spec-006-resultado.html) | [x] | [x] | humano | 2026-10-02 |
 
-Ao concluir, Layout → `aprovado`.
+Protótipo (seletor de tela + viewport): [`docs/layout/spec-006.html`](layout/spec-006.html). Telas extras: LLM desligado (`#off`), E4 (`#e4`), recusa anônimo (`#recusa-anonimo`). **Não** há chave Gemini na UI. Layout desta Spec: `aprovado`.
 
 ## 4. Dependências
 
@@ -892,7 +918,7 @@ RNF02: Gemini + interruptor + 60 s. RNF03: listagem/progresso continuam &lt; 2 s
 
 ## 13. Questões em aberto
 
-Nenhuma OPEN da entrevista. Modelo Gemini concreto (nome da versão da API) pode ser configuração do adaptador, sem nova entidade de domínio.
+Nenhuma OPEN da entrevista. Modelo Gemini concreto (nome da versão da API) pode ser configuração do adaptador, sem nova entidade de domínio. Laboratório 2026-10-02: `GEMINI_MODEL=gemini-3.5-flash-lite` (a chave fica só em `apps/api/.env`).
 
 ## 14. Definition of Done
 
@@ -902,8 +928,8 @@ AC-006-* e INV-006-* atendidos; testes da §12 aprovados; RNFs verificados; chav
 
 # SPEC-007 — Conversar com o agente LLM sobre a trilha
 
-**Status:** `aprovada`  
-**Layout:** `pendente`
+**Status:** `implementada`  
+**Layout:** `aprovado`
 
 ## 1. Identificação
 
@@ -935,15 +961,15 @@ AC-006-* e INV-006-* atendidos; testes da §12 aprovados; RNFs verificados; chav
 
 ## Telas e evidência de layout
 
-**Gate:** com Layout `pendente`, **não** implementar esta Spec.
+**Gate:** Layout `aprovado` em 2026-10-02. Implementação `implementada` em 2026-10-08.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Conversa referida à trilha em andamento | `docs/layout/spec-007-chat.*` | [ ] | [ ] | — | — |
-| Recusa sem progresso ativo | `docs/layout/spec-007-recusa.*` | [ ] | [ ] | — | — |
-| Falha: timeout ou LLM desligado | `docs/layout/spec-007-falha.*` | [ ] | [ ] | — | — |
+| Conversa referida à trilha em andamento | [`spec-007.html#chat`](layout/spec-007.html#chat) · [`spec-007-chat.html`](layout/spec-007-chat.html) · entrada [`#entrada`](layout/spec-007.html#entrada) · espera [`#espera`](layout/spec-007.html#espera) | [x] | [x] | humano | 2026-10-02 |
+| Recusa sem progresso ativo | [`spec-007.html#recusa`](layout/spec-007.html#recusa) · [`spec-007-recusa.html`](layout/spec-007-recusa.html) | [x] | [x] | humano | 2026-10-02 |
+| Falha: timeout ou LLM desligado | [`spec-007.html#timeout`](layout/spec-007.html#timeout) · [`#off`](layout/spec-007.html#off) · [`spec-007-falha.html`](layout/spec-007-falha.html) | [x] | [x] | humano | 2026-10-02 |
 
-Ao concluir, Layout → `aprovado`.
+Protótipo (seletor de tela + viewport): [`docs/layout/spec-007.html`](layout/spec-007.html). Telas extras: recusa anônimo (`#recusa-anonimo`), recusa administrador (`#recusa-admin`). **Não** há chave Gemini na UI. Layout desta Spec: `aprovado`.
 
 ## 4. Dependências
 
@@ -1017,9 +1043,256 @@ AC-007-* e INV-007-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ---
 
+# SPEC-008 — Gerenciar usuários
+
+**Status:** `implementada`  
+**Layout:** `aprovado`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-008 |
+| **Nome** | Gerenciar usuários |
+| **Objetivo** | Permitir que o administrador cadastre, consulte, altere e remova contas de aluno e de administrador, com e-mail único, senha em hash, XOR de perfil, preservação do último administrador e recusa de remoção ou promoção de aluno com `Progresso`. |
+| **Valor** | Mariana mantém quem acessa a plataforma sem depender só do seed e do cadastro público. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF14 |
+| **RB** | RB14, RB15, RB16, RB17 |
+| **RNF** | RNF05, RNF06, RNF03, RNF04, RNF07, RNF09 |
+| **UC / fluxo** | UC03 |
+| **Entidades** | `Usuario`, `Aluno`, `Administrador` |
+| **Drivers** | AD-RF02, AD-QA02 |
+| **ADRs** | ADR-004 |
+| **OPEN fechados** | OPEN-24; reusa OPEN-10, OPEN-11, OPEN-12 |
+
+## 3. Escopo
+
+**Incluído:** CRUD administrativo de contas (aluno e administrador) na API Nest; alteração de nome, e-mail, senha e perfil; recusas de e-mail duplicado, último administrador, auto-remoção e aluno com progresso; UI `/usuarios`.
+
+**Fora do escopo:** cadastro público (SPEC-001 / RF01); provedor de identidade externo; impersonação; consulta de progresso (SPEC-009); tela de logs.
+
+## Telas e evidência de layout
+
+**Gate:** Layout `aprovado` em 2026-10-08. Implementação `implementada` em 2026-10-08.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Lista de usuários | [`spec-008.html#lista`](layout/spec-008.html#lista) | [x] | [x] | humano | 2026-10-08 |
+| Formulário criar/editar | [`#criar`](layout/spec-008.html#criar) · [`#editar`](layout/spec-008.html#editar) | [x] | [x] | humano | 2026-10-08 |
+| Recusa (último admin / aluno com progresso) | [`#recusa-ultimo`](layout/spec-008.html#recusa-ultimo) · [`#recusa-progresso`](layout/spec-008.html#recusa-progresso) | [x] | [x] | humano | 2026-10-08 |
+
+Protótipo: [`docs/layout/spec-008.html`](layout/spec-008.html). Reutiliza a casca admin da SPEC-001 e a paleta RNF10.
+
+## 4. Dependências
+
+SPEC-001 (administrador autenticado JWT, seed do primeiro admin, XOR).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** administrador autenticado; existe ao menos um administrador.
+
+**Fluxo principal:** administrador cadastra conta com nome, e-mail, senha e perfil (`aluno` ou `administrador`); sistema persiste com hash.
+
+**Alternativos:** listar; alterar nome/e-mail/senha/perfil; remover aluno sem progresso ou administrador que não seja o último nem a própria sessão.
+
+**Exceções:** aluno/anônimo recusado; e-mail duplicado; último administrador; auto-remoção; aluno com `Progresso` (remoção ou promoção).
+
+**Pós-condição de sucesso:** conta persistida XOR; permanece ≥1 administrador.  
+**Falha:** contas inalteradas.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-008-01 | Só `Administrador` cria, altera ou remove contas. |
+| INV-008-02 | Toda conta é somente aluno ou somente administrador. |
+| INV-008-03 | Não se remove o último administrador nem a própria conta. |
+| INV-008-04 | Não se remove aluno com `Progresso`; não se altera o perfil desse aluno para administrador. |
+| INV-008-05 | Senha nunca retorna na API; armazenamento é hash. |
+
+## 7. Modelo de domínio envolvido
+
+- `Usuario`: `nome`, `email`, `senha` (hash), especialização XOR.
+- `Aluno` 1 : 0..* `Progresso` (bloqueia remoção e promoção).
+
+## 8. Impacto arquitetural
+
+Módulo de usuários na API Nest, autorização ADR-004. UI administrativa consome o contrato. Sem entidade nova no modelo conceitual.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Sucesso | Erros |
+|---|---|---|---|
+| Listar contas | — | lista sem senha | não autenticado / não admin |
+| Criar conta | nome, e-mail, senha, perfil | conta persistida | e-mail duplicado; não admin |
+| Alterar | id, nome/e-mail/senha/perfil | persistido | não encontrado; último admin; aluno com progresso promovido |
+| Remover | id | removida | último admin; auto-remoção; aluno com progresso |
+
+## 10. RNFs aplicáveis
+
+RNF05/RNF06 recusa na API; RNF03 CRUD sem LLM &lt; 2 s; RNF09 log sem senha/hash/JWT.
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-008-01 | Admin autenticado | Cadastra aluno ou administrador | Conta persistida com perfil XOR; senha em hash |
+| AC-008-02 | Aluno autenticado | Tenta listar ou criar conta | API recusa |
+| AC-008-03 | E-mail já cadastrado | Admin tenta criar | Recusa; nenhuma conta nova |
+| AC-008-04 | Único administrador | Tenta remover ou mudar o perfil para aluno | Recusa; conta intacta |
+| AC-008-05 | Admin autenticado | Tenta remover a própria conta | Recusa |
+| AC-008-06 | Aluno com progresso | Admin tenta remover ou promover | Recusa; progresso intacto |
+| AC-008-07 | Aluno sem progresso | Admin remove | Conta deixa de existir |
+
+## 12. Casos de teste derivados
+
+1. CRUD feliz de aluno e de administrador pelo admin.
+2. Recusa por aluno e anônimo.
+3. Recusa de e-mail duplicado.
+4. Recusa do último administrador e da auto-remoção.
+5. Recusa de aluno com progresso.
+6. Resposta sem senha; listagem &lt; 2 s.
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+AC-008-* e INV-008-* atendidos; testes da §12 aprovados; RNFs verificados; layout `aprovado` antes do código.
+
+---
+
+# SPEC-009 — Consultar progresso dos alunos
+
+**Status:** `implementada`  
+**Layout:** `aprovado`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-009 |
+| **Nome** | Consultar progresso dos alunos |
+| **Objetivo** | Permitir que o administrador consulte, somente leitura, quais trilhas cada aluno acompanha e o percentual derivado, sem executar o UC01. |
+| **Valor** | Mariana vê o andamento da turma sem marcar conclusão nem conversar no lugar do aluno. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF15; reutiliza RF06 |
+| **RB** | RB04, RB06, RB14, RB18 |
+| **RNF** | RNF05, RNF06, RNF03, RNF04, RNF07, RNF09 |
+| **UC / fluxo** | UC04 |
+| **Entidades** | `Aluno`, `Progresso`, `Trilha`, `Etapa`, `ConclusaoEtapa` |
+| **Drivers** | AD-RF02, AD-RF03, AD-QA02 |
+| **ADRs** | ADR-004 |
+| **OPEN fechados** | OPEN-25; não reabre OPEN-21 |
+
+## 3. Escopo
+
+**Incluído:** listagem administrativa de alunos com resumo de trilhas e percentual; detalhe somente leitura (etapas concluídas / pendentes, próxima etapa); recusa de escrita (conclusão, escolha de trilha, conversa) pelo administrador; UI `/acompanhamentos`.
+
+**Fora do escopo:** gestão de contas (SPEC-008); motor de recomendação; o administrador estudar como aluno; conversa (SPEC-007).
+
+## Telas e evidência de layout
+
+**Gate:** Layout `aprovado` em 2026-10-08. Implementação `implementada` em 2026-10-08.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Lista de alunos e andamento | [`spec-009.html#lista`](layout/spec-009.html#lista) | [x] | [x] | humano | 2026-10-08 |
+| Detalhe do aluno | [`#aluno`](layout/spec-009.html#aluno) | [x] | [x] | humano | 2026-10-08 |
+| Detalhe de uma trilha | [`#trilha`](layout/spec-009.html#trilha) | [x] | [x] | humano | 2026-10-08 |
+| Aluno sem progresso | [`#vazio`](layout/spec-009.html#vazio) | [x] | [x] | humano | 2026-10-08 |
+
+Protótipo: [`docs/layout/spec-009.html`](layout/spec-009.html). Reutiliza a casca admin da SPEC-001 e a paleta RNF10. Sem botão de concluir etapa.
+
+## 4. Dependências
+
+SPEC-004 (progresso individual e percentual derivado); SPEC-008 (contas listáveis).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** administrador autenticado.
+
+**Fluxo principal:** administrador abre a lista de alunos com trilhas e percentual; abre um aluno; vê etapas concluídas e pendentes.
+
+**Alternativos:** aluno sem progresso; só a lista.
+
+**Exceções:** aluno/anônimo recusado; pedido de conclusão, escolha de trilha ou conversa pelo administrador recusado.
+
+**Pós-condição de sucesso:** visualização; nenhum `Progresso` nem `ConclusaoEtapa` alterado.  
+**Falha:** estado inalterado.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-009-01 | Só `Administrador` consulta o andamento alheio. |
+| INV-009-02 | Percentual é o mesmo derivado da SPEC-004 (conclusões ÷ etapas). |
+| INV-009-03 | A consulta não cria, altera nem remove `Progresso` nem `ConclusaoEtapa`. |
+| INV-009-04 | O administrador não executa o UC01. |
+
+## 7. Modelo de domínio envolvido
+
+- `Aluno` realiza `Progresso`; `Progresso` acompanha `Trilha`; `/percentualProgresso` derivado.
+- Nenhuma associação estrutural nova do administrador.
+
+## 8. Impacto arquitetural
+
+Leitura no módulo de progresso, autorização ADR-004, perfil administrador. Sem adaptador LLM.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Sucesso | Erros |
+|---|---|---|---|
+| Listar acompanhamentos | — | alunos com resumo de trilhas e percentual | não autenticado / não admin |
+| Detalhe do aluno | id do aluno | progressos daquele aluno | não encontrado; não admin |
+| Detalhe de um progresso | id do aluno + id do progresso | etapas com concluída sim/não | não encontrado; não admin |
+
+## 10. RNFs aplicáveis
+
+RNF05/RNF06 recusa na API; RNF03 listagem &lt; 2 s; RNF09 log de consulta sem senha.
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-009-01 | Admin autenticado; aluno com progresso | Lista acompanhamentos | Vê o aluno, a trilha e o percentual derivado |
+| AC-009-02 | Admin autenticado; aluno sem progresso | Lista ou abre o aluno | Vê o aluno sem trilhas; nada é criado |
+| AC-009-03 | Aluno autenticado | Tenta a consulta administrativa | API recusa |
+| AC-009-04 | Admin autenticado | Tenta marcar conclusão ou escolher trilha | API recusa; fatos intactos |
+| AC-009-05 | Dois alunos com progressos distintos | Admin abre o detalhe de um | Vê só o progresso daquele aluno (RB04) |
+
+## 12. Casos de teste derivados
+
+1. Lista com percentual igual ao do aluno na SPEC-004.
+2. Aluno sem progresso; nenhuma linha de `Progresso` nova.
+3. Recusa por aluno e anônimo.
+4. Recusa de POST de conclusão pelo admin.
+5. Isolamento entre alunos.
+6. Listagem &lt; 2 s.
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+AC-009-* e INV-009-* atendidos; testes da §12 aprovados; RNFs verificados; layout `aprovado` antes do código.
+
+---
+
 ## Definition of Done do conjunto
 
-O conjunto SPEC-001 … SPEC-007 está **aprovado** (lista e ordem, 2026-09-30). Layout da SPEC-001: `aprovado` (2026-09-30). Layout das SPEC-002 … SPEC-007: `pendente`.
+O conjunto SPEC-001 … SPEC-009 está **implementado** (001–007 em 2026-10-08; 008–009 pedidas e implementadas em 2026-10-08). Layout de todas as Specs: `aprovado`.
 
 Ordem obrigatória por Spec:
 

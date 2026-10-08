@@ -1,0 +1,15 @@
+{
+  "name": "estudaai",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "api": "npm run start:dev -w apps/api",
+    "web": "npm run dev -w apps/web",
+    "test": "npm test -w apps/api",
+    "seed": "npm run seed -w apps/api",
+    "build": "npm run build -w apps/api && npm run build -w apps/web"
+  }
+}

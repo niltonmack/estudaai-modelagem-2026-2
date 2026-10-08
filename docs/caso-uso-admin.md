@@ -46,6 +46,8 @@ flowchart TB
 
 Não há ator secundário. A gestão do catálogo é restrição de permissão do `Administrador`, não uma associação estrutural persistida no modelo conceitual.
 
+Casos de uso administrativos adicionais (pedido humano 2026-10-08): [`caso-uso-usuarios.md`](caso-uso-usuarios.md) (UC03) e [`caso-uso-acompanhamento-admin.md`](caso-uso-acompanhamento-admin.md) (UC04). Não fazem parte do UC02.
+
 ## 3. Caso de uso textual
 
 ### Identificação
@@ -66,7 +68,7 @@ Permitir que o administrador cadastre, consulte, altere e remova categorias, tri
 
 ### Pré-condições
 
-1. Existe uma conta de `Usuario` com perfil de administrador, criada por **seed/script na implantação**. Não há promoção de aluno nem cadastro administrativo distinto nesta versão.
+1. Existe uma conta de `Usuario` com perfil de administrador, criada por **seed/script na implantação**. Contas administrativas adicionais nascem no UC03 (RF14).
 2. Existe (ou será criada) a categoria sentinela **Personalizada**, exigida por trilhas geradas via LLM.
 3. O administrador pretende publicar ou revisar conteúdo curado do catálogo (RB07) ou o interruptor do LLM (RF13).
 

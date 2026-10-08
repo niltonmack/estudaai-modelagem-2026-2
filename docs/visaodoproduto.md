@@ -28,6 +28,11 @@ A “recomendação inteligente” e a “adaptação ao perfil e ritmo” **nã
    - Customização baseada nas necessidades específicas do estudante
    - Flexibilidade e personalização do percurso de aprendizagem
 
+4. **Administração da plataforma**
+   - Catálogo curado (categorias, trilhas pré-definidas e etapas)
+   - Gestão de contas de alunos e de administradores
+   - Consulta do andamento dos alunos (quais trilhas e percentual), sem o administrador estudar no lugar do aluno
+
 ### Público-Alvo
 
 - Estudantes que desejam otimizar seu tempo de estudo
