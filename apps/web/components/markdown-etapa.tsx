@@ -1,8 +1,23 @@
 "use client";
 
+import katex from "katex";
 import { useState } from "react";
 import { Lightbox } from "@/components/lightbox";
+import { formulaExibida, texComVirgulaDecimal } from "@/lib/formula";
 import { idVideoYouTube } from "@/lib/youtube";
+
+function Formula({ tex, display }: { tex: string; display: boolean }) {
+  const html = katex.renderToString(texComVirgulaDecimal(tex), {
+    displayMode: display,
+    throwOnError: false,
+    strict: "ignore",
+    trust: false
+  });
+  if (display) {
+    return <div className="overflow-x-auto py-1" dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+}
 
 function Inline({
   texto,
@@ -11,10 +26,13 @@ function Inline({
   texto: string;
   aoVideo: (id: string, titulo: string) => void;
 }) {
-  const partes = texto.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
+  const partes = texto.split(/(\$[^$\n]+\$|\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
   return (
     <>
       {partes.map((parte, i) => {
+        if (parte.startsWith("$") && parte.endsWith("$") && parte.length > 2) {
+          return <Formula key={i} tex={parte.slice(1, -1)} display={false} />;
+        }
         if (parte.startsWith("**") && parte.endsWith("**")) {
           return (
             <strong key={i} className="font-semibold text-brand-ink">
@@ -62,6 +80,7 @@ type Bloco =
   | { tipo: "lista"; itens: string[] }
   | { tipo: "numerada"; itens: string[] }
   | { tipo: "tabela"; linhas: string[][] }
+  | { tipo: "formula"; texto: string }
   | { tipo: "paragrafo"; linhas: string[] };
 
 function parsear(texto: string): Bloco[] {
@@ -83,6 +102,23 @@ function parsear(texto: string): Bloco[] {
       }
       i += 1;
       blocos.push({ tipo: "codigo", texto: codigo.join("\n") });
+      continue;
+    }
+    const exibida = formulaExibida(linha);
+    if (exibida !== null) {
+      blocos.push({ tipo: "formula", texto: exibida });
+      i += 1;
+      continue;
+    }
+    if (linha.trim() === "$$") {
+      const formula: string[] = [];
+      i += 1;
+      while (i < linhas.length && linhas[i].trim() !== "$$") {
+        formula.push(linhas[i]);
+        i += 1;
+      }
+      i += 1;
+      blocos.push({ tipo: "formula", texto: formula.join("\n").trim() });
       continue;
     }
     const titulo = linha.match(/^(#{1,4})\s+(.*)$/);
@@ -132,7 +168,9 @@ function parsear(texto: string): Bloco[] {
       !linhas[i].trim().startsWith("```") &&
       !/^(#{1,4})\s+/.test(linhas[i]) &&
       !linhas[i].trim().startsWith("- ") &&
-      !/^\d+\.\s+/.test(linhas[i].trim())
+      !/^\d+\.\s+/.test(linhas[i].trim()) &&
+      formulaExibida(linhas[i]) === null &&
+      linhas[i].trim() !== "$$"
     ) {
       paragrafo.push(linhas[i]);
       i += 1;
@@ -184,6 +222,9 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
               ))}
             </ol>
           );
+        }
+        if (bloco.tipo === "formula") {
+          return <Formula key={i} tex={bloco.texto} display />;
         }
         if (bloco.tipo === "tabela") {
           return (
