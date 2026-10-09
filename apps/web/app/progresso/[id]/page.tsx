@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Alerta } from "@/components/auth-ui";
 import { ConversaPainel } from "@/components/conversa-painel";
@@ -32,11 +32,15 @@ export default function ProgressoDetalhePage() {
   const params = useParams<{ id: string }>();
   const [sessao, setSessao] = useState<Sessao | null>(null);
   const [detalhe, setDetalhe] = useState<ProgressoDetalhe | null>(null);
-  const [alerta, setAlerta] = useState<{ texto: string; tom: "red" | "green" } | null>(null);
+  const [alerta, setAlerta] = useState<{ texto: string; tom: "red" | "green" | "amber" } | null>(null);
   const [marcando, setMarcando] = useState(false);
   const [abertas, setAbertas] = useState<Record<string, boolean>>({});
   const [resposta, setResposta] = useState<{ titulo: string; texto: string } | null>(null);
   const [conversaAberta, setConversaAberta] = useState(false);
+  const [ajusteAberto, setAjusteAberto] = useState(false);
+  const [promptAjuste, setPromptAjuste] = useState("");
+  const [ajustando, setAjustando] = useState(false);
+  const [disponibilizando, setDisponibilizando] = useState(false);
 
   useEffect(() => {
     const atual = lerSessao();
@@ -61,7 +65,7 @@ export default function ProgressoDetalhePage() {
     if (new URLSearchParams(window.location.search).get("criada") === "1") {
       setAlerta({
         texto:
-          "Trilha personalizada criada a partir do seu objetivo. O acompanhamento é o mesmo das demais trilhas. O catálogo não foi alterado.",
+          "Trilha personalizada criada a partir do seu objetivo. Ela fica só com você até você deixá-la disponível para todos.",
         tom: "green"
       });
     }
@@ -97,6 +101,76 @@ export default function ProgressoDetalhePage() {
     });
   }
 
+  async function abrirAjuste() {
+    if (!sessao) return;
+    setAlerta(null);
+    const { ok, dados } = await chamarApi<{ textoObjetivo?: string } & ErroApi>(
+      `/solicitacoes-trilha/${params.id}`,
+      { token: sessao.accessToken }
+    );
+    if (!ok) {
+      setAlerta({ texto: mensagemErro(dados, "Não foi possível abrir o ajuste. A trilha não foi alterada."), tom: "red" });
+      return;
+    }
+    setPromptAjuste(dados.textoObjetivo ?? "");
+    setAjusteAberto(true);
+  }
+
+  async function disponibilizar() {
+    if (!sessao || !detalhe) return;
+    setDisponibilizando(true);
+    setAlerta(null);
+    const { ok, dados } = await chamarApi<ProgressoDetalhe & ErroApi>(
+      `/solicitacoes-trilha/trilha/${detalhe.trilha.id}/disponibilidade`,
+      {
+        method: "PATCH",
+        token: sessao.accessToken,
+        body: JSON.stringify({ disponivel: !detalhe.trilha.disponivel })
+      }
+    );
+    setDisponibilizando(false);
+    if (!ok || !("id" in dados) || !dados.id) {
+      setAlerta({ texto: mensagemErro(dados, "Não foi possível alterar a disponibilidade. A trilha permanece como estava."), tom: "red" });
+      return;
+    }
+    setDetalhe(dados);
+    setAlerta({
+      texto: dados.trilha.disponivel
+        ? "Esta trilha está disponível para todos. O seu progresso continua o mesmo."
+        : "A trilha saiu do catálogo. Quem já começou continua de onde parou.",
+      tom: "green"
+    });
+  }
+
+  async function ajustar(e: FormEvent) {
+    e.preventDefault();
+    if (!sessao) return;
+    setAjustando(true);
+    setAlerta({
+      texto: "Atualizando a trilha… Nada foi alterado ainda.",
+      tom: "amber"
+    });
+    const { ok, dados } = await chamarApi<ProgressoDetalhe & ErroApi>(`/solicitacoes-trilha/${params.id}`, {
+      method: "POST",
+      token: sessao.accessToken,
+      body: JSON.stringify({ textoObjetivo: promptAjuste })
+    });
+    setAjustando(false);
+    if (!ok || !("id" in dados) || !dados.id) {
+      setAlerta({
+        texto: mensagemErro(dados, "Não foi possível ajustar a trilha. A versão anterior permanece."),
+        tom: "red"
+      });
+      return;
+    }
+    setDetalhe(dados);
+    setAjusteAberto(false);
+    setAlerta({
+      texto: "Trilha atualizada. As etapas que permaneceram conservam a conclusão. As novas ainda não estão concluídas.",
+      tom: "green"
+    });
+  }
+
   if (!sessao) return null;
 
   return (
@@ -118,6 +192,16 @@ export default function ProgressoDetalhePage() {
             {detalhe.trilha.categoria.nome} · trilha {detalhe.trilha.tipo}
           </p>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">{detalhe.trilha.descricao}</p>
+          {detalhe.trilha.tipo === "personalizada" && detalhe.trilha.souAutor ? (
+            <p className="mt-2 max-w-xl text-sm text-slate-600">
+              {detalhe.trilha.disponivel
+                ? "Qualquer aluno encontra esta trilha e cursa o mesmo percurso. O progresso de cada um fica separado."
+                : "Enquanto estiver disponível, qualquer aluno encontra esta trilha e cursa o mesmo percurso. O progresso de cada um fica separado."}
+            </p>
+          ) : null}
+          {detalhe.trilha.autorNome && !detalhe.trilha.souAutor ? (
+            <p className="mt-2 text-sm text-slate-500">Por {detalhe.trilha.autorNome}</p>
+          ) : null}
           <div className="mt-6 rounded-lg border border-slate-200 bg-white p-4">
             <BarraProgresso feitos={detalhe.etapasConcluidas} total={detalhe.totalEtapas} />
           </div>
@@ -130,7 +214,73 @@ export default function ProgressoDetalhePage() {
               >
                 Conversar sobre esta trilha
               </button>
+              {detalhe.trilha.tipo === "personalizada" && detalhe.trilha.souAutor ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => void abrirAjuste()}
+                    className="inline-flex items-center justify-center rounded-md border border-brand-trail px-3 py-2 text-sm font-medium text-brand-trail hover:bg-brand-mint"
+                  >
+                    Ajustar trilha
+                  </button>
+                  <button
+                    type="button"
+                    disabled={disponibilizando}
+                    onClick={() => void disponibilizar()}
+                    className="inline-flex items-center justify-center rounded-md border border-brand-trail px-3 py-2 text-sm font-medium text-brand-trail hover:bg-brand-mint disabled:opacity-60"
+                  >
+                    {detalhe.trilha.disponivel ? "Retirar a disponibilidade" : "Disponível para todos"}
+                  </button>
+                </>
+              ) : null}
             </div>
+          ) : null}
+          {ajusteAberto ? (
+            <form className="mt-4 rounded-lg border border-slate-200 bg-white p-4" onSubmit={(e) => void ajustar(e)}>
+              <h3 className="text-lg font-semibold">Ajustar trilha</h3>
+              <p className="mt-1 text-sm text-slate-600">
+                Reescreva o pedido. O agente devolve a trilha inteira e grava nesta mesma trilha.
+              </p>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Etapas atuais</p>
+              <ol className="mt-2 space-y-1 text-sm">
+                {detalhe.trilha.etapas.map((etapa) => (
+                  <li key={etapa.id}>
+                    {etapa.ordem}. {etapa.titulo}
+                    {etapa.concluida ? <span className="text-brand-trail"> · concluída</span> : null}
+                  </li>
+                ))}
+              </ol>
+              <label className="mt-4 block text-sm font-medium text-slate-700">
+                Prompt
+                <textarea
+                  name="textoObjetivo"
+                  rows={5}
+                  required
+                  disabled={ajustando}
+                  value={promptAjuste}
+                  onChange={(ev) => setPromptAjuste(ev.target.value)}
+                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-brand-trail focus:border-brand-trail focus:ring-2 disabled:bg-slate-50"
+                />
+              </label>
+              <p className="mt-2 text-xs text-slate-500">Pode levar até um minuto. Até a resposta completa, nada é alterado.</p>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <button
+                  type="submit"
+                  disabled={ajustando}
+                  className="inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark disabled:opacity-60"
+                >
+                  {ajustando ? "Atualizando…" : "Atualizar trilha"}
+                </button>
+                <button
+                  type="button"
+                  disabled={ajustando}
+                  onClick={() => setAjusteAberto(false)}
+                  className="inline-flex rounded-md border border-slate-300 px-3 py-2 text-sm"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
           ) : null}
           <div className="mt-6 space-y-3">
             {detalhe.trilha.etapas.map((etapa) => {

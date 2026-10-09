@@ -32,6 +32,11 @@ export type EventoAudit =
   | 'llm.geracao.timeout'
   | 'llm.geracao.json_invalido'
   | 'llm.geracao.persistencia_falhou'
+  | 'llm.ajuste.ok'
+  | 'llm.ajuste.recusada'
+  | 'llm.ajuste.timeout'
+  | 'llm.ajuste.json_invalido'
+  | 'llm.ajuste.persistencia_falhou'
   | 'llm.conversa.ok'
   | 'llm.conversa.recusada'
   | 'llm.conversa.timeout'
@@ -40,7 +45,14 @@ export type EventoAudit =
   | 'usuario.removido'
   | 'usuario.remocao_recusada'
   | 'usuario.alteracao_recusada'
-  | 'acompanhamento.consultado';
+  | 'acompanhamento.consultado'
+  | 'busca.ok'
+  | 'busca.falha'
+  | 'indice.upsert'
+  | 'indice.removido'
+  | 'indice.falha'
+  | 'trilha.disponibilizada'
+  | 'trilha.retirada';
 
 export type RegistroAudit = {
   timestamp: string;

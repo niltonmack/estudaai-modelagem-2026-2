@@ -20,6 +20,7 @@ import { Progresso } from './progresso.entity';
 type Ator = { userId: string; email?: string; perfil?: Perfil };
 
 const TIPO_PRE_DEFINIDA = 'pré-definida' as const;
+const TIPO_PERSONALIZADA = 'personalizada' as const;
 
 @Injectable()
 export class ProgressoService {
@@ -34,8 +35,11 @@ export class ProgressoService {
 
   async catalogoPublico(): Promise<CatalogoPublicoResposta> {
     const publicadas = await this.trilhas.find({
-      where: { tipo: TIPO_PRE_DEFINIDA, disponivel: true },
-      relations: ['categoria', 'etapas']
+      where: [
+        { tipo: TIPO_PRE_DEFINIDA, disponivel: true },
+        { tipo: TIPO_PERSONALIZADA, disponivel: true }
+      ],
+      relations: ['categoria', 'etapas', 'autor']
     });
     const porCategoria = new Map<
       string,
@@ -53,7 +57,8 @@ export class ProgressoService {
         id: trilha.id,
         titulo: trilha.titulo,
         descricao: trilha.descricao,
-        quantidadeEtapas: (trilha.etapas ?? []).length
+        quantidadeEtapas: (trilha.etapas ?? []).length,
+        autorNome: trilha.autor?.nome ?? null
       });
     }
     const categorias = [...porCategoria.values()]
@@ -78,8 +83,8 @@ export class ProgressoService {
 
   async escolher(trilhaId: string, ator: Ator): Promise<ProgressoResposta> {
     const trilha = await this.trilhas.findOne({
-      where: { id: trilhaId, tipo: TIPO_PRE_DEFINIDA, disponivel: true },
-      relations: ['categoria', 'etapas']
+      where: { id: trilhaId, disponivel: true },
+      relations: ['categoria', 'etapas', 'autor']
     });
     if (!trilha) {
       throw new NotFoundException(
@@ -227,7 +232,15 @@ export class ProgressoService {
   private async carregar(id: string): Promise<Progresso> {
     const progresso = await this.progressos.findOne({
       where: { id },
-      relations: ['trilha', 'trilha.categoria', 'trilha.etapas', 'conclusoes', 'conclusoes.etapa', 'aluno']
+      relations: [
+        'trilha',
+        'trilha.categoria',
+        'trilha.etapas',
+        'trilha.autor',
+        'conclusoes',
+        'conclusoes.etapa',
+        'aluno'
+      ]
     });
     if (!progresso) {
       throw new NotFoundException('Progresso não encontrado.');
@@ -313,6 +326,7 @@ export class ProgressoService {
       trilha: {
         id: progresso.trilha.id,
         titulo: progresso.trilha.titulo,
+        tipo: progresso.trilha.tipo,
         categoria: { id: progresso.trilha.categoria.id, nome: progresso.trilha.categoria.nome }
       },
       proximaEtapa: d.proxima
@@ -342,6 +356,9 @@ export class ProgressoService {
         titulo: progresso.trilha.titulo,
         descricao: progresso.trilha.descricao,
         tipo: progresso.trilha.tipo,
+        disponivel: progresso.trilha.disponivel,
+        autorNome: progresso.trilha.autor?.nome ?? null,
+        souAutor: progresso.trilha.autorId === progresso.alunoId,
         categoria: { id: progresso.trilha.categoria.id, nome: progresso.trilha.categoria.nome },
         etapas: d.etapas.map((e) => {
           const conclusao = d.porEtapa.get(e.id);

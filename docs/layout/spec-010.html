@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — SPEC-010 layout pendente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { brand: { ink: "#123047", trail: "#1A7A72", trailDark: "#14635D", mint: "#D7F0ED", paper: "#F7F4EE", spark: "#E3A008" } } } } };
+  </script>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+    <p class="mx-auto max-w-3xl font-medium text-amber-950">
+      Protótipo SPEC-010 — layout <strong>aprovado</strong> em 2026-10-08. O aluno reenvia o prompt e a mesma trilha personalizada é revista. Não é o app em produção.
+    </p>
+  </header>
+  <main class="mx-auto max-w-3xl space-y-10 p-4 md:p-8">
+    <section id="acompanhamento">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Acompanhamento</p>
+      <article class="mt-3 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+        <h2 class="text-2xl font-semibold">Análise de Vendas com SQL: Totais por Mês</h2>
+        <p class="mt-1 text-sm text-slate-500">Personalizada · trilha personalizada</p>
+        <p class="mt-2 text-sm text-slate-600">Consultas para somar vendas por mês.</p>
+        <div class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+          <div class="h-full w-1/3 bg-brand-trail"></div>
+        </div>
+        <p class="mt-2 text-xs text-slate-500">1 de 3 etapas</p>
+        <div class="mt-4 flex flex-col gap-2 sm:flex-row">
+          <button type="button" class="rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white">Conversar sobre esta trilha</button>
+          <button type="button" class="rounded-md border border-brand-trail px-3 py-2 text-sm font-medium text-brand-trail">Ajustar trilha</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="ajuste">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Ajuste</p>
+      <article class="mt-3 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+        <h2 class="text-xl font-semibold">Ajustar trilha</h2>
+        <p class="mt-1 text-sm text-slate-600">Reescreva o pedido. O agente devolve a trilha inteira e grava nesta mesma trilha.</p>
+        <p class="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Etapas atuais</p>
+        <ol class="mt-2 space-y-1 text-sm">
+          <li>1. Introdução ao SQL para Vendas <span class="text-brand-trail">· concluída</span></li>
+          <li>2. Extraindo o mês da data</li>
+          <li>3. Totais com SUM e GROUP BY</li>
+        </ol>
+        <label class="mt-4 block text-sm font-medium">
+          Prompt
+          <textarea rows="5" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm">Quero analisar planilhas de vendas com SQL e montar consultas simples para totais por mês.
+
+Inclua uma etapa sobre índices e remova a etapa de totais com SUM e GROUP BY.</textarea>
+        </label>
+        <p class="mt-2 text-xs text-slate-500">Pode levar até um minuto. Até a resposta completa, nada é alterado.</p>
+        <div class="mt-4 flex flex-col gap-2 sm:flex-row">
+          <button type="button" class="rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white">Atualizar trilha</button>
+          <button type="button" class="rounded-md border border-slate-300 px-3 py-2 text-sm">Cancelar</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="espera">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Espera e falha</p>
+      <div class="mt-3 space-y-3">
+        <p class="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950">Atualizando a trilha… Nada foi alterado ainda.</p>
+        <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900">A resposta do agente veio incompleta. A trilha anterior permanece. Descreva o ajuste de outro modo.</p>
+      </div>
+    </section>
+
+    <section id="resultado">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Depois da revisão</p>
+      <article class="mt-3 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+        <h2 class="text-2xl font-semibold">Análise de Vendas com SQL: Totais por Mês</h2>
+        <p class="mt-1 text-sm text-slate-500">Mesma trilha · 1 de 3 etapas</p>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li class="rounded-md border border-slate-200 px-3 py-2">1. Introdução ao SQL para Vendas <span class="text-brand-trail">· concluída, conservada</span></li>
+          <li class="rounded-md border border-slate-200 px-3 py-2">2. Extraindo o mês da data</li>
+          <li class="rounded-md border border-brand-mint bg-brand-mint/40 px-3 py-2">3. Índices para consultas de vendas <span class="text-slate-600">· nova, sem conclusão</span></li>
+        </ul>
+        <p class="mt-3 text-xs text-slate-500">A etapa “Totais com SUM e GROUP BY” saiu. Só a conclusão dela foi removida.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

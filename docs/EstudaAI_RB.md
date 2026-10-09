@@ -65,7 +65,9 @@ Trilhas pré-definidas **SHALL** ser cadastradas e organizadas previamente por p
 
 **Tipo EARS:** Event-driven
 
-**WHEN** uma trilha personalizada for criada, o sistema **SHALL** associá-la ao aluno que a solicitou para permitir o acompanhamento de seu progresso.
+**WHEN** uma trilha personalizada for criada, o sistema **SHALL** registrar o aluno que a solicitou como autor da `Trilha` e **SHALL** abrir o `Progresso` desse autor.
+
+A autoria **SHALL NOT** ser inferida pelo `Progresso`. Outro aluno **SHALL** poder ter o próprio `Progresso` na mesma trilha quando ela estiver disponível (RF18). Cada `Progresso` guarda só as conclusões daquele aluno.
 
 ## RB10 - Resposta do agente LLM
 
@@ -134,3 +136,23 @@ O sistema **SHALL NOT** permitir que o administrador remova a própria conta.
 **Tipo EARS:** State-driven
 
 **WHILE** o administrador consultar o progresso de um aluno, o sistema **SHALL NOT** criar, alterar nem remover `Progresso` nem `ConclusaoEtapa`.
+
+## RB19 - Busca semântica do conteúdo
+
+**Tipo EARS:** Event-driven
+
+**WHEN** o aluno buscar por significado, o sistema **SHALL** percorrer as etapas das trilhas disponíveis a todos e as das personalizadas privadas desse aluno.
+
+**WHEN** uma etapa entrar, mudar ou sair desse conjunto, o sistema **SHALL** refletir a mudança no índice vetorial. Uma etapa **SHALL** corresponder a um único registro, identificado por `id da trilha` + `id da etapa`.
+
+A busca **SHALL NOT** criar, alterar nem remover `Trilha`, `Etapa`, `Progresso` nem `ConclusaoEtapa`. Começar a trilha encontrada é o fluxo já usado no catálogo, não um efeito da pergunta.
+
+## RB20 - Trilha personalizada disponível a todos
+
+**Tipo EARS:** Event-driven
+
+**WHEN** o autor deixar a trilha `personalizada` disponível, qualquer aluno **SHALL** poder encontrá-la e abrir o próprio `Progresso` nela. O sistema **SHALL NOT** duplicar `Trilha` nem `Etapa`.
+
+**WHILE** outro aluno tiver `Progresso` nessa trilha, o autor **SHALL NOT** remover etapa (RB11). Pode reescrever etapa existente e incluir etapa nova. Só o autor ajusta a trilha pelo agente (RF16).
+
+**WHEN** o autor retirar a disponibilidade, a trilha **SHALL** sair do catálogo e da busca dos demais. Os `Progresso` já abertos **SHALL** permanecer. Um aluno novo **SHALL NOT** começá-la enquanto estiver indisponível. A personalizada nasce indisponível para os demais.

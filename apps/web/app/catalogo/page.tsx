@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Alerta } from "@/components/auth-ui";
 import { CascaPublica } from "@/components/casca-publica";
 import { chamarApi, mensagemErro, ErroApi } from "@/lib/api";
-import { CatalogoPublico, ProgressoLista } from "@/lib/progresso";
+import { CatalogoPublico, ProgressoLista, ResultadoBusca } from "@/lib/progresso";
 import { lerSessao, Sessao } from "@/lib/sessao";
 
 function CatalogoConteudo() {
@@ -18,6 +18,9 @@ function CatalogoConteudo() {
   const [meus, setMeus] = useState<ProgressoLista[]>([]);
   const [alerta, setAlerta] = useState<{ texto: string; tom: "red" | "amber" | "green" } | null>(null);
   const [enviando, setEnviando] = useState<string | null>(null);
+  const [pergunta, setPergunta] = useState("");
+  const [buscando, setBuscando] = useState(false);
+  const [resultados, setResultados] = useState<ResultadoBusca[] | null>(null);
 
   useEffect(() => {
     const atual = lerSessao();
@@ -61,6 +64,11 @@ function CatalogoConteudo() {
     return mapa;
   }, [meus]);
 
+  const personalizadas = useMemo(
+    () => meus.filter((item) => item.trilha.tipo === "personalizada"),
+    [meus]
+  );
+
   async function escolher(trilhaId: string) {
     if (!sessao) {
       setAlerta({
@@ -92,9 +100,31 @@ function CatalogoConteudo() {
 
   if (sessao === undefined) return null;
 
+  async function buscar(evento: FormEvent) {
+    evento.preventDefault();
+    if (!sessao || sessao.perfil !== "aluno") return;
+    setBuscando(true);
+    setAlerta(null);
+    const { ok, dados } = await chamarApi<{ resultados: ResultadoBusca[] } & ErroApi>("/busca", {
+      method: "POST",
+      token: sessao.accessToken,
+      body: JSON.stringify({ texto: pergunta })
+    });
+    setBuscando(false);
+    if (!ok) {
+      setResultados(null);
+      setAlerta({
+        texto: mensagemErro(dados, "A busca não respondeu. Tente de novo. Suas trilhas não foram alteradas."),
+        tom: "red"
+      });
+      return;
+    }
+    setResultados(dados.resultados ?? []);
+  }
+
   const intro = sessao
-    ? "Trilhas organizadas por categoria. Se você já acompanha uma, o botão retoma de onde parou."
-    : "Você pode ver o catálogo sem conta. Para começar uma trilha, entre como aluno.";
+    ? "Trilhas organizadas por categoria. A busca olha as publicadas e as personalizadas que alguém deixou disponíveis."
+    : "Você pode ver o catálogo sem conta. Para começar uma trilha ou buscar pelo conteúdo, entre como aluno.";
 
   const inner = (
     <>
@@ -112,6 +142,69 @@ function CatalogoConteudo() {
           ) : null}
         </div>
       ) : null}
+      {sessao?.perfil === "aluno" ? (
+        <form className="mt-4 rounded-lg border border-slate-200 bg-white p-4" onSubmit={(e) => void buscar(e)}>
+          <label className="block text-sm font-medium text-brand-ink" htmlFor="busca-conteudo">
+            Buscar pelo conteúdo
+          </label>
+          <textarea
+            id="busca-conteudo"
+            rows={2}
+            value={pergunta}
+            onChange={(e) => setPergunta(e.target.value)}
+            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            placeholder="Como calcular juros simples e compostos?"
+          />
+          <button
+            type="submit"
+            disabled={buscando || !pergunta.trim()}
+            className="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark disabled:opacity-60"
+          >
+            {buscando ? "Buscando…" : "Buscar"}
+          </button>
+        </form>
+      ) : null}
+      {resultados ? (
+        <section className="mt-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Resultado da busca</h3>
+          {resultados.length === 0 ? (
+            <p className="mt-3 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+              Nenhuma etapa próxima dessa pergunta. As categorias continuam abaixo.
+            </p>
+          ) : (
+            <div className="mt-3 space-y-3">
+              {resultados.map((item) => (
+                <article key={`${item.trilhaId}-${item.etapaId}`} className="rounded-lg border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-medium uppercase tracking-wide text-brand-trail">
+                    {item.tituloTrilha}
+                    {item.tipo === "personalizada" ? " · personalizada" : " · pré-definida"}
+                    {item.autorNome ? ` · por ${item.autorNome}` : ""}
+                  </p>
+                  <h3 className="mt-1 text-lg font-semibold text-brand-ink">{item.tituloEtapa}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.trecho}</p>
+                  {item.progressoId ? (
+                    <Link
+                      href={`/progresso/${item.progressoId}`}
+                      className="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark"
+                    >
+                      Abrir
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={enviando === item.trilhaId}
+                      onClick={() => void escolher(item.trilhaId)}
+                      className="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark disabled:opacity-60"
+                    >
+                      {enviando === item.trilhaId ? "Abrindo…" : "Começar"}
+                    </button>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : null}
       {catalogo === null ? (
         <p className="mt-6 text-sm text-slate-500">Carregando catálogo…</p>
       ) : catalogo.indisponivel ? (
@@ -125,7 +218,33 @@ function CatalogoConteudo() {
           </p>
         </div>
       ) : (
-        catalogo.categorias.map((categoria) => (
+        <>
+          {personalizadas.length > 0 ? (
+            <section className="mt-6">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                Suas trilhas personalizadas
+              </h3>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                {personalizadas.map((item) => (
+                  <article key={item.id} className="rounded-lg border border-slate-200 bg-white p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-brand-trail">Personalizada</p>
+                    <h3 className="mt-1 text-lg font-semibold text-brand-ink">{item.trilha.titulo}</h3>
+                    <p className="mt-2 text-xs text-slate-500">
+                      {item.etapasConcluidas} de {item.totalEtapas} etapas
+                      {item.proximaEtapa ? ` · próxima: ${item.proximaEtapa.titulo}` : " · concluída"}
+                    </p>
+                    <Link
+                      href={`/progresso/${item.id}`}
+                      className="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark"
+                    >
+                      Abrir trilha
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+          {catalogo.categorias.map((categoria) => (
           <section key={categoria.id} className="mt-6">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{categoria.nome}</h3>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -134,7 +253,10 @@ function CatalogoConteudo() {
                 const acao = !sessao ? "Escolher trilha" : progresso ? "Continuar" : "Começar";
                 return (
                   <article key={trilha.id} className="rounded-lg border border-slate-200 bg-white p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-brand-trail">{categoria.nome}</p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-brand-trail">
+                      {categoria.nome}
+                      {trilha.autorNome ? ` · por ${trilha.autorNome}` : ""}
+                    </p>
                     <h3 className="mt-1 text-lg font-semibold text-brand-ink">{trilha.titulo}</h3>
                     <p className="mt-1 text-sm leading-relaxed text-slate-600">{trilha.descricao}</p>
                     <p className="mt-2 text-xs text-slate-500">
@@ -153,10 +275,12 @@ function CatalogoConteudo() {
               })}
             </div>
           </section>
-        ))
+        ))}
+        </>
       )}
       <p className="mt-6 text-xs text-slate-500">
-        Só entram trilhas publicadas. As geradas pelo agente não aparecem nesta lista.
+        A lista por categoria traz trilhas publicadas e personalizadas que o autor deixou disponíveis. As suas, ainda
+        privadas, ficam em Suas trilhas personalizadas e em Meu progresso.
       </p>
     </>
   );

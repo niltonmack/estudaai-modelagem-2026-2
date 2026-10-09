@@ -3,10 +3,12 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { appendFileSync, mkdirSync } from 'fs';
 import { dirname, resolve } from 'path';
+import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
 import { AuditLogger } from './audit/audit.logger';
 import { AuthService } from './auth/auth.service';
 import { CatalogoService } from './catalogo/catalogo.service';
+import { migrarAutoria } from './db/migrar-autor';
 import { ConfiguracaoLlmService } from './config/configuracao-llm.service';
 
 async function bootstrap() {
@@ -32,6 +34,7 @@ async function bootstrap() {
     };
   }
 
+  await migrarAutoria(app.get(DataSource));
   const auth = app.get(AuthService);
   await auth.seedAdministrador();
   await app.get(CatalogoService).seedPersonalizada();

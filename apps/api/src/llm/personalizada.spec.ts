@@ -302,6 +302,164 @@ describe('SPEC-006 trilha personalizada', () => {
     }
   });
 
+  it('AC-010-01 incluir etapa conserva conclusões e o mesmo progresso', async () => {
+    await interruptor(true);
+    const criada = await request(app.getHttpServer())
+      .post('/solicitacoes-trilha')
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Trilha para incluir uma etapa.' })
+      .expect(201);
+    const primeira = criada.body.trilha.etapas[0];
+    await request(app.getHttpServer())
+      .post(`/progresso/${criada.body.id}/etapas/${primeira.id}/conclusao`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .expect(200);
+    const pedido = await request(app.getHttpServer())
+      .get(`/solicitacoes-trilha/${criada.body.id}`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .expect(200);
+    expect(pedido.body.textoObjetivo).toContain('incluir uma etapa');
+    const antesPre = await dados.getRepository(Trilha).count({ where: { tipo: 'pré-definida' } });
+    const revista = await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${criada.body.id}`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Inclua uma etapa sobre índices.' })
+      .expect(201);
+    expect(revista.body.id).toBe(criada.body.id);
+    expect(revista.body.trilha.id).toBe(criada.body.trilha.id);
+    expect(revista.body.totalEtapas).toBe(4);
+    expect(revista.body.etapasConcluidas).toBe(1);
+    const conservada = revista.body.trilha.etapas.find((e: { id: string }) => e.id === primeira.id);
+    expect(conservada.concluida).toBe(true);
+    const nova = revista.body.trilha.etapas.find((e: { titulo: string }) => e.titulo === 'Etapa incluída');
+    expect(nova.concluida).toBe(false);
+    const solicitacao = await dados.getRepository(SolicitacaoTrilha).findOneByOrFail({
+      trilhaId: criada.body.trilha.id
+    });
+    expect(solicitacao.textoObjetivo).toContain('índices');
+    expect(await dados.getRepository(Trilha).count({ where: { tipo: 'pré-definida' } })).toBe(antesPre);
+    expect(await dados.getRepository(Progresso).count({ where: { trilhaId: criada.body.trilha.id } })).toBe(1);
+  });
+
+  it('AC-010-02 excluir etapa concluída remove só a conclusão dela', async () => {
+    await interruptor(true);
+    const criada = await request(app.getHttpServer())
+      .post('/solicitacoes-trilha')
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Trilha para excluir uma etapa.' })
+      .expect(201);
+    const [mantida, removida] = criada.body.trilha.etapas;
+    await request(app.getHttpServer())
+      .post(`/progresso/${criada.body.id}/etapas/${mantida.id}/conclusao`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .expect(200);
+    await request(app.getHttpServer())
+      .post(`/progresso/${criada.body.id}/etapas/${removida.id}/conclusao`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .expect(200);
+    fake.revisao = {
+      titulo: criada.body.trilha.titulo,
+      descricao: criada.body.trilha.descricao,
+      etapas: [
+        { id: mantida.id, titulo: mantida.titulo, conteudo: mantida.conteudo, ordem: 1 },
+        {
+          id: criada.body.trilha.etapas[2].id,
+          titulo: criada.body.trilha.etapas[2].titulo,
+          conteudo: criada.body.trilha.etapas[2].conteudo,
+          ordem: 2
+        }
+      ]
+    };
+    const revista = await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${criada.body.id}`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Remova a segunda etapa.' })
+      .expect(201);
+    expect(revista.body.totalEtapas).toBe(2);
+    expect(revista.body.etapasConcluidas).toBe(1);
+    expect(revista.body.trilha.etapas.map((e: { id: string }) => e.id)).not.toContain(removida.id);
+    expect(revista.body.trilha.etapas.find((e: { id: string }) => e.id === mantida.id).concluida).toBe(true);
+    expect(revista.body.percentualProgresso).toBe(0.5);
+  });
+
+  it('AC-010-03 timeout ou JSON inválido mantêm a trilha anterior', async () => {
+    await interruptor(true);
+    const criada = await request(app.getHttpServer())
+      .post('/solicitacoes-trilha')
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Trilha que não deve mudar se o agente falhar.' })
+      .expect(201);
+    const titulos = criada.body.trilha.etapas.map((e: { titulo: string }) => e.titulo);
+    fake.modo = 'timeout';
+    const timeout = await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${criada.body.id}`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Mude tudo.' })
+      .expect(504);
+    expect(timeout.body.codigo).toBe('timeout');
+    fake.modo = 'sem_etapas';
+    const invalido = await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${criada.body.id}`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'JSON incompleto.' })
+      .expect(422);
+    expect(invalido.body.codigo).toBe('json_invalido');
+    const detalhe = await request(app.getHttpServer())
+      .get(`/progresso/${criada.body.id}`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .expect(200);
+    expect(detalhe.body.trilha.etapas.map((e: { titulo: string }) => e.titulo)).toEqual(titulos);
+    const solicitacao = await dados.getRepository(SolicitacaoTrilha).findOneByOrFail({
+      trilhaId: criada.body.trilha.id
+    });
+    expect(solicitacao.textoObjetivo).toContain('não deve mudar');
+  });
+
+  it('AC-010-04 pré-definida, outro aluno e admin não ajustam', async () => {
+    await interruptor(true);
+    const trilhaPre = await publicarPredefinida();
+    const escolhida = await request(app.getHttpServer())
+      .post('/progresso/escolher-trilha')
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ trilhaId: trilhaPre })
+      .expect(201);
+    const pre = await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${escolhida.body.id}`)
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Alterar catálogo.' })
+      .expect(409);
+    expect(pre.body.codigo).toBe('recusado');
+
+    const personalizada = await request(app.getHttpServer())
+      .post('/solicitacoes-trilha')
+      .set('Authorization', `Bearer ${tokenAluno}`)
+      .send({ textoObjetivo: 'Trilha só do Lucas.' })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post('/auth/cadastro')
+      .send({ nome: 'Ana Lima', email: 'ana.ajuste@exemplo.com', senha: 'secreta123' })
+      .expect(201);
+    const ana = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'ana.ajuste@exemplo.com', senha: 'secreta123' })
+      .expect(200);
+    const alheia = await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${personalizada.body.id}`)
+      .set('Authorization', `Bearer ${ana.body.accessToken}`)
+      .send({ textoObjetivo: 'Quero a trilha do Lucas.' })
+      .expect(403);
+    expect(alheia.body.codigo).toBe('recusado');
+    await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${personalizada.body.id}`)
+      .set('Authorization', `Bearer ${tokenAdmin}`)
+      .send({ textoObjetivo: 'Admin ajusta.' })
+      .expect(403);
+    await request(app.getHttpServer())
+      .post(`/solicitacoes-trilha/${personalizada.body.id}`)
+      .send({ textoObjetivo: 'Anônimo ajusta.' })
+      .expect(401);
+  });
+
   it('progresso da trilha personalizada é do aluno (RB09)', async () => {
     await interruptor(true);
     const { body } = await request(app.getHttpServer())

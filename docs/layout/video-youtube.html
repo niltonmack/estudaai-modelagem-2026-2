@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — Layout do vídeo do YouTube (aprovado)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { brand: { ink: "#123047", trail: "#1A7A72", trailDark: "#14635D", mint: "#D7F0ED", paper: "#F7F4EE" } } } } };
+  </script>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+    <p class="mx-auto max-w-3xl font-medium text-amber-950">
+      Protótipo OPEN-27 — layout <strong>aprovado</strong> em 2026-10-08. O link do YouTube abre um lightbox sobre o acompanhamento. Não é o app em produção.
+    </p>
+  </header>
+  <main class="mx-auto max-w-3xl p-4 md:p-8">
+    <article class="rounded-lg border border-slate-200 bg-white">
+      <div class="border-b border-slate-100 px-4 py-3">
+        <p class="text-xs font-medium uppercase tracking-wide text-brand-trail">Etapa 1</p>
+        <h2 class="text-base font-semibold">Classes e objetos</h2>
+      </div>
+      <div class="space-y-3 px-4 py-3 text-sm leading-relaxed text-slate-700">
+        <p>Assista à explicação e depois copie o exemplo.</p>
+        <p><button type="button" class="text-brand-trail underline">Assistir: classes e objetos</button></p>
+        <p><a class="underline" href="https://adoptium.net/" target="_blank" rel="noreferrer">Instalar o JDK</a> continua um link comum.</p>
+      </div>
+    </article>
+    <div class="fixed inset-0 z-50 flex items-end justify-center bg-brand-ink/50 p-4 sm:items-center">
+      <div role="dialog" aria-modal="true" aria-labelledby="titulo-video" class="w-full max-w-3xl rounded-xl bg-white p-5 shadow-xl">
+        <div class="flex items-start justify-between gap-3">
+          <h3 id="titulo-video" class="text-lg font-semibold">Assistir: classes e objetos</h3>
+          <button type="button" class="rounded-md border border-slate-300 px-2 py-1 text-sm">Fechar</button>
+        </div>
+        <div class="mt-4 aspect-video rounded-md bg-brand-ink"></div>
+        <p class="mt-3 text-xs text-slate-500">O player do YouTube ocupa esta área. Fechar, Esc ou o fundo escuro devolvem o aluno à etapa.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

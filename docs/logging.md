@@ -63,6 +63,11 @@ Biblioteca: o **Logger do NestJS** (troca reversível; não é ADR). Destino: `s
 | `llm.geracao.timeout` | Timeout 60 s ou provedor mudo (E2) |
 | `llm.geracao.json_invalido` | `respostaLLM` sem título, descrição ou etapas (E3) |
 | `llm.geracao.persistencia_falhou` | JSON válido, transação revertida; nenhuma trilha órfã |
+| `llm.ajuste.ok` | Mesma trilha personalizada revista pelo prompt do aluno |
+| `llm.ajuste.recusada` | LLM desligado, trilha pré-definida ou aluno que não é o dono |
+| `llm.ajuste.timeout` | Timeout 60 s ou provedor mudo; trilha anterior permanece |
+| `llm.ajuste.json_invalido` | JSON sem título, descrição ou etapas; trilha anterior permanece |
+| `llm.ajuste.persistencia_falhou` | JSON válido, transação revertida; trilha anterior permanece |
 
 A chave Gemini **não** entra no log.
 
@@ -75,6 +80,20 @@ A chave Gemini **não** entra no log.
 | `llm.conversa.timeout` | Timeout 60 s ou provedor mudo (E2) |
 
 A chave Gemini **não** entra no log.
+
+## O que entra no log (SPEC-011)
+
+| Evento | Quando |
+|---|---|
+| `busca.ok` | A pergunta do aluno voltou do índice; o log leva a quantidade de resultados, sem o texto da pergunta nem o conteúdo da etapa |
+| `busca.falha` | Pinecone ausente, timeout ou erro; nada no MySQL foi alterado |
+| `indice.upsert` | Registro `trilhaId#etapaId` gravado ou atualizado depois do commit no MySQL |
+| `indice.removido` | Registro removido porque a etapa saiu do conjunto pesquisável |
+| `indice.falha` | A gravação no Pinecone falhou depois do commit; a trilha no MySQL permanece |
+| `trilha.disponibilizada` | O autor deixou a personalizada disponível a todos |
+| `trilha.retirada` | O autor retirou a disponibilidade; progressos já abertos permanecem |
+
+A chave Pinecone **não** entra no log. O campo `text` do registro **não** entra no log.
 
 ## O que entra no log (SPEC-008)
 

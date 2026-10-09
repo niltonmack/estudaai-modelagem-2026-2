@@ -13,6 +13,7 @@ import { NOME_SENTINELA } from './catalogo.service';
 import { EtapaDto, EtapaResposta, ImpactoRemocao, ReordenarEtapasDto, TrilhaDto, TrilhaResposta } from './dto';
 import { Etapa } from './etapa.entity';
 import { Trilha } from './trilha.entity';
+import { IndiceService } from '../indice/indice.service';
 import { Progresso } from '../progresso/progresso.entity';
 
 type Ator = { email?: string; perfil?: Perfil };
@@ -26,7 +27,8 @@ export class TrilhaService {
     @InjectRepository(Etapa) private readonly etapas: Repository<Etapa>,
     @InjectRepository(Categoria) private readonly categorias: Repository<Categoria>,
     @InjectRepository(Progresso) private readonly progressos: Repository<Progresso>,
-    private readonly audit: AuditLogger
+    private readonly audit: AuditLogger,
+    private readonly indice: IndiceService
   ) {}
 
   async listar(): Promise<TrilhaResposta[]> {
@@ -86,7 +88,9 @@ export class TrilhaService {
 
   async remover(id: string, ator: Ator): Promise<void> {
     const trilha = await this.buscar(id);
+    const etapas = (trilha.etapas ?? []).map((etapa) => etapa.id);
     await this.trilhas.remove(trilha);
+    await this.indice.sincronizar(id, etapas);
     this.audit.registrar({
       level: 'info',
       event: 'catalogo.trilha.removida',
@@ -114,6 +118,7 @@ export class TrilhaService {
     }
     trilha.disponivel = true;
     await this.trilhas.save(trilha);
+    await this.indice.sincronizar(trilha.id);
     this.audit.registrar({
       level: 'info',
       event: 'catalogo.trilha.publicada',
@@ -136,6 +141,7 @@ export class TrilhaService {
         trilha
       })
     );
+    await this.indice.sincronizar(trilhaId);
     this.audit.registrar({
       level: 'info',
       event: 'catalogo.etapa.criada',
@@ -158,6 +164,7 @@ export class TrilhaService {
     etapa.titulo = this.texto(dto.titulo, 'O título da etapa é obrigatório.');
     etapa.conteudo = this.texto(dto.conteudo, 'O conteúdo da etapa é obrigatório.');
     await this.etapas.save(etapa);
+    await this.indice.sincronizar(trilhaId);
     this.audit.registrar({
       level: 'info',
       event: 'catalogo.etapa.alterada',
@@ -205,6 +212,7 @@ export class TrilhaService {
       );
     }
     await this.etapas.remove(etapa);
+    await this.indice.sincronizar(trilhaId, [etapaId]);
     await this.compactarOrdem(trilhaId);
     this.audit.registrar({
       level: 'info',

@@ -87,3 +87,21 @@ Abrir [`painel-admin.html`](painel-admin.html). Telas: com alunos estudando, nen
 Redesenho de `/painel` no mesmo estilo da home do aluno: números de contas, acompanhamentos, trilhas publicadas e agente LLM; avanço geral dos alunos (RB06); novos acompanhamentos por semana pela data de início; trilhas mais acompanhadas com avanço médio. Somente leitura (RB18). Sem API nova.
 
 O layout foi `aprovado` pelo humano em 2026-10-08 e o painel está `implementado` em `apps/web/app/painel/page.tsx`.
+
+## Vídeo do YouTube — layout aprovado (2026-10-08)
+
+Abrir [`video-youtube.html`](video-youtube.html). O link `youtube.com` ou `youtu.be` no Markdown da etapa abre um lightbox sobre o acompanhamento, com o player e o botão Fechar. Os outros links continuam links.
+
+O layout foi `aprovado` pelo humano em 2026-10-08 e está `implementado` em `apps/web/components/markdown-etapa.tsx`.
+
+## SPEC-010 — layout aprovado (2026-10-08)
+
+Abrir [`spec-010.html`](spec-010.html). Telas: acompanhamento com **Ajustar trilha**, prompt de correção com as etapas atuais, espera ou falha sem gravar, trilha revista com a conclusão das etapas que permaneceram. Viewport desktop e smartphone no mesmo fluxo empilhado.
+
+O layout foi `aprovado` pelo humano em 2026-10-08 e está `implementado` no acompanhamento da trilha personalizada.
+
+## SPEC-011 — layout aprovado (2026-10-09)
+
+Abrir [`spec-011.html`](spec-011.html). A pergunta fica no topo do catálogo. O autor deixa a personalizada disponível; outro aluno começa essa mesma trilha. Telas: pergunta, resultado com autor, disponibilizar, categoria Personalizada, nenhum resultado, busca indisponível. Viewport desktop e smartphone no mesmo fluxo empilhado.
+
+O layout foi `aprovado` pelo humano em 2026-10-09 e está `implementado` no catálogo e no acompanhamento da trilha personalizada.

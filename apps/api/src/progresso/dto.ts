@@ -33,6 +33,9 @@ export type ProgressoResposta = {
     titulo: string;
     descricao: string;
     tipo: 'pré-definida' | 'personalizada';
+    disponivel: boolean;
+    autorNome: string | null;
+    souAutor: boolean;
     categoria: { id: string; nome: string };
     etapas: EtapaProgressoResposta[];
   };
@@ -47,7 +50,12 @@ export type ProgressoListaResposta = {
   percentualProgresso: number;
   etapasConcluidas: number;
   totalEtapas: number;
-  trilha: { id: string; titulo: string; categoria: { id: string; nome: string } };
+  trilha: {
+    id: string;
+    titulo: string;
+    tipo: 'pré-definida' | 'personalizada';
+    categoria: { id: string; nome: string };
+  };
   proximaEtapa: { id: string; titulo: string; ordem: number } | null;
 };
 
@@ -93,6 +101,7 @@ export type CatalogoPublicoResposta = {
       titulo: string;
       descricao: string;
       quantidadeEtapas: number;
+      autorNome: string | null;
     }[];
   }[];
 };

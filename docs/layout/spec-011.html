@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstudaAI — SPEC-011 layout aprovado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { brand: { ink: "#123047", trail: "#1A7A72", mint: "#D7F0ED", paper: "#F7F4EE", spark: "#E3A008" } } } } };
+  </script>
+</head>
+<body class="bg-brand-paper text-brand-ink">
+  <header class="border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+    <p class="mx-auto max-w-3xl font-medium text-amber-950">
+      Protótipo SPEC-011 — layout <strong>aprovado</strong> em 2026-10-09. A busca olha as trilhas disponíveis. O autor deixa a personalizada para todos, e outro aluno cursa a mesma trilha. Não é o app em produção. A implementação não foi iniciada.
+    </p>
+  </header>
+  <main class="mx-auto max-w-3xl space-y-10 p-4 md:p-8">
+    <section id="pergunta">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Catálogo do aluno</p>
+      <article class="mt-3 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+        <p class="text-xs text-slate-500">Início · Catálogo · Meu progresso</p>
+        <h2 class="mt-3 text-2xl font-semibold">Catálogo</h2>
+        <p class="mt-1 text-sm text-slate-600">A busca olha as trilhas publicadas e as personalizadas que alguém deixou disponíveis.</p>
+        <label class="mt-4 block text-sm font-medium">
+          Buscar pelo conteúdo
+          <textarea rows="2" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm">Como calcular juros simples e compostos?</textarea>
+        </label>
+        <button type="button" class="mt-3 rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white">Buscar</button>
+      </article>
+    </section>
+
+    <section id="resultados">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Resultado de outra pessoa</p>
+      <article class="mt-3 rounded-xl border border-slate-200 bg-white p-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-brand-spark">Juros simples e compostos · personalizada · por Lucas Almeida</p>
+        <h3 class="mt-1 text-lg font-semibold">Montante no regime composto</h3>
+        <p class="mt-2 text-sm text-slate-600">M = C (1 + i)^t. Com capital de 1000, taxa de 2% e 3 períodos, o montante fica em 1061,21.</p>
+        <button type="button" class="mt-3 rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white">Começar esta trilha</button>
+      </article>
+    </section>
+
+    <section id="disponibilizar">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Quem pediu a trilha à IA</p>
+      <article class="mt-3 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+        <h2 class="text-xl font-semibold">Juros simples e compostos</h2>
+        <p class="mt-1 text-sm text-slate-500">Personalizada · você é o autor · 0 de 4 etapas</p>
+        <p class="mt-4 text-sm text-slate-600">Enquanto estiver disponível, qualquer aluno encontra esta trilha e cursa o mesmo percurso. O progresso de cada um fica separado.</p>
+        <button type="button" class="mt-4 rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white">Disponível para todos</button>
+        <p class="mt-2 text-xs text-slate-500">Retirar a disponibilidade esconde a trilha de quem ainda não começou. Quem já começou continua.</p>
+      </article>
+    </section>
+
+    <section id="categorias">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Categorias, abaixo da busca</p>
+      <div class="mt-3 space-y-4">
+        <article>
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Personalizada</h3>
+          <div class="mt-2 rounded-xl border border-slate-200 bg-white p-4">
+            <p class="text-xs font-medium uppercase tracking-wide text-brand-spark">Personalizada · por Lucas Almeida</p>
+            <h3 class="mt-1 text-lg font-semibold">Juros simples e compostos</h3>
+            <p class="mt-1 text-sm text-slate-600">Do juros simples ao montante composto.</p>
+            <button type="button" class="mt-3 rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white">Começar</button>
+          </div>
+        </article>
+        <article>
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Exatas</h3>
+          <div class="mt-2 rounded-xl border border-slate-200 bg-white p-4">
+            <p class="text-xs font-medium uppercase tracking-wide text-brand-trail">Exatas</p>
+            <h3 class="mt-1 text-lg font-semibold">Cálculo I</h3>
+            <p class="mt-1 text-sm text-slate-600">Seis aulas, da função ao juros compostos.</p>
+            <button type="button" class="mt-3 rounded-md border border-brand-trail px-3 py-2 text-sm font-medium text-brand-trail">Continuar</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="vazio">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Nenhum resultado</p>
+      <p class="mt-3 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">Nenhuma etapa próxima dessa pergunta. As categorias continuam abaixo.</p>
+    </section>
+
+    <section id="indisponivel">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Busca indisponível</p>
+      <p class="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900">A busca não respondeu. Tente de novo. Suas trilhas não foram alteradas.</p>
+    </section>
+  </main>
+</body>
+</html>

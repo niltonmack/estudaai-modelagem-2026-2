@@ -1,6 +1,6 @@
 # Decisões em aberto — EstudaAI
 
-**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25) e a apresentação da etapa e da conversa (OPEN-26). **Absorvido na baseline.**  
+**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25), a apresentação da etapa e da conversa (OPEN-26), o vídeo do YouTube em lightbox (OPEN-27) e o ajuste da trilha personalizada (OPEN-28). Em 2026-10-09 incluiu a busca semântica no Pinecone (OPEN-29). **Absorvido na baseline.**  
 **Origem:** [`mapa-specs.md`](mapa-specs.md) §3  
 **Regra:** a implementação **não** reabre o que está `decidido` ou `fora de escopo`. Este arquivo permanece como rastreio da entrevista; RF, RB, RNF, UC, modelo, drivers e ADRs já refletem as respostas.
 
@@ -188,7 +188,7 @@ Legenda de status:
 | **Baseline** | Modelo conceitual: atributo `conteudo`, sem tipo. |
 | **Status** | `decidido` |
 | **Decisão** | `Etapa.conteudo` é Markdown. |
-| **Notas** | Não inclui mídia embutida obrigatória nem tipo URL exclusivo; links podem aparecer no próprio Markdown. |
+| **Notas** | Não inclui mídia embutida obrigatória nem tipo URL exclusivo; links podem aparecer no próprio Markdown. Link de vídeo do YouTube continua nesse Markdown; a abertura em lightbox é OPEN-27. Fórmula entre `$` ou `$$` nesse Markdown é desenhada como expressão matemática (RF05). |
 
 ## OPEN-17 — Recomendação inteligente da visão
 
@@ -300,6 +300,39 @@ Legenda de status:
 | **Decisão** | No acompanhamento, cada etapa é uma sanfona: o conteúdo fica oculto até o clique. O enunciado em `## Exercício` fica na etapa. A `## Resposta` só aparece no lightbox **Ver resposta**. **Conversar sobre esta trilha** abre a conversa em lightbox sobre a página. |
 | **Notas** | Não cria entidade nova. A resposta continua dentro de `Etapa.conteudo` (Markdown). Pedido humano 2026-10-08. |
 
+## OPEN-27 — Vídeo do YouTube em lightbox
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | Como o aluno assiste a um vídeo do YouTube citado no Markdown da etapa? |
+| **Specs** | SPEC-004; o armazenamento continua o de OPEN-16 / SPEC-003 |
+| **Baseline** | OPEN-16: `Etapa.conteudo` é Markdown e o link abre fora da página. |
+| **Status** | `decidido` |
+| **Decisão** | Um link de vídeo do YouTube (`youtube.com` ou `youtu.be`) no Markdown da etapa **abre um lightbox sobre a página** com o vídeo. O aluno não sai do acompanhamento. Outros links permanecem links. Não há coluna de mídia nem envio de arquivo. |
+| **Notas** | O endereço fica no Markdown, no corpo, no `## Exercício` ou na `## Resposta`. Layout e implementação aprovados pelo humano em 2026-10-08, depois do vídeo de teste na etapa 1 de Python Júnior. |
+
+## OPEN-28 — Ajustar trilha personalizada reenviando o prompt
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | Como o aluno corrige ou melhora uma trilha que o agente já gerou, por exemplo incluindo ou excluindo uma etapa? |
+| **Specs** | SPEC-010; reusa a porta da SPEC-006 e o acompanhamento da SPEC-004 |
+| **Baseline** | RF04 cria a trilha uma vez. Não havia revisão. RB11 bloqueia o administrador ao remover etapa de trilha pré-definida em uso. |
+| **Status** | `decidido` |
+| **Decisão** | No acompanhamento de trilha `personalizada`, o aluno dono reenvia um prompt. O agente devolve a trilha inteira. A API grava na **mesma** `Trilha` e na mesma `SolicitacaoTrilha`. Etapa citada com o `id` já existente é atualizada e **mantém** a `ConclusaoEtapa`. Etapa omitida é excluída, e só a conclusão dela sai. Etapa sem `id` é criada, sem conclusão. Trilha pré-definida não entra neste fluxo. |
+| **Notas** | Na data desta decisão o vínculo era só `Progresso` e `SolicitacaoTrilha`. A SPEC-011 passou a gravar o autor na `Trilha`, porque outros alunos podem acompanhar a mesma trilha. Timeout, LLM desligado ou JSON inválido não gravam nada. Layout e implementação do ajuste aprovados pelo humano em 2026-10-08. |
+
+## OPEN-29 — Busca semântica do conteúdo das trilhas
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | Onde ficam os embeddings, e como uma trilha pedida por um aluno fica disponível para os outros cursarem? |
+| **Specs** | SPEC-011 |
+| **Baseline** | MySQL 8.0 não tem tipo vetorial. `Etapa.conteudo` continua Markdown (OPEN-16). O catálogo lista só `pré-definida` disponível. A personalizada nascia ligada a um único `Progresso`. |
+| **Status** | `decidido` |
+| **Decisão** | A personalizada tem autor na própria `Trilha`: o aluno da `SolicitacaoTrilha`. Ela nasce indisponível para os demais. O autor pode deixá-la disponível. Aí qualquer aluno abre o próprio `Progresso` na mesma trilha, sem cópia. A busca percorre todas as trilhas disponíveis e as personalizadas privadas de quem pergunta. O vetor fica no Pinecone `estudaai-trilhas`, namespace `__default__`, dimensão 1024, truncamento `END`, field map `text`, `passage` na gravação e `query` na leitura. Registro `{ id: trilhaId#etapaId, text, trilha, aula, titulo, autor }`. |
+| **Notas** | Não há coluna de vetor no MySQL. Personalizadas já gravadas com `disponivel` verdadeiro, antes desta decisão, passam a indisponíveis até o autor publicar. Falha do Pinecone não desfaz trilha nem progresso. Layout `aprovado` e implementação em 2026-10-09. |
+
 ---
 
 ## Resumo
@@ -332,7 +365,10 @@ Legenda de status:
 | OPEN-24 | Gestão administrativa de usuários | `decidido` — RF14 / SPEC-008 |
 | OPEN-25 | Visão administrativa do progresso | `decidido` — RF15 / SPEC-009 |
 | OPEN-26 | Sanfona, resposta e conversa em lightbox | `decidido` — SPEC-004, SPEC-007 |
+| OPEN-27 | Vídeo do YouTube em lightbox | `decidido` — SPEC-004; aprovado pelo humano em 2026-10-08 |
+| OPEN-28 | Ajustar trilha personalizada reenviando o prompt | `decidido` — RF16 / SPEC-010; aprovado pelo humano em 2026-10-08 |
+| OPEN-29 | Busca semântica e trilha personalizada disponível a todos | `decidido` — RF17, RF18, RB09, RB19, RB20, RNF11 / SPEC-011; layout `aprovado` e implementação em 2026-10-09 |
 
-Progresso da entrevista: **26 / 26** fechadas (25 decididas, 1 fora de escopo).
+Progresso da entrevista: **29 / 29** fechadas (28 decididas, 1 fora de escopo).
 
 Nenhuma OPEN permanece `em aberto`. A implementação deve obedecer a este registro **e** à baseline atualizada. A divergência OPEN-06 (Gemini) foi incorporada em RNF02, ADR-002, AD-C02 e RF13.

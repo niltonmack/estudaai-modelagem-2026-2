@@ -65,11 +65,16 @@ Como aprovar o layout: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` p
 | Implementação da home do aluno | `implementada` | 2026-10-08 |
 | Layout do painel do administrador (`/painel`) | `aprovado` — [`layout/painel-admin.html`](layout/painel-admin.html); números e gráficos derivados de RB06, RF14 e RF15, somente leitura, sem API nova | 2026-10-08 |
 | Implementação do painel do administrador | `implementada` | 2026-10-08 |
+| Layout do vídeo do YouTube (OPEN-27) | `aprovado` — [`layout/video-youtube.html`](layout/video-youtube.html); link abre lightbox na página | 2026-10-08 |
+| Implementação do vídeo do YouTube | `implementada` | 2026-10-08 |
+| Aprovação humana OPEN-27 | texto, layout e implementação `aprovados` após o vídeo de teste na etapa 1 de Python Júnior | 2026-10-08 |
+| SPEC-010 — Ajustar trilha personalizada | texto, layout e implementação `aprovados` — [`layout/spec-010.html`](layout/spec-010.html) | 2026-10-08 |
+| SPEC-011 — Buscar conteúdo e cursar trilha disponibilizada | texto, layout e implementação `aprovados` — [`layout/spec-011.html`](layout/spec-011.html) | 2026-10-09 |
 | Acesso Gemini (laboratório) | chave só em `apps/api/.env`; `generateContent` HTTP 200 no modelo `gemini-3.5-flash-lite` | 2026-10-02 |
 | Banco MySQL local | schema `estudaai` em `127.0.0.1:3306` (serviço MySQL80); `dentalapp` intocado | 2026-10-02 |
 | Identidade visual (logo + paleta) | `aprovada` — [`identidade-visual.md`](identidade-visual.md) | 2026-09-30 |
 
-A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-08. Em 2026-10-08 o humano **aprovou** SPEC-008 (gerenciar usuários, RF14) e SPEC-009 (consultar progresso dos alunos, RF15): texto, layout e implementação.
+A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-08. Em 2026-10-08 o humano **aprovou** SPEC-008 (gerenciar usuários, RF14) e SPEC-009 (consultar progresso dos alunos, RF15): texto, layout e implementação. No mesmo dia **aprovou** OPEN-27 depois de ver o lightbox com o vídeo de teste na etapa 1 de Python Júnior. Esse endereço está no Markdown da etapa, no banco local, e não entra no repositório.
 
 ---
 
@@ -86,6 +91,8 @@ A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-
 | 7 | SPEC-007 | Conversar com o agente LLM sobre a trilha | SPEC-004, SPEC-006 | `implementada` | `aprovado` |
 | 8 | SPEC-008 | Gerenciar usuários | SPEC-001 | `implementada` | `aprovado` |
 | 9 | SPEC-009 | Consultar progresso dos alunos | SPEC-004, SPEC-008 | `implementada` | `aprovado` |
+| 10 | SPEC-010 | Ajustar trilha personalizada com o agente | SPEC-006, SPEC-004 | `implementada` | `aprovado` |
+| 11 | SPEC-011 | Buscar conteúdo e cursar trilha disponibilizada | SPEC-003, SPEC-004, SPEC-006 | `implementada` | `aprovado` |
 | — | — | Motor de recomendação da visão (OPEN-17) | — | `fora de escopo` | `não se aplica` |
 
 ```
@@ -95,6 +102,8 @@ SPEC-001 Identidade
       → SPEC-004 Acompanhar trilha pré-definida
         → SPEC-005 Integridade na remoção de etapa em uso
         → SPEC-006 Trilha personalizada (LLM)  →  SPEC-007 Conversa
+                                                →  SPEC-010 Ajustar a trilha personalizada
+        → SPEC-011 Busca semântica do conteúdo
         → SPEC-008 Gerenciar usuários  →  SPEC-009 Consultar progresso dos alunos
 ```
 
@@ -436,11 +445,11 @@ AC-002-* e INV-002-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 | **Entidades** | `Categoria`, `Trilha` (`tipo = pré-definida`), `Etapa` |
 | **Drivers** | AD-RF01, AD-RF04, AD-CEN04, AD-C04, AD-QA01 |
 | **ADRs** | ADR-003, ADR-004 |
-| **OPEN fechados** | OPEN-16; OPEN-07 (parte sem progresso) |
+| **OPEN fechados** | OPEN-16; OPEN-07 (parte sem progresso). OPEN-27 não acrescenta coluna: o vídeo é um link Markdown |
 
 ## 3. Escopo
 
-**Incluído:** CRUD de trilha pré-definida e etapas; associação e reordenação; validação RB03 antes de publicar; remoção **somente** se não houver `Progresso` vigente e se restar 1..* etapas; conteúdo Markdown.
+**Incluído:** CRUD de trilha pré-definida e etapas; associação e reordenação; validação RB03 antes de publicar; remoção **somente** se não houver `Progresso` vigente e se restar 1..* etapas; conteúdo Markdown. Um vídeo do YouTube entra como link nesse Markdown (OPEN-27); a abertura em lightbox é da SPEC-004.
 
 **Fora do escopo:** remoção com alunos em andamento (SPEC-005); trilha personalizada (SPEC-006); acompanhamento do aluno (SPEC-004).
 
@@ -564,13 +573,15 @@ AC-003-* e INV-003-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 | **Entidades** | `Aluno`, `Categoria`, `Trilha`, `Etapa`, `Progresso`, `ConclusaoEtapa` |
 | **Drivers** | AD-RF01, AD-RF03, AD-CEN02, AD-QA01, AD-QA04 |
 | **ADRs** | ADR-003, ADR-004 |
-| **OPEN fechados** | OPEN-13, OPEN-15, OPEN-21, OPEN-22 |
+| **OPEN fechados** | OPEN-13, OPEN-15, OPEN-21, OPEN-22, OPEN-26, OPEN-27 |
 
 ## 3. Escopo
 
 **Incluído:** listagem anônima; escolha e progresso só aluno autenticado; percentual derivado; histórico; retomada do mesmo `Progresso`; mensagem de catálogo indisponível (E4, em conjunto com estado do LLM da SPEC-006).
 
 **Apresentação (OPEN-26, 2026-10-08):** no acompanhamento, a etapa é uma sanfona — título e estado visíveis, Markdown oculto até o clique. O trecho `## Exercício` permanece no painel aberto. O trecho `## Resposta`, quando existir, não aparece no fluxo da etapa: o botão **Ver resposta** abre um lightbox sobre a página. Sem `## Resposta`, o botão não aparece. Marcar conclusão continua explícita (RF07).
+
+**Vídeo (OPEN-27, 2026-10-08):** um link de vídeo do YouTube (`youtube.com` ou `youtu.be`) no Markdown da etapa — corpo, `## Exercício` ou `## Resposta` — abre um lightbox sobre a página com o vídeo. O aluno permanece no acompanhamento. Os outros links continuam links. Não há entidade de mídia nem upload. Layout `aprovado` e implementação `implementada` em 2026-10-08.
 
 **Fora do escopo:** criar personalizada (SPEC-006); conversa (SPEC-007); pausar/abandonar/reiniciar; admin como aluno.
 
@@ -817,7 +828,7 @@ AC-005-* e INV-005-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 **Incluído:** interruptor admin (RF13); porta LLM só no Nest; geração síncrona; timeout 60 s; contrato JSON; sentinela; transação solicitação+trilha+etapas+progresso; fallback para catálogo; E4 se catálogo vazio e LLM off.
 
-**Fora do escopo:** fila; conversa (SPEC-007); o LLM escolher categoria; alterar trilhas pré-definidas; ranking da visão.
+**Fora do escopo:** fila; conversa (SPEC-007); o LLM escolher categoria; alterar trilhas pré-definidas; ranking da visão; revisar uma trilha personalizada já gerada (SPEC-010).
 
 ## Telas e evidência de layout
 
@@ -1299,9 +1310,154 @@ AC-009-* e INV-009-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ---
 
+# SPEC-010 — Ajustar trilha personalizada com o agente
+
+**Status:** `implementada`  
+**Layout:** `aprovado`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-010 |
+| **Nome** | Ajustar trilha personalizada com o agente |
+| **Objetivo** | O aluno dono reenvia um prompt para corrigir ou melhorar a trilha `personalizada`. O agente devolve a trilha inteira. A API grava na mesma `Trilha` e conserva a conclusão das etapas que permanecem. |
+| **Valor** | Lucas pede para incluir ou excluir uma etapa sem abrir outra trilha e sem perder o que já marcou no restante. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF16; reutiliza RF04, RF05–RF07, RF13 |
+| **RB** | RB01, RB03, RB04, RB06, RB08, RB09, RB10, RB12 |
+| **RNF** | RNF02, RNF03 (esta operação **fora** dos 2 s), RNF05, RNF07 |
+| **UC / fluxo** | UC01, extensão do fluxo A3 sobre a trilha já aberta |
+| **Entidades** | `SolicitacaoTrilha`, `Trilha` (`personalizada`), `Etapa`, `Progresso`, `ConclusaoEtapa` |
+| **Drivers** | AD-RF01, AD-C02, AD-QA01 |
+| **ADRs** | ADR-002, ADR-003, ADR-004 |
+| **OPEN fechados** | OPEN-28; reusa OPEN-06, OPEN-09, OPEN-19, OPEN-20 |
+
+## 3. Escopo
+
+**Incluído:** no acompanhamento da trilha `personalizada`, o aluno dono envia um novo texto; a porta Gemini recebe esse texto e as etapas atuais com `id`; a resposta substitui título, descrição e a lista de etapas da **mesma** trilha; `SolicitacaoTrilha.textoObjetivo` e `respostaLLM` passam a ser o pedido e o JSON desta revisão.
+
+**Fora do escopo:** criar outra `Trilha` ou outro `Progresso`; editar trilha pré-definida; o administrador ajustar no lugar do aluno; editor manual de Markdown sem o agente; fila.
+
+## Telas e evidência de layout
+
+**Gate:** layout `aprovado` em 2026-10-08. Implementação `implementada` em 2026-10-08.
+
+| Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Acompanhamento com Ajustar trilha | [`spec-010.html#acompanhamento`](layout/spec-010.html#acompanhamento) | [x] | [x] | humano | 2026-10-08 |
+| Prompt de correção, com as etapas atuais | [`spec-010.html#ajuste`](layout/spec-010.html#ajuste) | [x] | [x] | humano | 2026-10-08 |
+| Espera e falha sem gravar | [`spec-010.html#espera`](layout/spec-010.html#espera) | [x] | [x] | humano | 2026-10-08 |
+| Trilha revista, conclusões preservadas | [`spec-010.html#resultado`](layout/spec-010.html#resultado) | [x] | [x] | humano | 2026-10-08 |
+
+Protótipo: [`docs/layout/spec-010.html`](layout/spec-010.html).
+
+## 4. Dependências
+
+SPEC-006 (trilha personalizada, porta LLM, interruptor, timeout 60 s). SPEC-004 (acompanhamento e conclusão). SPEC-001 (aluno JWT).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** aluno autenticado é o dono do `Progresso`; a trilha é `personalizada`; LLM habilitado.
+
+**Fluxo:** o aluno abre **Ajustar trilha**. O campo começa com o `textoObjetivo` já gravado. Ele reescreve o prompt — por exemplo, “inclua uma etapa sobre índices e remova a etapa de totais”. A API envia ao agente o prompt e as etapas atuais `{id, titulo, conteudo, ordem}`. O agente devolve a trilha inteira. A API atualiza a mesma `Trilha`:
+
+- etapa com `id` desta trilha: atualiza título, conteúdo e ordem; a `ConclusaoEtapa` permanece;
+- etapa desta trilha ausente na resposta: remove a conclusão dela e depois a etapa;
+- etapa sem `id`: cria, sem conclusão;
+- título e descrição da trilha acompanham o JSON;
+- `textoObjetivo` e `respostaLLM` da solicitação passam a ser este pedido e este JSON.
+
+**Exceções**
+
+- LLM desligado, timeout de 60 s ou JSON sem título, descrição ou ao menos uma etapa: nada é gravado; a trilha anterior permanece.
+- Trilha pré-definida, outro aluno, administrador ou anônimo: recusa; nada é gravado.
+- `id` que não pertence a esta trilha: trata como etapa nova, sem reaproveitar conclusão alheia.
+- Há `Progresso` de outro aluno (RB20): etapa omitida não é removida; a revisão inteira fica sem gravar. Reescrever etapa existente e incluir etapa nova continuam válidas quando a resposta não omite etapa em uso.
+
+**Pós-sucesso:** o mesmo `Progresso` abre a trilha revista. O percentual é recalculado (RB06). Pré-definidas intactas (RB10).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-010-01 | Só o autor da trilha ajusta (RB01, RB09). Outro aluno que apenas a acompanha não ajusta. |
+| INV-010-02 | A revisão grava na mesma `Trilha` e no mesmo `Progresso`. Não nasce trilha nova. |
+| INV-010-03 | `Trilha.tipo` permanece `personalizada` e a categoria permanece a sentinela **Personalizada**. |
+| INV-010-04 | Trilha pré-definida não é alterada por este fluxo (RB10). RB11 continua valendo para o administrador no catálogo. |
+| INV-010-05 | Etapa mantida conserva a `ConclusaoEtapa`. Etapa nova não nasce concluída. |
+| INV-010-06 | Excluir etapa remove somente a conclusão dessa etapa. As demais conclusões ficam (RB12). |
+| INV-010-07 | A trilha revista tem ao menos uma etapa (RB03). |
+| INV-010-08 | Chamada ao LLM sai somente da API Nest. Timeout 60 s. Sem fila. Chave fora do Next.js. |
+| INV-010-09 | Falha do agente não altera `Trilha`, `Etapa`, `ConclusaoEtapa` nem `SolicitacaoTrilha`. |
+
+## 7. Modelo de domínio envolvido
+
+Nenhuma entidade nova nesta Spec. A autoria na `Trilha` é da SPEC-011. Até lá, o autor prático é o aluno da `SolicitacaoTrilha`.
+
+JSON pedido ao agente na revisão:
+
+```json
+{
+  "titulo": "string",
+  "descricao": "string",
+  "etapas": [
+    { "id": "uuid existente ou omitido", "titulo": "string", "conteudo": "string (Markdown)", "ordem": 1 }
+  ]
+}
+```
+
+## 8. Impacto arquitetural
+
+Nova operação na API, atrás da mesma porta LLM da SPEC-006. O adaptador falso dos testes devolve uma revisão controlada. A listagem e o progresso local não esperam o Gemini (RNF03).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Sucesso | Erros |
+|---|---|---|---|
+| Ajustar trilha personalizada | aluno dono, progressoId, textoObjetivo | mesma trilha revista + o mesmo progresso | não dono; trilha pré-definida; LLM off; timeout; JSON inválido |
+
+## 10. RNFs aplicáveis
+
+RNF02: Gemini, interruptor e 60 s. RNF03: abrir o acompanhamento continua abaixo de 2 s, sem esperar esta revisão. RNF05: operação autenticada. RNF07: trocar o adaptador não cria outra entidade.
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-010-01 | Aluno dono, LLM on, JSON com as etapas antigas mais uma sem `id` | Reenvia o prompt | A mesma trilha ganha a etapa nova; as conclusões anteriores permanecem; não nasce outro `Progresso` |
+| AC-010-02 | Uma etapa concluída é omitida no JSON e as outras voltam com o mesmo `id` | Reenvia o prompt | A etapa omitida e só a conclusão dela saem; as outras conclusões ficam |
+| AC-010-03 | LLM off, timeout ou JSON inválido | Reenvia o prompt | A trilha anterior permanece inteira |
+| AC-010-04 | Trilha pré-definida, outro aluno, admin ou anônimo | Tenta ajustar | Recusa; nada gravado |
+| AC-010-05 | Há pré-definidas no catálogo | Revisão bem-sucedida | Pré-definidas inalteradas |
+| AC-010-06 | Chave Gemini | Inspeciona o cliente | A chave não está no frontend |
+
+## 12. Casos de teste derivados
+
+1. Incluir etapa: ids antigos preservados, conclusão preservada, etapa nova sem conclusão.
+2. Excluir etapa concluída: só aquela conclusão some; percentual recalculado.
+3. Timeout, LLM off e JSON sem etapas: estado anterior igual.
+4. Recusa em trilha pré-definida e por quem não é o dono.
+5. Contagem de trilhas pré-definidas inalterada.
+6. Mesmo `trilha_id` e mesmo `progresso_id` antes e depois.
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+AC-010-* e INV-010-* atendidos; testes da §12 aprovados; RNFs verificados; layout `aprovado` antes do código.
+
+---
+
 ## Definition of Done do conjunto
 
-O conjunto SPEC-001 … SPEC-009 está **implementado** (001–007 em 2026-10-08; 008–009 pedidas e implementadas em 2026-10-08). Layout de todas as Specs: `aprovado`.
+O conjunto SPEC-001 … SPEC-011 está **implementado** (001–007 em 2026-10-08; 008–010 em 2026-10-08; 011 em 2026-10-09). Layout da SPEC-011: `aprovado` antes do código.
 
 Ordem obrigatória por Spec:
 
@@ -1318,3 +1474,189 @@ Se durante a implementação surgir conflito entre código, esta Spec e a baseli
 2. propor alteração da baseline para aprovação humana.
 
 A decisão final é da equipe humana.
+
+---
+
+# SPEC-011 — Buscar conteúdo e cursar trilha disponibilizada
+
+**Status:** `implementada`  
+**Layout:** `aprovado` em 2026-10-09. Implementação em 2026-10-09.
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-011 |
+| **Nome** | Buscar conteúdo e cursar trilha disponibilizada |
+| **Objetivo** | No catálogo, o aluno autenticado pergunta e recebe até cinco etapas de qualquer trilha disponível. O autor de uma personalizada pode deixá-la para todos. Outro aluno começa essa mesma trilha, com o próprio progresso. |
+| **Valor** | Quem pediu à IA uma trilha de juros simples e compostos deixa o percurso no catálogo. Outro aluno acha a etapa pela pergunta e cursa a mesma trilha, sem cópia e sem misturar conclusões. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF17, RF18 |
+| **RB** | RB01, RB04, RB09, RB11, RB19, RB20 |
+| **RNF** | RNF03 (a busca **fora** dos 2 s), RNF05, RNF07, RNF09, RNF11 |
+| **UC / fluxo** | Consulta no catálogo e início de acompanhamento da SPEC-004 |
+| **Entidades** | `Trilha`, `Etapa`, `Progresso`, `SolicitacaoTrilha` |
+| **Drivers** | AD-C02, AD-QA01 |
+| **ADRs** | ADR-001, ADR-004 |
+| **OPEN fechados** | OPEN-29; reusa OPEN-13, OPEN-16 |
+
+## 3. Escopo
+
+**Incluído:** autor na `Trilha`; personalizada nasce indisponível para os demais; o autor a deixa disponível ou a retira; ela entra na categoria **Personalizada** do catálogo; outro aluno abre `Progresso` na mesma trilha; pergunta no topo de `/catalogo`; `POST /busca`; índice Pinecone das etapas visíveis.
+
+**Fora do escopo:** copiar a trilha ao começar; o outro aluno ajustar pelo agente; rota nova de busca; a tela administrativa `/categorias`; criar ou reconfigurar o índice; coluna vetorial no MySQL; chamar o Gemini para embedding; busca do administrador ou do anônimo; motor de recomendação (OPEN-17).
+
+## Telas e evidência de layout
+
+**Gate:** layout `aprovado` pelo humano em 2026-10-09. Implementação em 2026-10-09.
+
+| Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Catálogo com a pergunta acima das categorias | [`spec-011.html#pergunta`](layout/spec-011.html#pergunta) | [x] | [x] | humano | 2026-10-09 |
+| Etapa de trilha disponibilizada por outro aluno | [`spec-011.html#resultados`](layout/spec-011.html#resultados) | [x] | [x] | humano | 2026-10-09 |
+| Autor deixa a trilha disponível | [`spec-011.html#disponibilizar`](layout/spec-011.html#disponibilizar) | [x] | [x] | humano | 2026-10-09 |
+| Categoria Personalizada no catálogo | [`spec-011.html#categorias`](layout/spec-011.html#categorias) | [x] | [x] | humano | 2026-10-09 |
+| Nenhuma etapa próxima | [`spec-011.html#vazio`](layout/spec-011.html#vazio) | [x] | [x] | humano | 2026-10-09 |
+| Busca indisponível | [`spec-011.html#indisponivel`](layout/spec-011.html#indisponivel) | [x] | [x] | humano | 2026-10-09 |
+
+Protótipo: [`docs/layout/spec-011.html`](layout/spec-011.html).
+
+## 4. Dependências
+
+SPEC-003 e SPEC-004 (catálogo e `Progresso`). SPEC-006 (a personalizada nasce da solicitação). SPEC-010 (só o autor ajusta; etapa em uso por outro aluno não sai). SPEC-001 (aluno JWT).
+
+## 5. Comportamento esperado
+
+**Autoria e disponibilidade**
+
+A personalizada guarda o autor na própria `Trilha`: o aluno da `SolicitacaoTrilha`. A pré-definida não tem autor. O `Progresso` deixa de significar posse. Vários alunos podem acompanhar a mesma trilha; cada um tem as próprias `ConclusaoEtapa`.
+
+A personalizada nasce com `disponivel` falso para os demais. Só o autor a vê no bloco das suas trilhas e na própria busca. No acompanhamento, o autor marca **Disponível para todos**. A trilha passa a aparecer no catálogo, na categoria **Personalizada**, com o nome do autor, para quem está logado e para quem só consulta o catálogo (OPEN-13). Começar continua exigindo aluno autenticado.
+
+O autor pode retirar a disponibilidade. A trilha sai do catálogo e da busca dos outros. Quem já tem `Progresso` continua de onde parou. Aluno novo não a começa enquanto estiver indisponível.
+
+Personalizadas já gravadas antes desta Spec, com `disponivel` verdadeiro só porque a geração antiga marcava esse campo, passam a `disponivel` falso nesta migração. Nada fica público sem o gesto do autor.
+
+**Começar a trilha de outro aluno**
+
+O aluno usa o mesmo `POST /progresso/escolher-trilha` da trilha pré-definida. A trilha personalizada entra nesse contrato quando `disponivel` é verdadeiro. A API cria o `Progresso` dele na mesma `Trilha` e nas mesmas etapas. Não cria `SolicitacaoTrilha`, não copia etapa e não mexe no progresso do autor.
+
+Se ele já acompanha, o botão abre o `Progresso` existente.
+
+**Ajuste com a trilha compartilhada**
+
+Só o autor chama o ajuste da SPEC-010. Se a resposta omitir uma etapa e existir `Progresso` de outro aluno, a API não grava a revisão (RB11, RB20). Reescrever etapa já existente e incluir etapa nova seguem a SPEC-010, e a conclusão de quem já marcou a etapa reescrita permanece.
+
+**Conjunto pesquisável**
+
+- etapa de trilha `disponivel`, pré-definida ou personalizada, de qualquer autor;
+- etapa de personalizada ainda indisponível cujo autor é o aluno que pergunta.
+
+A personalizada privada de outro aluno fica de fora, mesmo que o índice ainda a tenha.
+
+**Registro no Pinecone**
+
+Um registro por etapa, no namespace `__default__`:
+
+```json
+{
+  "id": "idDaTrilha#idDaEtapa",
+  "text": "Markdown atual de Etapa.conteudo",
+  "trilha": "idDaTrilha",
+  "aula": "idDaEtapa",
+  "titulo": "titulo da etapa",
+  "autor": "idDoAutor ou vazio na pré-definida"
+}
+```
+
+O índice vetoriza só `text`. Gravação com `passage`, pergunta com `query`, dimensão 1024, truncamento `END`. A API não cria nem reconfigura o índice. A consulta pede `topK` 5 e filtra registro disponível ou de autoria do aluno. O MySQL confirma a visibilidade e descarta o que o índice atrasou. O trecho é o início do `conteudo` atual, até 240 caracteres, mais o nome do autor quando houver.
+
+**Quando gravar ou apagar**
+
+Depois do commit: criar personalizada, disponibilizar, retirar, editar etapa, ajustar (SPEC-010), publicar ou despublicar pré-definida. Na subida, com a chave presente, a API reindexa o conjunto pesquisável. Falha do Pinecone não desfaz o MySQL.
+
+**Fluxo da pergunta**
+
+A pergunta fica no topo de `/catalogo`, acima das categorias. O resultado mostra trilha, etapa, autor da personalizada e a ação **Abrir** ou **Começar**. As categorias continuam abaixo. Quem vê o catálogo sem conta não envia a pergunta.
+
+**Exceções**
+
+- Anônimo, administrador ou texto vazio na busca: recusa.
+- Aluno que não é o autor tenta disponibilizar, retirar ou ajustar: recusa.
+- Começar personalizada indisponível, ou pré-definida não publicada: recusa.
+- Índice ausente ou em erro: a busca avisa indisponível; o catálogo por categoria continua.
+- Nenhum vizinho: “Nenhuma etapa próxima dessa pergunta.”
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-011-01 | Só o aluno autenticado busca (RB01). |
+| INV-011-02 | A busca devolve trilha `disponivel` de qualquer autor e a personalizada privada de quem pergunta (RB19). |
+| INV-011-03 | A personalizada tem um autor, o aluno da solicitação. A pré-definida não tem autor (RB09). |
+| INV-011-04 | Disponibilizar não copia `Trilha` nem `Etapa` e não abre um segundo `Progresso` para o autor (RB20). |
+| INV-011-05 | Outro aluno, ao começar, ganha `Progresso` próprio na mesma trilha. As conclusões não se misturam (RB04). |
+| INV-011-06 | Só o autor disponibiliza, retira e ajusta. |
+| INV-011-07 | Com `Progresso` de outro aluno, omitir etapa não grava a revisão (RB11). |
+| INV-011-08 | A pergunta não grava trilha, etapa, progresso nem conclusão (RB19). |
+| INV-011-09 | Um registro por etapa, id `trilhaId#etapaId`. O texto exibido sai do MySQL. |
+| INV-011-10 | `PINECONE_API_KEY` fica só na API. A busca não chama o Gemini nem reconfigura o índice. |
+
+## 7. Modelo de domínio envolvido
+
+`Trilha` passa a ter autor opcional: preenchido na personalizada, vazio na pré-definida. `disponivel` na personalizada significa “visível para todos”, e nasce falso. `Progresso` continua um por par aluno–trilha. `SolicitacaoTrilha.aluno_id` e `Trilha.autor` são o mesmo aluno. Nenhuma coluna de vetor.
+
+## 8. Impacto arquitetural
+
+Coluna `autor_id` em `trilha`, nula na pré-definida, com restrição ao apagar o usuário. Porta de índice na API, com adaptador falso nos testes. `escolher-trilha` aceita personalizada disponível. A listagem do catálogo inclui essas trilhas na categoria **Personalizada**. Listar categorias não espera o Pinecone (RNF03).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Sucesso | Erros |
+|---|---|---|---|
+| Disponibilizar ou retirar | autor, trilha personalizada, `disponivel` | a mesma trilha muda o flag | quem não é o autor; trilha pré-definida |
+| Começar | aluno, trilha disponível | `Progresso` novo, ou o já existente | indisponível; anônimo; administrador |
+| Buscar | aluno JWT, texto | até 5 itens `{ trilhaId, etapaId, tituloTrilha, tituloEtapa, tipo, autorNome ou null, progressoId ou null, trecho }` | anônimo; administrador; texto vazio; índice indisponível |
+| Indexar | depois do commit | upsert ou remoção de `trilhaId#etapaId` | falha só no log; MySQL permanece |
+
+## 10. RNFs aplicáveis
+
+RNF11: `estudaai-trilhas`, `__default__`, 1024, `END`, field map `text`, `passage` e `query`. RNF03: a busca fica fora dos 2 segundos; o catálogo não. RNF05: busca, disponibilizar e começar são autenticados. RNF07: o adaptador falso não cria entidade. RNF09: sem chave e sem o corpo de `text` no log.
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-011-01 | Autor com personalizada privada de juros compostos | Deixa disponível | A trilha aparece no catálogo, categoria Personalizada, com o nome do autor; não nasce outra trilha nem outro progresso do autor |
+| AC-011-02 | Outro aluno vê essa trilha na busca ou no catálogo | Começa | Ganha `Progresso` próprio na mesma trilha; o progresso e as conclusões do autor ficam como estavam |
+| AC-011-03 | A personalizada do outro ainda está privada | Este aluno busca | Essa trilha não aparece |
+| AC-011-04 | A personalizada está disponível e o texto responde à pergunta | Outro aluno busca | A etapa volta, no máximo cinco, com trecho do MySQL e o nome do autor |
+| AC-011-05 | Outro aluno já tem progresso | O autor manda uma revisão que omite uma etapa | Nada é gravado |
+| AC-011-06 | O autor retira a disponibilidade | Outro aluno que já começou abre a trilha; um terceiro tenta começar | O segundo continua; o terceiro é recusado; a busca dos outros não devolve a trilha |
+| AC-011-07 | Pinecone falha depois do commit, ou na pergunta | Disponibilizar, ou buscar | A trilha no MySQL permanece; a busca avisa indisponível |
+| AC-011-08 | Administrador, anônimo, ou aluno que não é o autor | Busca, ou tenta disponibilizar | Busca recusada para admin e anônimo; disponibilizar recusada para quem não é o autor |
+| AC-011-09 | Chave Pinecone | Inspeciona o cliente e o log | A chave não está no frontend nem no log |
+
+## 12. Casos de teste derivados
+
+1. Gerar personalizada grava `autor_id` e `disponivel` falso. O catálogo público não a lista.
+2. Disponibilizar não duplica trilha, etapa nem progresso do autor. A categoria Personalizada passa a listá-la.
+3. Outro aluno em `escolher-trilha` cria progresso novo na mesma `trilha_id`. Conclusão de um não aparece para o outro.
+4. Busca do outro aluno acha a etapa disponível e não acha a personalizada privada de um terceiro.
+5. Revisão que omite etapa com progresso alheio não altera etapas nem conclusões.
+6. Retirar a disponibilidade esconde a trilha na busca alheia e recusa começo novo; o progresso já aberto abre.
+7. Migração deixa indisponível a personalizada antiga que estava com `disponivel` verdadeiro.
+8. Falha do adaptador de índice não reverte o commit. Busca com adaptador indisponível não escreve no banco.
+9. Log sem chave e sem o campo `text`.
+
+## 13. Questões em aberto
+
+Nenhuma. O índice e o formato `trilhaId#etapaId` foram definidos pelo humano em 2026-10-09. A autoria na `Trilha` e a disponibilidade para todos foram pedidas na revisão desta Spec.
+
+## 14. Definition of Done
+
+AC-011-* e INV-011-* atendidos; testes da §12 aprovados; RNFs verificados; layout `aprovado` antes do código.

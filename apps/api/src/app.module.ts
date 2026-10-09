@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { CatalogoModule } from './catalogo/catalogo.module';
 import { ConfigModule } from './config/config.module';
 import { opcoesTypeOrm } from './db/opcoes-typeorm';
+import { IndiceModule } from './indice/indice.module';
 import { LlmModule } from './llm/llm.module';
 import { ProgressoModule } from './progresso/progresso.module';
 import { UsuarioModule } from './usuario/usuario.module';
@@ -18,6 +19,7 @@ import { UsuarioModule } from './usuario/usuario.module';
     ProgressoModule,
     ConfigModule,
     LlmModule,
+    IndiceModule,
     UsuarioModule
   ]
 })

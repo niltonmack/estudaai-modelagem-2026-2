@@ -1,8 +1,38 @@
-function Inline({ texto }: { texto: string }) {
-  const partes = texto.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
+"use client";
+
+import katex from "katex";
+import { useState } from "react";
+import { Lightbox } from "@/components/lightbox";
+import { formulaExibida, texComVirgulaDecimal } from "@/lib/formula";
+import { idVideoYouTube } from "@/lib/youtube";
+
+function Formula({ tex, display }: { tex: string; display: boolean }) {
+  const html = katex.renderToString(texComVirgulaDecimal(tex), {
+    displayMode: display,
+    throwOnError: false,
+    strict: "ignore",
+    trust: false
+  });
+  if (display) {
+    return <div className="overflow-x-auto py-1" dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+function Inline({
+  texto,
+  aoVideo
+}: {
+  texto: string;
+  aoVideo: (id: string, titulo: string) => void;
+}) {
+  const partes = texto.split(/(\$[^$\n]+\$|\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
   return (
     <>
       {partes.map((parte, i) => {
+        if (parte.startsWith("$") && parte.endsWith("$") && parte.length > 2) {
+          return <Formula key={i} tex={parte.slice(1, -1)} display={false} />;
+        }
         if (parte.startsWith("**") && parte.endsWith("**")) {
           return (
             <strong key={i} className="font-semibold text-brand-ink">
@@ -19,6 +49,19 @@ function Inline({ texto }: { texto: string }) {
         }
         const link = parte.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
         if (link) {
+          const video = idVideoYouTube(link[2]);
+          if (video) {
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => aoVideo(video, link[1])}
+                className="text-brand-trail underline"
+              >
+                {link[1]}
+              </button>
+            );
+          }
           return (
             <a key={i} href={link[2]} className="text-brand-trail underline" target="_blank" rel="noreferrer">
               {link[1]}
@@ -37,6 +80,7 @@ type Bloco =
   | { tipo: "lista"; itens: string[] }
   | { tipo: "numerada"; itens: string[] }
   | { tipo: "tabela"; linhas: string[][] }
+  | { tipo: "formula"; texto: string }
   | { tipo: "paragrafo"; linhas: string[] };
 
 function parsear(texto: string): Bloco[] {
@@ -58,6 +102,23 @@ function parsear(texto: string): Bloco[] {
       }
       i += 1;
       blocos.push({ tipo: "codigo", texto: codigo.join("\n") });
+      continue;
+    }
+    const exibida = formulaExibida(linha);
+    if (exibida !== null) {
+      blocos.push({ tipo: "formula", texto: exibida });
+      i += 1;
+      continue;
+    }
+    if (linha.trim() === "$$") {
+      const formula: string[] = [];
+      i += 1;
+      while (i < linhas.length && linhas[i].trim() !== "$$") {
+        formula.push(linhas[i]);
+        i += 1;
+      }
+      i += 1;
+      blocos.push({ tipo: "formula", texto: formula.join("\n").trim() });
       continue;
     }
     const titulo = linha.match(/^(#{1,4})\s+(.*)$/);
@@ -107,7 +168,9 @@ function parsear(texto: string): Bloco[] {
       !linhas[i].trim().startsWith("```") &&
       !/^(#{1,4})\s+/.test(linhas[i]) &&
       !linhas[i].trim().startsWith("- ") &&
-      !/^\d+\.\s+/.test(linhas[i].trim())
+      !/^\d+\.\s+/.test(linhas[i].trim()) &&
+      formulaExibida(linhas[i]) === null &&
+      linhas[i].trim() !== "$$"
     ) {
       paragrafo.push(linhas[i]);
       i += 1;
@@ -118,13 +181,16 @@ function parsear(texto: string): Bloco[] {
 }
 
 export function MarkdownEtapa({ texto }: { texto: string }) {
+  const [video, setVideo] = useState<{ id: string; titulo: string } | null>(null);
+  const aoVideo = (id: string, titulo: string) => setVideo({ id, titulo });
+
   return (
     <div className="space-y-3 text-sm leading-relaxed text-slate-700">
       {parsear(texto).map((bloco, i) => {
         if (bloco.tipo === "titulo") {
           return (
             <h4 key={i} className="font-semibold text-brand-ink">
-              <Inline texto={bloco.texto} />
+              <Inline texto={bloco.texto} aoVideo={aoVideo} />
             </h4>
           );
         }
@@ -140,7 +206,7 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
             <ul key={i} className="list-disc space-y-1 pl-5">
               {bloco.itens.map((item, j) => (
                 <li key={j}>
-                  <Inline texto={item} />
+                  <Inline texto={item} aoVideo={aoVideo} />
                 </li>
               ))}
             </ul>
@@ -151,11 +217,14 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
             <ol key={i} className="list-decimal space-y-1 pl-5">
               {bloco.itens.map((item, j) => (
                 <li key={j}>
-                  <Inline texto={item} />
+                  <Inline texto={item} aoVideo={aoVideo} />
                 </li>
               ))}
             </ol>
           );
+        }
+        if (bloco.tipo === "formula") {
+          return <Formula key={i} tex={bloco.texto} display />;
         }
         if (bloco.tipo === "tabela") {
           return (
@@ -166,7 +235,7 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
                     <tr key={j} className={j === 0 ? "font-medium text-brand-ink" : ""}>
                       {linha.map((celula, k) => (
                         <td key={k} className="border border-slate-200 px-2 py-1">
-                          <Inline texto={celula} />
+                          <Inline texto={celula} aoVideo={aoVideo} />
                         </td>
                       ))}
                     </tr>
@@ -176,17 +245,41 @@ export function MarkdownEtapa({ texto }: { texto: string }) {
             </div>
           );
         }
+        const linhaUnica = bloco.linhas.length === 1 ? bloco.linhas[0].trim() : "";
+        const videoSolto = linhaUnica ? idVideoYouTube(linhaUnica) : null;
+        if (videoSolto) {
+          return (
+            <p key={i}>
+              <button type="button" onClick={() => aoVideo(videoSolto, "Assistir ao vídeo")} className="text-brand-trail underline">
+                Assistir ao vídeo
+              </button>
+            </p>
+          );
+        }
         return (
           <p key={i}>
             {bloco.linhas.map((linha, j) => (
               <span key={j}>
                 {j > 0 ? <br /> : null}
-                <Inline texto={linha} />
+                <Inline texto={linha} aoVideo={aoVideo} />
               </span>
             ))}
           </p>
         );
       })}
+      {video ? (
+        <Lightbox titulo={video.titulo} sobre onFechar={() => setVideo(null)}>
+          <div className="aspect-video overflow-hidden rounded-md bg-brand-ink">
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube-nocookie.com/embed/${video.id}`}
+              title={video.titulo}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </Lightbox>
+      ) : null}
     </div>
   );
 }
