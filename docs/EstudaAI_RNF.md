@@ -79,7 +79,7 @@ O sistema **SHALL NOT** usar uma segunda paleta de marca nem um segundo símbolo
 
 **Tipo EARS:** Optional feature
 
-**WHERE** a busca semântica estiver configurada, o sistema **SHALL** usar o índice Pinecone já existente `quickstart`, no namespace `__default__`, com dimensão 1024, truncamento `END` e field map `text`.
+**WHERE** a busca semântica estiver configurada, o sistema **SHALL** usar o índice Pinecone já existente `estudaai-trilhas`, no namespace `__default__`, com dimensão 1024, truncamento `END` e field map `text`.
 
 A gravação de um trecho **SHALL** usar o parâmetro de embedding `passage`. A pergunta do aluno **SHALL** usar o parâmetro `query`. Os dois lados **SHALL** permanecer em 1024 dimensões.
 

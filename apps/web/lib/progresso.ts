@@ -3,6 +3,18 @@ export type TrilhaCatalogo = {
   titulo: string;
   descricao: string;
   quantidadeEtapas: number;
+  autorNome: string | null;
+};
+
+export type ResultadoBusca = {
+  trilhaId: string;
+  etapaId: string;
+  tituloTrilha: string;
+  tituloEtapa: string;
+  tipo: "pré-definida" | "personalizada";
+  autorNome: string | null;
+  progressoId: string | null;
+  trecho: string;
 };
 
 export type CategoriaCatalogo = {
@@ -39,6 +51,9 @@ export type ProgressoDetalhe = {
     titulo: string;
     descricao: string;
     tipo: "pré-definida" | "personalizada";
+    disponivel: boolean;
+    autorNome: string | null;
+    souAutor: boolean;
     categoria: { id: string; nome: string };
     etapas: EtapaProgresso[];
   };

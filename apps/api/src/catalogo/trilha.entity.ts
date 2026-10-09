@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Usuario } from '../usuario/usuario.entity';
 import { Categoria } from './categoria.entity';
 import { Etapa } from './etapa.entity';
 
@@ -18,6 +19,13 @@ export class Trilha {
 
   @Column({ default: false })
   disponivel!: boolean;
+
+  @Column({ name: 'autor_id', type: 'varchar', length: 36, nullable: true })
+  autorId!: string | null;
+
+  @ManyToOne(() => Usuario, { nullable: true, onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'autor_id' })
+  autor!: Usuario | null;
 
   @ManyToOne(() => Categoria, (categoria) => categoria.trilhas, {
     nullable: false,

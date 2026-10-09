@@ -34,7 +34,9 @@ CREATE TABLE trilha (
   tipo VARCHAR(20) NOT NULL,
   disponivel BOOLEAN NOT NULL DEFAULT FALSE,
   categoria_id CHAR(36) NOT NULL,
-  FOREIGN KEY (categoria_id) REFERENCES categoria(id)
+  autor_id CHAR(36) NULL,
+  FOREIGN KEY (categoria_id) REFERENCES categoria(id),
+  FOREIGN KEY (autor_id) REFERENCES usuario(id)
 );
 
 CREATE TABLE etapa (

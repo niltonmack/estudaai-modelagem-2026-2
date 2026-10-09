@@ -8,6 +8,7 @@ import { ConfigModule } from '../config/config.module';
 import { Progresso } from '../progresso/progresso.entity';
 import { ProgressoModule } from '../progresso/progresso.module';
 import { Usuario } from '../usuario/usuario.entity';
+import { IndiceModule } from '../indice/indice.module';
 import { FakeLlmAdapter } from './fake.adapter';
 import { GeminiLlmAdapter } from './gemini.adapter';
 import { Mensagem } from './mensagem.entity';
@@ -23,7 +24,8 @@ import { SolicitacaoTrilha } from './solicitacao-trilha.entity';
     TypeOrmModule.forFeature([SolicitacaoTrilha, Mensagem, Trilha, Etapa, Progresso, Categoria, Usuario]),
     AuthModule,
     ConfigModule,
-    ProgressoModule
+    ProgressoModule,
+    IndiceModule
   ],
   controllers: [PersonalizadaController, ConversaController],
   providers: [

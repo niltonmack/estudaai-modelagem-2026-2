@@ -33,6 +33,9 @@ export type ProgressoResposta = {
     titulo: string;
     descricao: string;
     tipo: 'pré-definida' | 'personalizada';
+    disponivel: boolean;
+    autorNome: string | null;
+    souAutor: boolean;
     categoria: { id: string; nome: string };
     etapas: EtapaProgressoResposta[];
   };
@@ -98,6 +101,7 @@ export type CatalogoPublicoResposta = {
       titulo: string;
       descricao: string;
       quantidadeEtapas: number;
+      autorNome: string | null;
     }[];
   }[];
 };

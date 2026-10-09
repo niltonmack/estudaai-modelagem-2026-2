@@ -7,6 +7,7 @@ import { NOME_SENTINELA } from '../catalogo/catalogo.service';
 import { Etapa } from '../catalogo/etapa.entity';
 import { Trilha } from '../catalogo/trilha.entity';
 import { ConfiguracaoLlmService } from '../config/configuracao-llm.service';
+import { IndiceService } from '../indice/indice.service';
 import { ConclusaoEtapa } from '../progresso/conclusao-etapa.entity';
 import { Progresso } from '../progresso/progresso.entity';
 import { ProgressoResposta } from '../progresso/dto';
@@ -38,7 +39,8 @@ export class PersonalizadaService {
     private readonly dados: DataSource,
     @InjectRepository(Trilha) private readonly trilhas: Repository<Trilha>,
     @InjectRepository(Categoria) private readonly categorias: Repository<Categoria>,
-    private readonly audit: AuditLogger
+    private readonly audit: AuditLogger,
+    private readonly indice: IndiceService
   ) {}
 
   async gerar(textoObjetivo: string, ator: Ator): Promise<ProgressoResposta> {
@@ -118,8 +120,9 @@ export class PersonalizadaService {
     }
 
     let progressoId = '';
+    let trilhaId = '';
     try {
-      progressoId = await this.dados.transaction(async (manager) => {
+      const gravado = await this.dados.transaction(async (manager) => {
         const aluno = await manager.getRepository(Usuario).findOneByOrFail({ id: ator.userId });
         const sentinelaTx = await manager.getRepository(Categoria).findOneByOrFail({ id: sentinela.id });
         const trilha = await manager.getRepository(Trilha).save(
@@ -127,7 +130,9 @@ export class PersonalizadaService {
             titulo: resposta.titulo.slice(0, 160),
             descricao: resposta.descricao,
             tipo: TIPO_PERSONALIZADA,
-            disponivel: true,
+            disponivel: false,
+            autor: aluno,
+            autorId: aluno.id,
             categoria: sentinelaTx
           })
         );
@@ -161,8 +166,10 @@ export class PersonalizadaService {
             trilhaId: trilha.id
           })
         );
-        return progresso.id;
+        return { progressoId: progresso.id, trilhaId: trilha.id };
       });
+      progressoId = gravado.progressoId;
+      trilhaId = gravado.trilhaId;
     } catch {
       this.audit.registrar({
         level: 'error',
@@ -201,6 +208,7 @@ export class PersonalizadaService {
       perfil: 'aluno',
       message: `Trilha personalizada criada: ${resposta.titulo}`
     });
+    await this.indice.sincronizar(trilhaId);
     return this.progresso.obter(progressoId, ator);
   }
 
@@ -313,6 +321,36 @@ export class PersonalizadaService {
       );
     }
 
+    const mantidas = new Set<string>();
+    const idsAtuais = new Set(etapasAtuais.map((etapa) => etapa.id));
+    for (const etapa of resposta.etapas) {
+      if (etapa.id && idsAtuais.has(etapa.id) && !mantidas.has(etapa.id)) mantidas.add(etapa.id);
+    }
+    const omitiuEtapa = etapasAtuais.some((etapa) => !mantidas.has(etapa.id));
+    if (omitiuEtapa) {
+      const acompanhamentos = await this.dados.getRepository(Progresso).find({
+        where: { trilhaId: progresso.trilhaId }
+      });
+      if (acompanhamentos.some((item) => item.alunoId !== ator.userId)) {
+        this.audit.registrar({
+          level: 'warn',
+          event: 'llm.ajuste.recusada',
+          outcome: 'recusado',
+          email: ator.email,
+          perfil: 'aluno',
+          message: 'Ajuste recusado: etapa em uso por outro aluno'
+        });
+        throw new HttpException(
+          {
+            message:
+              'Outro aluno já acompanha esta trilha. Não é possível excluir etapa. A trilha anterior permanece.',
+            codigo: 'etapa_em_uso'
+          },
+          HttpStatus.CONFLICT
+        );
+      }
+    }
+
     try {
       await this.dados.transaction(async (manager) => {
         const trilhasRepo = manager.getRepository(Trilha);
@@ -396,6 +434,55 @@ export class PersonalizadaService {
       perfil: 'aluno',
       message: `Trilha personalizada revista: ${resposta.titulo}`
     });
+    const removidas = etapasAtuais.filter((etapa) => !mantidas.has(etapa.id)).map((etapa) => etapa.id);
+    await this.indice.sincronizar(progresso.trilhaId, removidas);
+    return this.progresso.obter(progresso.id, ator);
+  }
+
+  async definirDisponibilidade(trilhaId: string, disponivel: boolean, ator: Ator): Promise<ProgressoResposta> {
+    const trilha = await this.trilhas.findOne({ where: { id: trilhaId }, relations: ['etapas'] });
+    if (!trilha || trilha.tipo !== TIPO_PERSONALIZADA) {
+      throw new HttpException(
+        { message: 'Só uma trilha personalizada pode ficar disponível. Nada foi alterado.', codigo: 'recusado' },
+        trilha ? HttpStatus.CONFLICT : HttpStatus.NOT_FOUND
+      );
+    }
+    if (trilha.autorId !== ator.userId) {
+      throw new HttpException(
+        { message: 'Só o autor pode deixar esta trilha disponível. Nada foi alterado.', codigo: 'recusado' },
+        HttpStatus.FORBIDDEN
+      );
+    }
+    const progresso = await this.dados.getRepository(Progresso).findOne({
+      where: { alunoId: ator.userId, trilhaId: trilha.id }
+    });
+    if (!progresso) {
+      throw new HttpException(
+        { message: 'Progresso do autor não encontrado. Nada foi alterado.', codigo: 'recusado' },
+        HttpStatus.NOT_FOUND
+      );
+    }
+    const antes = await this.dados.getRepository(Progresso).count({ where: { alunoId: ator.userId, trilhaId } });
+    trilha.disponivel = disponivel;
+    await this.trilhas.save(trilha);
+    const depois = await this.dados.getRepository(Progresso).count({ where: { alunoId: ator.userId, trilhaId } });
+    if (depois !== antes) {
+      throw new HttpException(
+        { message: 'A disponibilidade não pode abrir outro progresso. Nada mais foi alterado.', codigo: 'persistencia' },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+    await this.indice.sincronizar(trilha.id);
+    this.audit.registrar({
+      level: 'info',
+      event: disponivel ? 'trilha.disponibilizada' : 'trilha.retirada',
+      outcome: 'ok',
+      email: ator.email,
+      perfil: 'aluno',
+      message: disponivel
+        ? `Trilha disponível para todos: ${trilha.titulo}`
+        : `Trilha retirada do catálogo: ${trilha.titulo}`
+    });
     return this.progresso.obter(progresso.id, ator);
   }
 
@@ -408,20 +495,6 @@ export class PersonalizadaService {
       throw new HttpException(
         { message: 'Progresso não encontrado. Nada foi alterado.', codigo: 'recusado' },
         HttpStatus.NOT_FOUND
-      );
-    }
-    if (progresso.alunoId !== ator.userId) {
-      this.audit.registrar({
-        level: 'warn',
-        event: 'llm.ajuste.recusada',
-        outcome: 'recusado',
-        email: ator.email,
-        perfil: 'aluno',
-        message: 'Ajuste recusado: aluno não é o dono'
-      });
-      throw new HttpException(
-        { message: 'Só o aluno desta trilha pode ajustá-la. Nada foi alterado.', codigo: 'recusado' },
-        HttpStatus.FORBIDDEN
       );
     }
     if (progresso.trilha.tipo !== TIPO_PERSONALIZADA) {
@@ -439,6 +512,20 @@ export class PersonalizadaService {
           codigo: 'recusado'
         },
         HttpStatus.CONFLICT
+      );
+    }
+    if (progresso.alunoId !== ator.userId || progresso.trilha.autorId !== ator.userId) {
+      this.audit.registrar({
+        level: 'warn',
+        event: 'llm.ajuste.recusada',
+        outcome: 'recusado',
+        email: ator.email,
+        perfil: 'aluno',
+        message: 'Ajuste recusado: aluno não é o autor'
+      });
+      throw new HttpException(
+        { message: 'Só o autor desta trilha pode ajustá-la. Nada foi alterado.', codigo: 'recusado' },
+        HttpStatus.FORBIDDEN
       );
     }
     return progresso;

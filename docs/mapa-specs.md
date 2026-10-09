@@ -6,7 +6,7 @@
 
 Este documento é **somente o índice ordenado**. Não contém o texto completo das Specs e não implementa código.
 
-As 29 questões humanas (`OPEN-01` … `OPEN-29`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso. OPEN-26 registra a sanfona da etapa, o lightbox da resposta e o lightbox da conversa. OPEN-27 registra o link de vídeo do YouTube abrindo em lightbox na página; o layout foi `aprovado` e a tela está `implementada` em 2026-10-08. OPEN-28 registra o aluno reenviando o prompt para ajustar a trilha personalizada já gerada (RF16 / SPEC-010); o layout foi `aprovado` e a tela está `implementada` em 2026-10-08. OPEN-29 registra a busca semântica no Pinecone e a trilha personalizada disponível a todos (RF17, RF18 / SPEC-011); o layout foi `aprovado` em 2026-10-09 e a implementação não foi iniciada.
+As 29 questões humanas (`OPEN-01` … `OPEN-29`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso. OPEN-26 registra a sanfona da etapa, o lightbox da resposta e o lightbox da conversa. OPEN-27 registra o link de vídeo do YouTube abrindo em lightbox na página; o layout foi `aprovado` e a tela está `implementada` em 2026-10-08. OPEN-28 registra o aluno reenviando o prompt para ajustar a trilha personalizada já gerada (RF16 / SPEC-010); o layout foi `aprovado` e a tela está `implementada` em 2026-10-08. OPEN-29 registra a busca semântica no Pinecone e a trilha personalizada disponível a todos (RF17, RF18 / SPEC-011); o layout foi `aprovado` e a tela está `implementada` em 2026-10-09.
 
 Para o texto completo (comportamento, invariantes, contratos, Dado/Quando/Então, testes e status): [`specs.md`](specs.md).
 
@@ -85,7 +85,7 @@ RNFs não originam Specs próprias. Associação por Spec está no índice (§2)
 | RNF01, RNF04, RNF08 | Superfície web única, responsiva, navegadores atuais |
 | RNF02 | LLM opcional (Gemini), interruptor na UI do administrador, timeout 60 s |
 | RNF03 | Ações principais sem LLM e sem índice vetorial &lt; 2 s |
-| RNF11 | Pinecone `quickstart`, 1024 dimensões, chave só na API Nest |
+| RNF11 | Pinecone `estudaai-trilhas`, 1024 dimensões, chave só na API Nest |
 | RNF09 | Log da API Nest (identidade, autorização, falhas; sem senha/JWT) |
 | RNF10 | Logotipo e paleta únicos (Ink, Trilha, Faísca) em toda a UI |
 | RNF05, RNF06 | Autenticação e autorização na operação, não só na UI |
@@ -382,7 +382,7 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 | OPEN-26 | Sanfona da etapa, lightbox da resposta e da conversa | SPEC-004, SPEC-007 |
 | OPEN-27 | Link de vídeo do YouTube abre lightbox na página | SPEC-004; armazenamento em SPEC-003 / OPEN-16 |
 | OPEN-28 | Aluno reenvia o prompt e a mesma trilha personalizada é revista | SPEC-010 |
-| OPEN-29 | Busca semântica no índice Pinecone `quickstart` | SPEC-011 |
+| OPEN-29 | Busca semântica no índice Pinecone `estudaai-trilhas` | SPEC-011 |
 
 ---
 
@@ -398,8 +398,8 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 
 ## 5. Texto completo das Specs
 
-O índice deste mapa permanece a ordem de implementação: SPEC-001 → … → SPEC-011. O conteúdo completo está em [`specs.md`](specs.md). Status em 2026-10-09: SPEC-001 … SPEC-010 `implementadas`. SPEC-011 está `aprovada`, com layout `aprovado`. A implementação não foi iniciada.
+O índice deste mapa permanece a ordem de implementação: SPEC-001 → … → SPEC-011. O conteúdo completo está em [`specs.md`](specs.md). Status em 2026-10-09: SPEC-001 … SPEC-011 `implementadas`. Layout da SPEC-011: `aprovado`.
 
-**Portão:** o código de uma Spec só começa depois do layout `aprovado`. O humano aprovou o layout da SPEC-011 e pediu para não iniciar o código neste momento.
+**Portão:** o código de uma Spec só começa depois do layout `aprovado`.
 
-**Próximo passo humano:** pedir a implementação da SPEC-011. OPEN-17 (motor de recomendação) permanece fora de escopo.
+**Próximo passo humano:** nenhuma Spec desta versão aguarda implementação. OPEN-17 (motor de recomendação) permanece fora de escopo.

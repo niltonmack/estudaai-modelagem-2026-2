@@ -75,7 +75,7 @@ No PowerShell:
 Copy-Item .env.example apps\api\.env
 ```
 
-Os valores de laboratório já apontam para `127.0.0.1:3306`, banco `estudaai` e o administrador inicial. Para o agente LLM, preencha `GEMINI_API_KEY` nesse arquivo. O modelo padrão é `gemini-3.5-flash-lite`. Para a busca semântica, preencha `PINECONE_API_KEY`; o índice esperado é `quickstart`. As duas chaves ficam só na API.
+Os valores de laboratório já apontam para `127.0.0.1:3306`, banco `estudaai` e o administrador inicial. Para o agente LLM, preencha `GEMINI_API_KEY` nesse arquivo. O modelo padrão é `gemini-3.5-flash-lite`. Para a busca semântica, preencha `PINECONE_API_KEY`; o índice esperado é `estudaai-trilhas`. As duas chaves ficam só na API.
 
 A interface usa `http://localhost:3001` quando `apps/web/.env.local` não existe. Crie esse arquivo apenas se a API estiver em outro endereço:
 

@@ -45,7 +45,14 @@ export type EventoAudit =
   | 'usuario.removido'
   | 'usuario.remocao_recusada'
   | 'usuario.alteracao_recusada'
-  | 'acompanhamento.consultado';
+  | 'acompanhamento.consultado'
+  | 'busca.ok'
+  | 'busca.falha'
+  | 'indice.upsert'
+  | 'indice.removido'
+  | 'indice.falha'
+  | 'trilha.disponibilizada'
+  | 'trilha.retirada';
 
 export type RegistroAudit = {
   timestamp: string;

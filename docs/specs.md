@@ -69,7 +69,7 @@ Como aprovar o layout: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` p
 | Implementação do vídeo do YouTube | `implementada` | 2026-10-08 |
 | Aprovação humana OPEN-27 | texto, layout e implementação `aprovados` após o vídeo de teste na etapa 1 de Python Júnior | 2026-10-08 |
 | SPEC-010 — Ajustar trilha personalizada | texto, layout e implementação `aprovados` — [`layout/spec-010.html`](layout/spec-010.html) | 2026-10-08 |
-| SPEC-011 — Buscar conteúdo e cursar trilha disponibilizada | texto e layout `aprovados`; implementação não iniciada — [`layout/spec-011.html`](layout/spec-011.html) | 2026-10-09 |
+| SPEC-011 — Buscar conteúdo e cursar trilha disponibilizada | texto, layout e implementação `aprovados` — [`layout/spec-011.html`](layout/spec-011.html) | 2026-10-09 |
 | Acesso Gemini (laboratório) | chave só em `apps/api/.env`; `generateContent` HTTP 200 no modelo `gemini-3.5-flash-lite` | 2026-10-02 |
 | Banco MySQL local | schema `estudaai` em `127.0.0.1:3306` (serviço MySQL80); `dentalapp` intocado | 2026-10-02 |
 | Identidade visual (logo + paleta) | `aprovada` — [`identidade-visual.md`](identidade-visual.md) | 2026-09-30 |
@@ -92,7 +92,7 @@ A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-
 | 8 | SPEC-008 | Gerenciar usuários | SPEC-001 | `implementada` | `aprovado` |
 | 9 | SPEC-009 | Consultar progresso dos alunos | SPEC-004, SPEC-008 | `implementada` | `aprovado` |
 | 10 | SPEC-010 | Ajustar trilha personalizada com o agente | SPEC-006, SPEC-004 | `implementada` | `aprovado` |
-| 11 | SPEC-011 | Buscar conteúdo e cursar trilha disponibilizada | SPEC-003, SPEC-004, SPEC-006 | `aprovada` | `aprovado` |
+| 11 | SPEC-011 | Buscar conteúdo e cursar trilha disponibilizada | SPEC-003, SPEC-004, SPEC-006 | `implementada` | `aprovado` |
 | — | — | Motor de recomendação da visão (OPEN-17) | — | `fora de escopo` | `não se aplica` |
 
 ```
@@ -1457,7 +1457,7 @@ AC-010-* e INV-010-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ## Definition of Done do conjunto
 
-O conjunto SPEC-001 … SPEC-010 está **implementado** (001–007 em 2026-10-08; 008–009 pedidas e implementadas em 2026-10-08; 010 aprovada e implementada em 2026-10-08). SPEC-011 está `aprovada`, com layout `aprovado` em 2026-10-09. A implementação não foi iniciada: o humano pediu para esperar.
+O conjunto SPEC-001 … SPEC-011 está **implementado** (001–007 em 2026-10-08; 008–010 em 2026-10-08; 011 em 2026-10-09). Layout da SPEC-011: `aprovado` antes do código.
 
 Ordem obrigatória por Spec:
 
@@ -1479,8 +1479,8 @@ A decisão final é da equipe humana.
 
 # SPEC-011 — Buscar conteúdo e cursar trilha disponibilizada
 
-**Status:** `aprovada`  
-**Layout:** `aprovado` em 2026-10-09. Implementação não iniciada.
+**Status:** `implementada`  
+**Layout:** `aprovado` em 2026-10-09. Implementação em 2026-10-09.
 
 ## 1. Identificação
 
@@ -1512,7 +1512,7 @@ A decisão final é da equipe humana.
 
 ## Telas e evidência de layout
 
-**Gate:** layout `aprovado` pelo humano em 2026-10-09. A implementação permanece parada até novo pedido.
+**Gate:** layout `aprovado` pelo humano em 2026-10-09. Implementação em 2026-10-09.
 
 | Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
@@ -1625,7 +1625,7 @@ Coluna `autor_id` em `trilha`, nula na pré-definida, com restrição ao apagar 
 
 ## 10. RNFs aplicáveis
 
-RNF11: `quickstart`, `__default__`, 1024, `END`, field map `text`, `passage` e `query`. RNF03: a busca fica fora dos 2 segundos; o catálogo não. RNF05: busca, disponibilizar e começar são autenticados. RNF07: o adaptador falso não cria entidade. RNF09: sem chave e sem o corpo de `text` no log.
+RNF11: `estudaai-trilhas`, `__default__`, 1024, `END`, field map `text`, `passage` e `query`. RNF03: a busca fica fora dos 2 segundos; o catálogo não. RNF05: busca, disponibilizar e começar são autenticados. RNF07: o adaptador falso não cria entidade. RNF09: sem chave e sem o corpo de `text` no log.
 
 ## 11. Critérios de aceitação
 

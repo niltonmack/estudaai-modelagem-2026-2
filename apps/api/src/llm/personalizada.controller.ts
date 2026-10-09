@@ -1,9 +1,15 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { IsBoolean } from 'class-validator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Perfis, PerfisGuard } from '../auth/perfis.guard';
 import { Perfil } from '../usuario/perfil';
 import { GerarTrilhaPersonalizadaDto } from './dto';
 import { PersonalizadaService } from './personalizada.service';
+
+class DisponibilidadeDto {
+  @IsBoolean()
+  disponivel!: boolean;
+}
 
 type ReqUsuario = { user?: { userId?: string; email?: string; perfil?: Perfil } };
 
@@ -29,6 +35,15 @@ export class PersonalizadaController {
   @Get(':progressoId')
   pedido(@Param('progressoId') progressoId: string, @Req() req: ReqUsuario) {
     return this.personalizada.pedido(progressoId, this.ator(req));
+  }
+
+  @Patch('trilha/:trilhaId/disponibilidade')
+  disponibilidade(
+    @Param('trilhaId', ParseUUIDPipe) trilhaId: string,
+    @Body() dto: DisponibilidadeDto,
+    @Req() req: ReqUsuario
+  ) {
+    return this.personalizada.definirDisponibilidade(trilhaId, dto.disponivel, this.ator(req));
   }
 
   @Post(':progressoId')

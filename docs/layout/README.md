@@ -104,4 +104,4 @@ O layout foi `aprovado` pelo humano em 2026-10-08 e está `implementado` no acom
 
 Abrir [`spec-011.html`](spec-011.html). A pergunta fica no topo do catálogo. O autor deixa a personalizada disponível; outro aluno começa essa mesma trilha. Telas: pergunta, resultado com autor, disponibilizar, categoria Personalizada, nenhum resultado, busca indisponível. Viewport desktop e smartphone no mesmo fluxo empilhado.
 
-O layout foi `aprovado` pelo humano em 2026-10-09. A implementação não foi iniciada.
+O layout foi `aprovado` pelo humano em 2026-10-09 e está `implementado` no catálogo e no acompanhamento da trilha personalizada.

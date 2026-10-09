@@ -330,8 +330,8 @@ Legenda de status:
 | **Specs** | SPEC-011 |
 | **Baseline** | MySQL 8.0 não tem tipo vetorial. `Etapa.conteudo` continua Markdown (OPEN-16). O catálogo lista só `pré-definida` disponível. A personalizada nascia ligada a um único `Progresso`. |
 | **Status** | `decidido` |
-| **Decisão** | A personalizada tem autor na própria `Trilha`: o aluno da `SolicitacaoTrilha`. Ela nasce indisponível para os demais. O autor pode deixá-la disponível. Aí qualquer aluno abre o próprio `Progresso` na mesma trilha, sem cópia. A busca percorre todas as trilhas disponíveis e as personalizadas privadas de quem pergunta. O vetor fica no Pinecone `quickstart`, namespace `__default__`, dimensão 1024, truncamento `END`, field map `text`, `passage` na gravação e `query` na leitura. Registro `{ id: trilhaId#etapaId, text, trilha, aula, titulo, autor }`. |
-| **Notas** | Não há coluna de vetor no MySQL. Personalizadas já gravadas com `disponivel` verdadeiro, antes desta decisão, passam a indisponíveis até o autor publicar. Falha do Pinecone não desfaz trilha nem progresso. Layout `aprovado` em 2026-10-09. Implementação não iniciada. |
+| **Decisão** | A personalizada tem autor na própria `Trilha`: o aluno da `SolicitacaoTrilha`. Ela nasce indisponível para os demais. O autor pode deixá-la disponível. Aí qualquer aluno abre o próprio `Progresso` na mesma trilha, sem cópia. A busca percorre todas as trilhas disponíveis e as personalizadas privadas de quem pergunta. O vetor fica no Pinecone `estudaai-trilhas`, namespace `__default__`, dimensão 1024, truncamento `END`, field map `text`, `passage` na gravação e `query` na leitura. Registro `{ id: trilhaId#etapaId, text, trilha, aula, titulo, autor }`. |
+| **Notas** | Não há coluna de vetor no MySQL. Personalizadas já gravadas com `disponivel` verdadeiro, antes desta decisão, passam a indisponíveis até o autor publicar. Falha do Pinecone não desfaz trilha nem progresso. Layout `aprovado` e implementação em 2026-10-09. |
 
 ---
 
@@ -367,7 +367,7 @@ Legenda de status:
 | OPEN-26 | Sanfona, resposta e conversa em lightbox | `decidido` — SPEC-004, SPEC-007 |
 | OPEN-27 | Vídeo do YouTube em lightbox | `decidido` — SPEC-004; aprovado pelo humano em 2026-10-08 |
 | OPEN-28 | Ajustar trilha personalizada reenviando o prompt | `decidido` — RF16 / SPEC-010; aprovado pelo humano em 2026-10-08 |
-| OPEN-29 | Busca semântica e trilha personalizada disponível a todos | `decidido` — RF17, RF18, RB09, RB19, RB20, RNF11 / SPEC-011; layout `aprovado` em 2026-10-09; implementação não iniciada |
+| OPEN-29 | Busca semântica e trilha personalizada disponível a todos | `decidido` — RF17, RF18, RB09, RB19, RB20, RNF11 / SPEC-011; layout `aprovado` e implementação em 2026-10-09 |
 
 Progresso da entrevista: **29 / 29** fechadas (28 decididas, 1 fora de escopo).
 

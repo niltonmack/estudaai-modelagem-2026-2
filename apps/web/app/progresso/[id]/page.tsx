@@ -40,6 +40,7 @@ export default function ProgressoDetalhePage() {
   const [ajusteAberto, setAjusteAberto] = useState(false);
   const [promptAjuste, setPromptAjuste] = useState("");
   const [ajustando, setAjustando] = useState(false);
+  const [disponibilizando, setDisponibilizando] = useState(false);
 
   useEffect(() => {
     const atual = lerSessao();
@@ -64,7 +65,7 @@ export default function ProgressoDetalhePage() {
     if (new URLSearchParams(window.location.search).get("criada") === "1") {
       setAlerta({
         texto:
-          "Trilha personalizada criada a partir do seu objetivo. O acompanhamento é o mesmo das demais trilhas. O catálogo não foi alterado.",
+          "Trilha personalizada criada a partir do seu objetivo. Ela fica só com você até você deixá-la disponível para todos.",
         tom: "green"
       });
     }
@@ -113,6 +114,32 @@ export default function ProgressoDetalhePage() {
     }
     setPromptAjuste(dados.textoObjetivo ?? "");
     setAjusteAberto(true);
+  }
+
+  async function disponibilizar() {
+    if (!sessao || !detalhe) return;
+    setDisponibilizando(true);
+    setAlerta(null);
+    const { ok, dados } = await chamarApi<ProgressoDetalhe & ErroApi>(
+      `/solicitacoes-trilha/trilha/${detalhe.trilha.id}/disponibilidade`,
+      {
+        method: "PATCH",
+        token: sessao.accessToken,
+        body: JSON.stringify({ disponivel: !detalhe.trilha.disponivel })
+      }
+    );
+    setDisponibilizando(false);
+    if (!ok || !("id" in dados) || !dados.id) {
+      setAlerta({ texto: mensagemErro(dados, "Não foi possível alterar a disponibilidade. A trilha permanece como estava."), tom: "red" });
+      return;
+    }
+    setDetalhe(dados);
+    setAlerta({
+      texto: dados.trilha.disponivel
+        ? "Esta trilha está disponível para todos. O seu progresso continua o mesmo."
+        : "A trilha saiu do catálogo. Quem já começou continua de onde parou.",
+      tom: "green"
+    });
   }
 
   async function ajustar(e: FormEvent) {
@@ -165,6 +192,16 @@ export default function ProgressoDetalhePage() {
             {detalhe.trilha.categoria.nome} · trilha {detalhe.trilha.tipo}
           </p>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">{detalhe.trilha.descricao}</p>
+          {detalhe.trilha.tipo === "personalizada" && detalhe.trilha.souAutor ? (
+            <p className="mt-2 max-w-xl text-sm text-slate-600">
+              {detalhe.trilha.disponivel
+                ? "Qualquer aluno encontra esta trilha e cursa o mesmo percurso. O progresso de cada um fica separado."
+                : "Enquanto estiver disponível, qualquer aluno encontra esta trilha e cursa o mesmo percurso. O progresso de cada um fica separado."}
+            </p>
+          ) : null}
+          {detalhe.trilha.autorNome && !detalhe.trilha.souAutor ? (
+            <p className="mt-2 text-sm text-slate-500">Por {detalhe.trilha.autorNome}</p>
+          ) : null}
           <div className="mt-6 rounded-lg border border-slate-200 bg-white p-4">
             <BarraProgresso feitos={detalhe.etapasConcluidas} total={detalhe.totalEtapas} />
           </div>
@@ -177,14 +214,24 @@ export default function ProgressoDetalhePage() {
               >
                 Conversar sobre esta trilha
               </button>
-              {detalhe.trilha.tipo === "personalizada" ? (
-                <button
-                  type="button"
-                  onClick={() => void abrirAjuste()}
-                  className="inline-flex items-center justify-center rounded-md border border-brand-trail px-3 py-2 text-sm font-medium text-brand-trail hover:bg-brand-mint"
-                >
-                  Ajustar trilha
-                </button>
+              {detalhe.trilha.tipo === "personalizada" && detalhe.trilha.souAutor ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => void abrirAjuste()}
+                    className="inline-flex items-center justify-center rounded-md border border-brand-trail px-3 py-2 text-sm font-medium text-brand-trail hover:bg-brand-mint"
+                  >
+                    Ajustar trilha
+                  </button>
+                  <button
+                    type="button"
+                    disabled={disponibilizando}
+                    onClick={() => void disponibilizar()}
+                    className="inline-flex items-center justify-center rounded-md border border-brand-trail px-3 py-2 text-sm font-medium text-brand-trail hover:bg-brand-mint disabled:opacity-60"
+                  >
+                    {detalhe.trilha.disponivel ? "Retirar a disponibilidade" : "Disponível para todos"}
+                  </button>
+                </>
               ) : null}
             </div>
           ) : null}
