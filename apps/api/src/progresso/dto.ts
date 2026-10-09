@@ -47,7 +47,12 @@ export type ProgressoListaResposta = {
   percentualProgresso: number;
   etapasConcluidas: number;
   totalEtapas: number;
-  trilha: { id: string; titulo: string; categoria: { id: string; nome: string } };
+  trilha: {
+    id: string;
+    titulo: string;
+    tipo: 'pré-definida' | 'personalizada';
+    categoria: { id: string; nome: string };
+  };
   proximaEtapa: { id: string; titulo: string; ordem: number } | null;
 };
 

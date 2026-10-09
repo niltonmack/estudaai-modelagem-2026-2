@@ -123,6 +123,14 @@ O cadastro público (RF01) continua criando somente aluno. Contas de administrad
 
 O administrador **SHALL NOT** registrar conclusão de etapa, iniciar acompanhamento nem conversar com o agente no lugar do aluno. Essa consulta **não** é o UC01.
 
+## RF16 - Ajustar trilha personalizada com LLM
+
+**Tipo EARS:** Event-driven
+
+**WHEN** o aluno dono de uma trilha `personalizada` reenviar um prompt para corrigir ou melhorar essa trilha **e** a funcionalidade de LLM estiver habilitada, o sistema **SHALL** pedir ao agente a trilha revista e **SHALL** gravar o resultado na mesma `Trilha`, sem criar outra e sem alterar trilhas pré-definidas.
+
+O aluno **SHALL** poder pedir inclusão, exclusão ou reescrita de etapas. A etapa que permanece conserva a conclusão já marcada. A etapa excluída deixa de compor a trilha, e a conclusão só dela é removida. A etapa nova nasce sem conclusão.
+
 ## Observação sobre `SHOULD` e `IF`
 
 `SHOULD` não foi usado no corpo dos RFs porque o arquivo descreve capacidades obrigatórias. `IF` aparece onde a entrevista humana definiu condição excepcional (e-mail duplicado, conversa sem trilha).

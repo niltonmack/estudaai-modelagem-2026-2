@@ -68,6 +68,7 @@ Como aprovar o layout: anexar protótipo (PNG, PDF ou Figma) em `docs/layout/` p
 | Layout do vídeo do YouTube (OPEN-27) | `aprovado` — [`layout/video-youtube.html`](layout/video-youtube.html); link abre lightbox na página | 2026-10-08 |
 | Implementação do vídeo do YouTube | `implementada` | 2026-10-08 |
 | Aprovação humana OPEN-27 | texto, layout e implementação `aprovados` após o vídeo de teste na etapa 1 de Python Júnior | 2026-10-08 |
+| SPEC-010 — Ajustar trilha personalizada | texto, layout e implementação `aprovados` — [`layout/spec-010.html`](layout/spec-010.html) | 2026-10-08 |
 | Acesso Gemini (laboratório) | chave só em `apps/api/.env`; `generateContent` HTTP 200 no modelo `gemini-3.5-flash-lite` | 2026-10-02 |
 | Banco MySQL local | schema `estudaai` em `127.0.0.1:3306` (serviço MySQL80); `dentalapp` intocado | 2026-10-02 |
 | Identidade visual (logo + paleta) | `aprovada` — [`identidade-visual.md`](identidade-visual.md) | 2026-09-30 |
@@ -89,6 +90,7 @@ A implementação do conjunto SPEC-001 … SPEC-007 foi **aprovada** em 2026-10-
 | 7 | SPEC-007 | Conversar com o agente LLM sobre a trilha | SPEC-004, SPEC-006 | `implementada` | `aprovado` |
 | 8 | SPEC-008 | Gerenciar usuários | SPEC-001 | `implementada` | `aprovado` |
 | 9 | SPEC-009 | Consultar progresso dos alunos | SPEC-004, SPEC-008 | `implementada` | `aprovado` |
+| 10 | SPEC-010 | Ajustar trilha personalizada com o agente | SPEC-006, SPEC-004 | `implementada` | `aprovado` |
 | — | — | Motor de recomendação da visão (OPEN-17) | — | `fora de escopo` | `não se aplica` |
 
 ```
@@ -98,6 +100,7 @@ SPEC-001 Identidade
       → SPEC-004 Acompanhar trilha pré-definida
         → SPEC-005 Integridade na remoção de etapa em uso
         → SPEC-006 Trilha personalizada (LLM)  →  SPEC-007 Conversa
+                                                →  SPEC-010 Ajustar a trilha personalizada
         → SPEC-008 Gerenciar usuários  →  SPEC-009 Consultar progresso dos alunos
 ```
 
@@ -822,7 +825,7 @@ AC-005-* e INV-005-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 **Incluído:** interruptor admin (RF13); porta LLM só no Nest; geração síncrona; timeout 60 s; contrato JSON; sentinela; transação solicitação+trilha+etapas+progresso; fallback para catálogo; E4 se catálogo vazio e LLM off.
 
-**Fora do escopo:** fila; conversa (SPEC-007); o LLM escolher categoria; alterar trilhas pré-definidas; ranking da visão.
+**Fora do escopo:** fila; conversa (SPEC-007); o LLM escolher categoria; alterar trilhas pré-definidas; ranking da visão; revisar uma trilha personalizada já gerada (SPEC-010).
 
 ## Telas e evidência de layout
 
@@ -1304,9 +1307,153 @@ AC-009-* e INV-009-* atendidos; testes da §12 aprovados; RNFs verificados; layo
 
 ---
 
+# SPEC-010 — Ajustar trilha personalizada com o agente
+
+**Status:** `implementada`  
+**Layout:** `aprovado`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-010 |
+| **Nome** | Ajustar trilha personalizada com o agente |
+| **Objetivo** | O aluno dono reenvia um prompt para corrigir ou melhorar a trilha `personalizada`. O agente devolve a trilha inteira. A API grava na mesma `Trilha` e conserva a conclusão das etapas que permanecem. |
+| **Valor** | Lucas pede para incluir ou excluir uma etapa sem abrir outra trilha e sem perder o que já marcou no restante. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF16; reutiliza RF04, RF05–RF07, RF13 |
+| **RB** | RB01, RB03, RB04, RB06, RB08, RB09, RB10, RB12 |
+| **RNF** | RNF02, RNF03 (esta operação **fora** dos 2 s), RNF05, RNF07 |
+| **UC / fluxo** | UC01, extensão do fluxo A3 sobre a trilha já aberta |
+| **Entidades** | `SolicitacaoTrilha`, `Trilha` (`personalizada`), `Etapa`, `Progresso`, `ConclusaoEtapa` |
+| **Drivers** | AD-RF01, AD-C02, AD-QA01 |
+| **ADRs** | ADR-002, ADR-003, ADR-004 |
+| **OPEN fechados** | OPEN-28; reusa OPEN-06, OPEN-09, OPEN-19, OPEN-20 |
+
+## 3. Escopo
+
+**Incluído:** no acompanhamento da trilha `personalizada`, o aluno dono envia um novo texto; a porta Gemini recebe esse texto e as etapas atuais com `id`; a resposta substitui título, descrição e a lista de etapas da **mesma** trilha; `SolicitacaoTrilha.textoObjetivo` e `respostaLLM` passam a ser o pedido e o JSON desta revisão.
+
+**Fora do escopo:** criar outra `Trilha` ou outro `Progresso`; editar trilha pré-definida; o administrador ajustar no lugar do aluno; editor manual de Markdown sem o agente; fila.
+
+## Telas e evidência de layout
+
+**Gate:** layout `aprovado` em 2026-10-08. Implementação `implementada` em 2026-10-08.
+
+| Tela | Evidência (anexar) | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Acompanhamento com Ajustar trilha | [`spec-010.html#acompanhamento`](layout/spec-010.html#acompanhamento) | [x] | [x] | humano | 2026-10-08 |
+| Prompt de correção, com as etapas atuais | [`spec-010.html#ajuste`](layout/spec-010.html#ajuste) | [x] | [x] | humano | 2026-10-08 |
+| Espera e falha sem gravar | [`spec-010.html#espera`](layout/spec-010.html#espera) | [x] | [x] | humano | 2026-10-08 |
+| Trilha revista, conclusões preservadas | [`spec-010.html#resultado`](layout/spec-010.html#resultado) | [x] | [x] | humano | 2026-10-08 |
+
+Protótipo: [`docs/layout/spec-010.html`](layout/spec-010.html).
+
+## 4. Dependências
+
+SPEC-006 (trilha personalizada, porta LLM, interruptor, timeout 60 s). SPEC-004 (acompanhamento e conclusão). SPEC-001 (aluno JWT).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** aluno autenticado é o dono do `Progresso`; a trilha é `personalizada`; LLM habilitado.
+
+**Fluxo:** o aluno abre **Ajustar trilha**. O campo começa com o `textoObjetivo` já gravado. Ele reescreve o prompt — por exemplo, “inclua uma etapa sobre índices e remova a etapa de totais”. A API envia ao agente o prompt e as etapas atuais `{id, titulo, conteudo, ordem}`. O agente devolve a trilha inteira. A API atualiza a mesma `Trilha`:
+
+- etapa com `id` desta trilha: atualiza título, conteúdo e ordem; a `ConclusaoEtapa` permanece;
+- etapa desta trilha ausente na resposta: remove a conclusão dela e depois a etapa;
+- etapa sem `id`: cria, sem conclusão;
+- título e descrição da trilha acompanham o JSON;
+- `textoObjetivo` e `respostaLLM` da solicitação passam a ser este pedido e este JSON.
+
+**Exceções**
+
+- LLM desligado, timeout de 60 s ou JSON sem título, descrição ou ao menos uma etapa: nada é gravado; a trilha anterior permanece.
+- Trilha pré-definida, outro aluno, administrador ou anônimo: recusa; nada é gravado.
+- `id` que não pertence a esta trilha: trata como etapa nova, sem reaproveitar conclusão alheia.
+
+**Pós-sucesso:** o mesmo `Progresso` abre a trilha revista. O percentual é recalculado (RB06). Pré-definidas intactas (RB10).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-010-01 | Só o aluno dono do `Progresso` ajusta a trilha (RB01, RB09). |
+| INV-010-02 | A revisão grava na mesma `Trilha` e no mesmo `Progresso`. Não nasce trilha nova. |
+| INV-010-03 | `Trilha.tipo` permanece `personalizada` e a categoria permanece a sentinela **Personalizada**. |
+| INV-010-04 | Trilha pré-definida não é alterada por este fluxo (RB10). RB11 continua valendo para o administrador no catálogo. |
+| INV-010-05 | Etapa mantida conserva a `ConclusaoEtapa`. Etapa nova não nasce concluída. |
+| INV-010-06 | Excluir etapa remove somente a conclusão dessa etapa. As demais conclusões ficam (RB12). |
+| INV-010-07 | A trilha revista tem ao menos uma etapa (RB03). |
+| INV-010-08 | Chamada ao LLM sai somente da API Nest. Timeout 60 s. Sem fila. Chave fora do Next.js. |
+| INV-010-09 | Falha do agente não altera `Trilha`, `Etapa`, `ConclusaoEtapa` nem `SolicitacaoTrilha`. |
+
+## 7. Modelo de domínio envolvido
+
+Nenhuma entidade nova. `Trilha` continua sem `aluno_id`. O dono segue em `Progresso.aluno_id` e `SolicitacaoTrilha.aluno_id`.
+
+JSON pedido ao agente na revisão:
+
+```json
+{
+  "titulo": "string",
+  "descricao": "string",
+  "etapas": [
+    { "id": "uuid existente ou omitido", "titulo": "string", "conteudo": "string (Markdown)", "ordem": 1 }
+  ]
+}
+```
+
+## 8. Impacto arquitetural
+
+Nova operação na API, atrás da mesma porta LLM da SPEC-006. O adaptador falso dos testes devolve uma revisão controlada. A listagem e o progresso local não esperam o Gemini (RNF03).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Sucesso | Erros |
+|---|---|---|---|
+| Ajustar trilha personalizada | aluno dono, progressoId, textoObjetivo | mesma trilha revista + o mesmo progresso | não dono; trilha pré-definida; LLM off; timeout; JSON inválido |
+
+## 10. RNFs aplicáveis
+
+RNF02: Gemini, interruptor e 60 s. RNF03: abrir o acompanhamento continua abaixo de 2 s, sem esperar esta revisão. RNF05: operação autenticada. RNF07: trocar o adaptador não cria outra entidade.
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-010-01 | Aluno dono, LLM on, JSON com as etapas antigas mais uma sem `id` | Reenvia o prompt | A mesma trilha ganha a etapa nova; as conclusões anteriores permanecem; não nasce outro `Progresso` |
+| AC-010-02 | Uma etapa concluída é omitida no JSON e as outras voltam com o mesmo `id` | Reenvia o prompt | A etapa omitida e só a conclusão dela saem; as outras conclusões ficam |
+| AC-010-03 | LLM off, timeout ou JSON inválido | Reenvia o prompt | A trilha anterior permanece inteira |
+| AC-010-04 | Trilha pré-definida, outro aluno, admin ou anônimo | Tenta ajustar | Recusa; nada gravado |
+| AC-010-05 | Há pré-definidas no catálogo | Revisão bem-sucedida | Pré-definidas inalteradas |
+| AC-010-06 | Chave Gemini | Inspeciona o cliente | A chave não está no frontend |
+
+## 12. Casos de teste derivados
+
+1. Incluir etapa: ids antigos preservados, conclusão preservada, etapa nova sem conclusão.
+2. Excluir etapa concluída: só aquela conclusão some; percentual recalculado.
+3. Timeout, LLM off e JSON sem etapas: estado anterior igual.
+4. Recusa em trilha pré-definida e por quem não é o dono.
+5. Contagem de trilhas pré-definidas inalterada.
+6. Mesmo `trilha_id` e mesmo `progresso_id` antes e depois.
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+AC-010-* e INV-010-* atendidos; testes da §12 aprovados; RNFs verificados; layout `aprovado` antes do código.
+
+---
+
 ## Definition of Done do conjunto
 
-O conjunto SPEC-001 … SPEC-009 está **implementado** (001–007 em 2026-10-08; 008–009 pedidas e implementadas em 2026-10-08). Layout de todas as Specs: `aprovado`.
+O conjunto SPEC-001 … SPEC-010 está **implementado** (001–007 em 2026-10-08; 008–009 pedidas e implementadas em 2026-10-08; 010 aprovada e implementada em 2026-10-08). Layout de todas as Specs: `aprovado`.
 
 Ordem obrigatória por Spec:
 

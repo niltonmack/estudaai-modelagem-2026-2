@@ -1,4 +1,4 @@
-import { ContextoConversa, LlmTimeoutError, PortaLlm } from './porta-llm';
+import { ContextoConversa, LlmTimeoutError, PortaLlm, TrilhaAtualLlm } from './porta-llm';
 
 const MODELO_PADRAO = 'gemini-3.5-flash-lite';
 
@@ -12,7 +12,12 @@ export class GeminiLlmAdapter extends PortaLlm {
 
   async gerarTrilha(textoObjetivo: string, signal?: AbortSignal): Promise<unknown> {
     const texto = await this.chamar(this.promptTrilha(textoObjetivo), true, signal);
-    return this.extrairJson(texto);
+    return extrairJsonLlm(texto);
+  }
+
+  async revisarTrilha(textoObjetivo: string, atual: TrilhaAtualLlm, signal?: AbortSignal): Promise<unknown> {
+    const texto = await this.chamar(this.promptRevisao(textoObjetivo, atual), true, signal);
+    return extrairJsonLlm(texto);
   }
 
   async conversar(texto: string, contexto: ContextoConversa, signal?: AbortSignal): Promise<string> {
@@ -52,9 +57,9 @@ export class GeminiLlmAdapter extends PortaLlm {
       throw new LlmTimeoutError();
     }
     const jsonResposta = (await resposta.json()) as {
-      candidates?: { content?: { parts?: { text?: string }[] } }[];
+      candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[];
     };
-    return jsonResposta.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('\n') ?? '';
+    return textoUtil(jsonResposta.candidates?.[0]?.content?.parts);
   }
 
   private promptTrilha(objetivo: string) {
@@ -65,6 +70,27 @@ export class GeminiLlmAdapter extends PortaLlm {
       'Regras: titulo e descricao obrigatórios; pelo menos uma etapa; conteudo em Markdown; não escolha categoria;',
       'textos em português do Brasil, adequados a material escolar.',
       'Objetivo do aluno:',
+      objetivo
+    ].join('\n');
+  }
+
+  private promptRevisao(objetivo: string, atual: TrilhaAtualLlm) {
+    return [
+      'Você é o agente do EstudaAI.',
+      'O aluno quer corrigir ou melhorar a trilha personalizada já existente.',
+      'Devolva SOMENTE um JSON (sem markdown) no formato:',
+      '{"titulo":"string","descricao":"string","etapas":[{"id":"uuid da etapa que permanece, ou omita id se for etapa nova","titulo":"string","conteudo":"string em Markdown","ordem":1}]}',
+      'Regras: devolva a trilha inteira; titulo e descricao obrigatórios; pelo menos uma etapa;',
+      'para manter uma etapa, repita o id recebido; para excluir, omita essa etapa; para incluir, omita o id;',
+      'não escolha categoria; não altere trilhas pré-definidas;',
+      'textos em português do Brasil, adequados a material escolar.',
+      'Trilha atual:',
+      JSON.stringify({
+        titulo: atual.titulo,
+        descricao: atual.descricao,
+        etapas: atual.etapas
+      }),
+      'Pedido do aluno:',
       objetivo
     ].join('\n');
   }
@@ -80,15 +106,40 @@ export class GeminiLlmAdapter extends PortaLlm {
       texto
     ].join('\n');
   }
+}
 
-  private extrairJson(texto: string): unknown {
-    const limpo = texto.trim();
-    const cerca = limpo.match(/```(?:json)?\s*([\s\S]*?)```/);
-    const bruto = cerca ? cerca[1].trim() : limpo;
-    try {
-      return JSON.parse(bruto);
-    } catch {
-      return bruto;
-    }
+function textoUtil(partes: { text?: string; thought?: boolean }[] | undefined): string {
+  const lista = partes ?? [];
+  const visiveis = lista.filter((parte) => !parte.thought);
+  const escolhidas = visiveis.length > 0 ? visiveis : lista;
+  return escolhidas.map((parte) => parte.text ?? '').join('\n');
+}
+
+export function extrairJsonLlm(texto: string): unknown {
+  const limpo = texto.trim();
+  const direto = tentarParse(limpo);
+  if (direto.ok) return direto.valor;
+
+  const cerca = limpo.match(/^```(?:json)?\s*([\s\S]*?)```$/);
+  if (cerca) {
+    const interno = tentarParse(cerca[1].trim());
+    if (interno.ok) return interno.valor;
+  }
+
+  const inicio = limpo.indexOf('{');
+  const fim = limpo.lastIndexOf('}');
+  if (inicio >= 0 && fim > inicio) {
+    const recorte = tentarParse(limpo.slice(inicio, fim + 1));
+    if (recorte.ok) return recorte.valor;
+  }
+
+  return limpo;
+}
+
+function tentarParse(texto: string): { ok: true; valor: unknown } | { ok: false } {
+  try {
+    return { ok: true, valor: JSON.parse(texto) };
+  } catch {
+    return { ok: false };
   }
 }

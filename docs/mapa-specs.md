@@ -6,7 +6,7 @@
 
 Este documento é **somente o índice ordenado**. Não contém o texto completo das Specs e não implementa código.
 
-As 27 questões humanas (`OPEN-01` … `OPEN-27`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso. OPEN-26 registra a sanfona da etapa, o lightbox da resposta e o lightbox da conversa. OPEN-27 registra o link de vídeo do YouTube abrindo em lightbox na página; o layout foi `aprovado` e a tela está `implementada` em 2026-10-08.
+As 28 questões humanas (`OPEN-01` … `OPEN-28`) foram resolvidas em [`decisoes-em-aberto.md`](decisoes-em-aberto.md) e absorvidas na baseline (RF, RB, RNF, UC, modelo, drivers, ADRs). A implementação **não** reabre essas decisões. OPEN-24 e OPEN-25 (2026-10-08) acrescentam gestão de contas e consulta administrativa de progresso. OPEN-26 registra a sanfona da etapa, o lightbox da resposta e o lightbox da conversa. OPEN-27 registra o link de vídeo do YouTube abrindo em lightbox na página; o layout foi `aprovado` e a tela está `implementada` em 2026-10-08. OPEN-28 registra o aluno reenviando o prompt para ajustar a trilha personalizada já gerada (RF16 / SPEC-010); o layout foi `aprovado` e a tela está `implementada` em 2026-10-08.
 
 Para o texto completo (comportamento, invariantes, contratos, Dado/Quando/Então, testes e status): [`specs.md`](specs.md).
 
@@ -22,7 +22,7 @@ Artefatos lidos: visão do produto, personas (Lucas / Mariana), RF, RB, RNF, mod
 2. Administrador mantém o catálogo curado: categorias, trilhas pré-definidas e etapas ordenadas.
 3. Aluno consulta o catálogo, escolhe uma trilha pré-definida e visualiza etapas, conteúdos e sequência.
 4. Aluno registra conclusão explícita de etapas e acompanha percentual e histórico individuais.
-5. Aluno descreve um objetivo em linguagem natural e obtém uma trilha personalizada via agente LLM, depois a acompanha como qualquer outra trilha.
+5. Aluno descreve um objetivo em linguagem natural e obtém uma trilha personalizada via agente LLM, depois a acompanha como qualquer outra trilha. Pode reenviar um prompt para corrigir ou melhorar essa mesma trilha.
 6. Aluno conversa com o agente LLM para apoio ao estudo, sem alterar o catálogo curado.
 7. Administrador, ao remover etapa já usada por alunos, avalia e trata o impacto sobre progresso e conclusões.
 8. Administrador cadastra, consulta, altera e remove contas de alunos e de administradores.
@@ -37,6 +37,7 @@ Identidade
       → Acompanhar trilha pré-definida (catálogo + visualização + progresso)
         → Integridade na remoção de etapa em uso
         → Trilha personalizada (LLM)  →  Conversa com o agente
+                                       →  Ajustar a trilha personalizada já gerada
         → Gerenciar usuários  →  Consultar progresso dos alunos
 ```
 
@@ -59,7 +60,7 @@ Identidade
 | RB05 | Etapa só conta como concluída se houver marcação explícita |
 | RB06 | Percentual é derivado (conclusões ÷ total de etapas), não editável |
 | RB07 | Trilha pré-definida nasce da curadoria administrativa |
-| RB08 | Trilha personalizada nasce de solicitação textual + resposta do LLM |
+| RB08 | Trilha personalizada nasce de solicitação textual + resposta do LLM; um novo prompt do dono revisa a mesma trilha |
 | RB09 | Trilha personalizada fica associada ao aluno que a solicitou |
 | RB10 | Sugestão do LLM não substitui nem altera o catálogo curado |
 | RB11 | Remoção de etapa vinculada trata impacto em progresso antes de concluir |
@@ -99,7 +100,7 @@ RNFs não originam Specs próprias. Associação por Spec está no índice (§2)
 
 ### 1.6 Decisões humanas (OPEN)
 
-As 27 OPENs estão **fechadas** (26 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s, gestão de contas (RF14), consulta administrativa de progresso (RF15), a apresentação em sanfona e lightbox (RF05, RF08) e o vídeo do YouTube em lightbox (RF05, OPEN-27).
+As 28 OPENs estão **fechadas** (27 decididas, 1 fora de escopo). Índice e texto completo: [`decisoes-em-aberto.md`](decisoes-em-aberto.md). A baseline já incorpora Gemini, NestJS, App Router, MySQL, JWT, sentinela **Personalizada**, XOR de perfil, política de remoção por bloqueio, timeout 60 s, gestão de contas (RF14), consulta administrativa de progresso (RF15), a apresentação em sanfona e lightbox (RF05, RF08), o vídeo do YouTube em lightbox (RF05, OPEN-27) e o ajuste da trilha personalizada pelo prompt do aluno (RF16, OPEN-28).
 
 ### 1.7 Inconsistências, lacunas e ambiguidades
 
@@ -302,6 +303,25 @@ Observação: RB13 cobre remoção de categoria com trilhas. A sentinela **Perso
 | **Justificativa da ordem** | O acompanhamento do aluno (SPEC-004) já calcula o percentual. A lista de contas (SPEC-008) dá o ponto de entrada. Separada da SPEC-008 porque o resultado é consulta de `Progresso`, não mutação de `Usuario`. |
 | **OPEN associados** | Resolvidos: OPEN-25; não reabre OPEN-21 |
 
+### SPEC-010 — Ajustar trilha personalizada com o agente
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-010 |
+| **Nome** | Ajustar trilha personalizada com o agente |
+| **Objetivo** | O aluno dono reenvia um prompt para corrigir ou melhorar a trilha `personalizada` já gerada. O agente devolve a trilha inteira e a API grava na mesma `Trilha`, preservando conclusões das etapas que permanecem. |
+| **Valor** | Lucas pede para incluir ou excluir uma etapa sem perder o que já concluiu no restante e sem montar outra trilha. |
+| **RF** | RF16; reutiliza RF04, RF05–RF07, RF13 |
+| **RB** | RB01, RB03, RB04, RB06, RB08, RB09, RB10, RB12 |
+| **RNF** | RNF02, RNF03 (esta operação **fora** dos 2 s), RNF05, RNF07 |
+| **UC / fluxo** | UC01, extensão do A3: revisar a trilha personalizada já aberta |
+| **Entidades** | `SolicitacaoTrilha`, `Trilha` (`personalizada`), `Etapa`, `Progresso`, `ConclusaoEtapa` |
+| **Drivers** | AD-RF01, AD-C02, AD-QA01 |
+| **ADRs** | ADR-002, ADR-003, ADR-004 |
+| **Dependências** | SPEC-006, SPEC-004 |
+| **Justificativa da ordem** | A trilha e o progresso já existem. Esta Spec só revisa o que a SPEC-006 criou. Não altera o catálogo curado (SPEC-003 / SPEC-005). |
+| **OPEN associados** | Resolvidos: OPEN-28; reusa OPEN-06, OPEN-09, OPEN-19, OPEN-20 |
+
 ---
 
 ## 3. Questões humanas (OPEN) — resolvidas
@@ -337,6 +357,7 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 | OPEN-25 | Consulta administrativa do progresso | SPEC-009 |
 | OPEN-26 | Sanfona da etapa, lightbox da resposta e da conversa | SPEC-004, SPEC-007 |
 | OPEN-27 | Link de vídeo do YouTube abre lightbox na página | SPEC-004; armazenamento em SPEC-003 / OPEN-16 |
+| OPEN-28 | Aluno reenvia o prompt e a mesma trilha personalizada é revista | SPEC-010 |
 
 ---
 
@@ -352,7 +373,7 @@ Texto completo e status em [`decisoes-em-aberto.md`](decisoes-em-aberto.md). Nen
 
 ## 5. Texto completo das Specs
 
-O índice deste mapa permanece a ordem de implementação **aprovada**: SPEC-001 → … → SPEC-009. O conteúdo completo está em [`specs.md`](specs.md). Status em 2026-10-08: SPEC-001 … SPEC-009 `implementadas`. Aprovação humana de SPEC-008 e SPEC-009 (texto, layout e implementação): 2026-10-08.
+O índice deste mapa permanece a ordem de implementação: SPEC-001 → … → SPEC-010. O conteúdo completo está em [`specs.md`](specs.md). Status em 2026-10-08: SPEC-001 … SPEC-010 `implementadas`. Aprovação humana da SPEC-010 (texto, layout e implementação): 2026-10-08.
 
 **Portão:** o código de uma Spec só começa depois do layout `aprovado`.
 

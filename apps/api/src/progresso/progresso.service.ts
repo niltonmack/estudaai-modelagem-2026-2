@@ -313,6 +313,7 @@ export class ProgressoService {
       trilha: {
         id: progresso.trilha.id,
         titulo: progresso.trilha.titulo,
+        tipo: progresso.trilha.tipo,
         categoria: { id: progresso.trilha.categoria.id, nome: progresso.trilha.categoria.nome }
       },
       proximaEtapa: d.proxima

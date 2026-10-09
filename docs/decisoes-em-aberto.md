@@ -1,6 +1,6 @@
 # Decisões em aberto — EstudaAI
 
-**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25), a apresentação da etapa e da conversa (OPEN-26) e o vídeo do YouTube em lightbox (OPEN-27). **Absorvido na baseline.**  
+**Status do registro:** entrevista original 23 / 23; em 2026-10-08 o humano incluiu RF14/RF15 (OPEN-24 e OPEN-25), a apresentação da etapa e da conversa (OPEN-26), o vídeo do YouTube em lightbox (OPEN-27) e o ajuste da trilha personalizada (OPEN-28). **Absorvido na baseline.**  
 **Origem:** [`mapa-specs.md`](mapa-specs.md) §3  
 **Regra:** a implementação **não** reabre o que está `decidido` ou `fora de escopo`. Este arquivo permanece como rastreio da entrevista; RF, RB, RNF, UC, modelo, drivers e ADRs já refletem as respostas.
 
@@ -311,6 +311,17 @@ Legenda de status:
 | **Decisão** | Um link de vídeo do YouTube (`youtube.com` ou `youtu.be`) no Markdown da etapa **abre um lightbox sobre a página** com o vídeo. O aluno não sai do acompanhamento. Outros links permanecem links. Não há coluna de mídia nem envio de arquivo. |
 | **Notas** | O endereço fica no Markdown, no corpo, no `## Exercício` ou na `## Resposta`. Layout e implementação aprovados pelo humano em 2026-10-08, depois do vídeo de teste na etapa 1 de Python Júnior. |
 
+## OPEN-28 — Ajustar trilha personalizada reenviando o prompt
+
+| Campo | Conteúdo |
+|---|---|
+| **Pergunta** | Como o aluno corrige ou melhora uma trilha que o agente já gerou, por exemplo incluindo ou excluindo uma etapa? |
+| **Specs** | SPEC-010; reusa a porta da SPEC-006 e o acompanhamento da SPEC-004 |
+| **Baseline** | RF04 cria a trilha uma vez. Não havia revisão. RB11 bloqueia o administrador ao remover etapa de trilha pré-definida em uso. |
+| **Status** | `decidido` |
+| **Decisão** | No acompanhamento de trilha `personalizada`, o aluno dono reenvia um prompt. O agente devolve a trilha inteira. A API grava na **mesma** `Trilha` e na mesma `SolicitacaoTrilha`. Etapa citada com o `id` já existente é atualizada e **mantém** a `ConclusaoEtapa`. Etapa omitida é excluída, e só a conclusão dela sai. Etapa sem `id` é criada, sem conclusão. Trilha pré-definida não entra neste fluxo. |
+| **Notas** | O vínculo com o aluno continua em `Progresso.aluno_id` e `SolicitacaoTrilha.aluno_id`; `Trilha` não ganha coluna de usuário. Timeout, LLM desligado ou JSON inválido não gravam nada. Layout e implementação aprovados pelo humano em 2026-10-08. |
+
 ---
 
 ## Resumo
@@ -344,7 +355,8 @@ Legenda de status:
 | OPEN-25 | Visão administrativa do progresso | `decidido` — RF15 / SPEC-009 |
 | OPEN-26 | Sanfona, resposta e conversa em lightbox | `decidido` — SPEC-004, SPEC-007 |
 | OPEN-27 | Vídeo do YouTube em lightbox | `decidido` — SPEC-004; aprovado pelo humano em 2026-10-08 |
+| OPEN-28 | Ajustar trilha personalizada reenviando o prompt | `decidido` — RF16 / SPEC-010; aprovado pelo humano em 2026-10-08 |
 
-Progresso da entrevista: **27 / 27** fechadas (26 decididas, 1 fora de escopo).
+Progresso da entrevista: **28 / 28** fechadas (27 decididas, 1 fora de escopo).
 
 Nenhuma OPEN permanece `em aberto`. A implementação deve obedecer a este registro **e** à baseline atualizada. A divergência OPEN-06 (Gemini) foi incorporada em RNF02, ADR-002, AD-C02 e RF13.

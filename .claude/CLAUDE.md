@@ -69,7 +69,7 @@ EstudaAI: web de trilhas de aprendizagem. Frontend Next.js (App Router), API Nes
 Documentação de modelagem: docs/ (visão, RF, RB, RNF, modelo conceitual, UC, drivers, ADRs).
 Mapa SDD: docs/mapa-specs.md (ordem aprovada). Specs: docs/specs.md (SPEC-001 … SPEC-009 implementadas). Decisões humanas: docs/decisoes-em-aberto.md.
 
-Não inventar requisito, entidade ou tecnologia fora da baseline e de docs/decisoes-em-aberto.md (27 OPENs fechadas). LLM desta versão: Gemini, atrás da porta da API Nest. Não implementar Spec com layout pendente.
+Não inventar requisito, entidade ou tecnologia fora da baseline e de docs/decisoes-em-aberto.md (28 OPENs fechadas). LLM desta versão: Gemini, atrás da porta da API Nest. Não implementar Spec com layout pendente. SPEC-010 (ajustar trilha personalizada) está implementada.
 
 Artefatos de handoff do pipeline de skills: pasta context/ na raiz.
 ```

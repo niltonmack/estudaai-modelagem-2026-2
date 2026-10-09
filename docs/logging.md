@@ -63,6 +63,11 @@ Biblioteca: o **Logger do NestJS** (troca reversível; não é ADR). Destino: `s
 | `llm.geracao.timeout` | Timeout 60 s ou provedor mudo (E2) |
 | `llm.geracao.json_invalido` | `respostaLLM` sem título, descrição ou etapas (E3) |
 | `llm.geracao.persistencia_falhou` | JSON válido, transação revertida; nenhuma trilha órfã |
+| `llm.ajuste.ok` | Mesma trilha personalizada revista pelo prompt do aluno |
+| `llm.ajuste.recusada` | LLM desligado, trilha pré-definida ou aluno que não é o dono |
+| `llm.ajuste.timeout` | Timeout 60 s ou provedor mudo; trilha anterior permanece |
+| `llm.ajuste.json_invalido` | JSON sem título, descrição ou etapas; trilha anterior permanece |
+| `llm.ajuste.persistencia_falhou` | JSON válido, transação revertida; trilha anterior permanece |
 
 A chave Gemini **não** entra no log.
 

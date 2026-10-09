@@ -54,7 +54,7 @@ Acesso Gemini no laboratório (2026-10-02): `generateContent` com a chave de `ap
 
 `GET`/`POST /progresso/:id/mensagens` (aluno JWT). Exige `Progresso.ativo` do próprio aluno na trilha (OPEN-14). Reusa `PORTA_LLM.conversar` (texto in → mensagem out, 60 s). Persistência: `Mensagem` com `origem ∈ {aluno, agente LLM}` e `trilha_id` obrigatório. Timeout/LLM off/sem progresso não alteram catálogo nem etapas. Admin e anônimo recusados. Chave Gemini continua só na API Nest.
 
-UI: em `/progresso/:id`, *Conversar sobre esta trilha* abre a conversa em lightbox (OPEN-26). A rota direta `/progresso/:id/conversa` continua válida. As etapas do acompanhamento são sanfona; `## Resposta` só aparece no lightbox *Ver resposta*. OPEN-27: link de vídeo do YouTube no Markdown da etapa abre o player em lightbox sobre `/progresso/:id`. Outros links seguem para fora.
+UI: em `/progresso/:id`, *Conversar sobre esta trilha* abre a conversa em lightbox (OPEN-26). SPEC-010 (OPEN-28): na trilha personalizada, *Ajustar trilha* reenvia o prompt e revisa a mesma trilha em `POST /solicitacoes-trilha/:progressoId`. A rota direta `/progresso/:id/conversa` continua válida. As etapas do acompanhamento são sanfona; `## Resposta` só aparece no lightbox *Ver resposta*. OPEN-27: link de vídeo do YouTube no Markdown da etapa abre o player em lightbox sobre `/progresso/:id`. Outros links seguem para fora.
 
 ## SPEC-008
 

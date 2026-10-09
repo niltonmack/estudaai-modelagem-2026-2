@@ -93,3 +93,9 @@ O layout foi `aprovado` pelo humano em 2026-10-08 e o painel está `implementado
 Abrir [`video-youtube.html`](video-youtube.html). O link `youtube.com` ou `youtu.be` no Markdown da etapa abre um lightbox sobre o acompanhamento, com o player e o botão Fechar. Os outros links continuam links.
 
 O layout foi `aprovado` pelo humano em 2026-10-08 e está `implementado` em `apps/web/components/markdown-etapa.tsx`.
+
+## SPEC-010 — layout aprovado (2026-10-08)
+
+Abrir [`spec-010.html`](spec-010.html). Telas: acompanhamento com **Ajustar trilha**, prompt de correção com as etapas atuais, espera ou falha sem gravar, trilha revista com a conclusão das etapas que permaneceram. Viewport desktop e smartphone no mesmo fluxo empilhado.
+
+O layout foi `aprovado` pelo humano em 2026-10-08 e está `implementado` no acompanhamento da trilha personalizada.

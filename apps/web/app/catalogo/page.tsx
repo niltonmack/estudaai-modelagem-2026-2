@@ -61,6 +61,11 @@ function CatalogoConteudo() {
     return mapa;
   }, [meus]);
 
+  const personalizadas = useMemo(
+    () => meus.filter((item) => item.trilha.tipo === "personalizada"),
+    [meus]
+  );
+
   async function escolher(trilhaId: string) {
     if (!sessao) {
       setAlerta({
@@ -125,7 +130,33 @@ function CatalogoConteudo() {
           </p>
         </div>
       ) : (
-        catalogo.categorias.map((categoria) => (
+        <>
+          {personalizadas.length > 0 ? (
+            <section className="mt-6">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                Suas trilhas personalizadas
+              </h3>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                {personalizadas.map((item) => (
+                  <article key={item.id} className="rounded-lg border border-slate-200 bg-white p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-brand-trail">Personalizada</p>
+                    <h3 className="mt-1 text-lg font-semibold text-brand-ink">{item.trilha.titulo}</h3>
+                    <p className="mt-2 text-xs text-slate-500">
+                      {item.etapasConcluidas} de {item.totalEtapas} etapas
+                      {item.proximaEtapa ? ` · próxima: ${item.proximaEtapa.titulo}` : " · concluída"}
+                    </p>
+                    <Link
+                      href={`/progresso/${item.id}`}
+                      className="mt-3 inline-flex rounded-md bg-brand-trail px-3 py-2 text-sm font-medium text-white hover:bg-brand-trailDark"
+                    >
+                      Abrir trilha
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+          {catalogo.categorias.map((categoria) => (
           <section key={categoria.id} className="mt-6">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{categoria.nome}</h3>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -153,10 +184,12 @@ function CatalogoConteudo() {
               })}
             </div>
           </section>
-        ))
+        ))}
+        </>
       )}
       <p className="mt-6 text-xs text-slate-500">
-        Só entram trilhas publicadas. As geradas pelo agente não aparecem nesta lista.
+        A lista por categoria traz só trilhas publicadas. As que o agente gerou para você ficam em Suas trilhas
+        personalizadas e em Meu progresso.
       </p>
     </>
   );

@@ -63,7 +63,7 @@ O administrador **não** possui associação estrutural com Categoria, Trilha, E
 1. **RB03** — Toda `Trilha` possui exatamente uma `Categoria` e uma ou mais `Etapa` ordenadas. Personalizadas usam a sentinela **Personalizada**.
 2. **RB04 / RB06** — `Progresso` é individual por aluno; o percentual é derivado.
 3. **RB05 / RB12** — `Etapa` só entra no percentual se existir `ConclusaoEtapa`; o histórico permanece enquanto `Progresso.ativo` for verdadeiro.
-4. **RB08 / RB09** — Trilha `personalizada` é criada a partir de `SolicitacaoTrilha` (texto do aluno + `respostaLLM` JSON) e fica associada a esse aluno via `Progresso`.
+4. **RB08 / RB09** — Trilha `personalizada` é criada a partir de `SolicitacaoTrilha` (texto do aluno + `respostaLLM` JSON) e fica associada a esse aluno via `Progresso`. Um novo prompt do mesmo aluno (RF16) revisa essa `Trilha`, sem coluna de usuário em `Trilha` e sem nova linha de `Progresso`.
 5. **RB01 / RB02 / RB07 / RB14–RB18** — Uso de trilhas e progresso exige autenticação; listagem do catálogo pode ser anônima; cadastro de trilhas pré-definidas e gestão de contas são exclusivos do administrador; perfis são XOR; o último administrador não é removido; aluno com progresso não é removido; consulta administrativa de progresso é somente leitura.
 6. **RB10** — Mensagens do agente são apoio ao estudo, exigem trilha em andamento e não substituem a curadoria.
 7. **RB11 / RB13** — Não se remove etapa com progresso vigente nem categoria que ainda classifique trilhas. `ConclusaoEtapa` já gravadas são preservadas. Recusa-se remoção que deixaria a trilha sem etapas.
@@ -138,7 +138,7 @@ classDiagram
 |---|---|
 | Cadastro e login com perfil (RF01, RF02, RB14) | `Usuario` e especializações XOR `Aluno` / `Administrador` |
 | Catálogo por área e trilhas curadas (RF03, RF09, RF10, RB07) | `Categoria` classifica `Trilha` com `tipo = pré-definida` |
-| Trilha gerada por LLM a partir de objetivo em linguagem natural (RF04, RB08, RB09) | `SolicitacaoTrilha` origina `Trilha` personalizada, depois acompanhada por `Progresso` do aluno |
+| Trilha gerada por LLM a partir de objetivo em linguagem natural (RF04, RB08, RB09) | `SolicitacaoTrilha` origina `Trilha` personalizada, depois acompanhada por `Progresso` do aluno. RF16 revisa essa mesma trilha |
 | Visualizar etapas, conteúdos e sequência (RF05, RF12) | `Etapa.titulo`, `conteudo` e `ordem` na composição da trilha. Link de vídeo do YouTube nesse Markdown abre em lightbox (OPEN-27); não há atributo de mídia |
 | Progresso percentual e conclusão explícita (RF06, RF07, RB05, RB06) | `Progresso` + `ConclusaoEtapa` + atributo derivado |
 | Conversa de dúvidas e sugestões (RF08, RB10) | `Mensagem` associada ao aluno e obrigatoriamente à trilha em andamento |
