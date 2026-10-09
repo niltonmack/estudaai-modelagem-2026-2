@@ -20,7 +20,7 @@ Tabelas só de implementação (`token_revogado`, `recuperacao_senha`, `configur
 | **Aluno** | Especialização XOR de Usuario que estuda e acompanha trilhas | — | persona 1, RB01, RB04, RB14 |
 | **Administrador** | Especialização XOR de Usuario autorizada a manter o catálogo, o interruptor do LLM, as contas e a consulta do progresso dos alunos | — | persona 2, RF09–RF15, RB02, RB14–RB18 |
 | **Categoria** | Organização do catálogo por área de aprendizagem | `nome`, `descricao` | RF03, RF09, RB03 |
-| **Trilha** | Percurso de aprendizagem pré-definido ou personalizado | `titulo`, `descricao`, `tipo` | RF03–RF05, RF10, RB03, RB07, RB08 |
+| **Trilha** | Percurso de aprendizagem pré-definido ou personalizado | `titulo`, `descricao`, `tipo`, `disponivel` | RF03–RF05, RF10, RF18, RB03, RB07, RB08, RB20 |
 | **Etapa** | Unidade ordenada de conteúdo dentro de uma trilha | `titulo`, `conteudo` (Markdown), `ordem` | RF05, RF11, RF12, RB03 |
 | **Progresso** | Acompanhamento individual de um aluno em uma trilha | `dataInicio`, `ativo`, `/percentualProgresso` | RF06, RB04, RB06, RB12 |
 | **ConclusaoEtapa** | Registro explícito de que o aluno concluiu uma etapa | `dataConclusao` | RF07, RB05, RB12 |
@@ -49,9 +49,10 @@ Valores de domínio:
 | Aluno | realiza | Progresso | 1 : 0..* | Cada acompanhamento é individual (RB04) |
 | Aluno | envia | Mensagem | 1 : 0..* | Conversa de apoio ao estudo (RF08) |
 | SolicitacaoTrilha | origina | Trilha | 0..1 : 1 | Só a trilha personalizada nasce da solicitação; a pré-definida não possui solicitação |
+| Aluno | autoria | Trilha | 1 : 0..* | Só a personalizada tem autor: o aluno que a solicitou. A pré-definida não tem autor (RB09, RF18) |
 | Categoria | classifica | Trilha | 1 : 1..* | Toda trilha possui uma categoria (RB03) |
 | Trilha | composta por | Etapa | 1 : 1..* | Toda trilha tem uma ou mais etapas ordenadas (RB03, RF12) |
-| Progresso | acompanha | Trilha | 1 : 1 | O aluno acompanha uma trilha por vez neste vínculo |
+| Progresso | acompanha | Trilha | 0..* : 1 | Vários alunos acompanham a mesma trilha; cada um tem o próprio `Progresso` e as próprias conclusões |
 | Progresso | registra | ConclusaoEtapa | 1 : 0..* | Histórico de conclusões enquanto o progresso está ativo (RB12) |
 | ConclusaoEtapa | conclui | Etapa | 1 : 1 | Conclusão explícita; sem marcação a etapa não conta (RB05) |
 | Mensagem | refere-se a | Trilha | 0..* : 1 | Conversa exige trilha em andamento (RF08) |
@@ -63,10 +64,11 @@ O administrador **não** possui associação estrutural com Categoria, Trilha, E
 1. **RB03** — Toda `Trilha` possui exatamente uma `Categoria` e uma ou mais `Etapa` ordenadas. Personalizadas usam a sentinela **Personalizada**.
 2. **RB04 / RB06** — `Progresso` é individual por aluno; o percentual é derivado.
 3. **RB05 / RB12** — `Etapa` só entra no percentual se existir `ConclusaoEtapa`; o histórico permanece enquanto `Progresso.ativo` for verdadeiro.
-4. **RB08 / RB09** — Trilha `personalizada` é criada a partir de `SolicitacaoTrilha` (texto do aluno + `respostaLLM` JSON) e fica associada a esse aluno via `Progresso`. Um novo prompt do mesmo aluno (RF16) revisa essa `Trilha`, sem coluna de usuário em `Trilha` e sem nova linha de `Progresso`.
+4. **RB08 / RB09 / RB20** — Trilha `personalizada` nasce de `SolicitacaoTrilha` e tem autor: o aluno que a solicitou. O `Progresso` desse autor é o acompanhamento dele, não a autoria. Com a trilha disponível, outros alunos abrem o próprio `Progresso` na mesma `Trilha`. O autor revisa pelo prompt (RF16) sem criar outra trilha. Enquanto houver `Progresso` de outro aluno, etapa em uso não sai (RB11).
 5. **RB01 / RB02 / RB07 / RB14–RB18** — Uso de trilhas e progresso exige autenticação; listagem do catálogo pode ser anônima; cadastro de trilhas pré-definidas e gestão de contas são exclusivos do administrador; perfis são XOR; o último administrador não é removido; aluno com progresso não é removido; consulta administrativa de progresso é somente leitura.
 6. **RB10** — Mensagens do agente são apoio ao estudo, exigem trilha em andamento e não substituem a curadoria.
 7. **RB11 / RB13** — Não se remove etapa com progresso vigente nem categoria que ainda classifique trilhas. `ConclusaoEtapa` já gravadas são preservadas. Recusa-se remoção que deixaria a trilha sem etapas.
+8. **RB19** — A busca semântica não é uma entidade do MySQL. O índice externo aponta para `Trilha` e `Etapa` já persistidas e não substitui o conteúdo.
 
 ## 5. Diagrama em Mermaid
 
@@ -91,6 +93,7 @@ classDiagram
         titulo
         descricao
         tipo
+        disponivel
     }
     class Etapa {
         titulo
@@ -124,9 +127,10 @@ classDiagram
     Aluno "1" --> "0..*" Progresso : realiza
     Aluno "1" --> "0..*" Mensagem : envia
     SolicitacaoTrilha "0..1" --> "1" Trilha : origina
+    Aluno "0..1" --> "0..*" Trilha : autoria
     Categoria "1" --> "1..*" Trilha : classifica
     Trilha "1" --> "1..*" Etapa : composta por
-    Progresso "1" --> "1" Trilha : acompanha
+    Progresso "0..*" --> "1" Trilha : acompanha
     Progresso "1" --> "0..*" ConclusaoEtapa : registra
     ConclusaoEtapa "1" --> "1" Etapa : conclui
     Mensagem "0..*" --> "1" Trilha : refere-se a
@@ -138,8 +142,8 @@ classDiagram
 |---|---|
 | Cadastro e login com perfil (RF01, RF02, RB14) | `Usuario` e especializações XOR `Aluno` / `Administrador` |
 | Catálogo por área e trilhas curadas (RF03, RF09, RF10, RB07) | `Categoria` classifica `Trilha` com `tipo = pré-definida` |
-| Trilha gerada por LLM a partir de objetivo em linguagem natural (RF04, RB08, RB09) | `SolicitacaoTrilha` origina `Trilha` personalizada, depois acompanhada por `Progresso` do aluno. RF16 revisa essa mesma trilha |
-| Visualizar etapas, conteúdos e sequência (RF05, RF12) | `Etapa.titulo`, `conteudo` e `ordem` na composição da trilha. Link de vídeo do YouTube nesse Markdown abre em lightbox (OPEN-27); não há atributo de mídia |
+| Trilha gerada por LLM a partir de objetivo em linguagem natural (RF04, RB08, RB09, RF18, RB20) | `SolicitacaoTrilha` origina `Trilha` personalizada. O aluno solicitante é o autor. O `Progresso` dele é o acompanhamento, não a posse exclusiva. Com `disponivel`, outros alunos abrem o próprio `Progresso` na mesma trilha |
+| Visualizar etapas, conteúdos e sequência (RF05, RF12) | `Etapa.titulo`, `conteudo` e `ordem` na composição da trilha. Link de vídeo do YouTube nesse Markdown abre em lightbox (OPEN-27); não há atributo de mídia. A busca por significado (RF17) não cria atributo no MySQL: o vetor fica no Pinecone |
 | Progresso percentual e conclusão explícita (RF06, RF07, RB05, RB06) | `Progresso` + `ConclusaoEtapa` + atributo derivado |
 | Conversa de dúvidas e sugestões (RF08, RB10) | `Mensagem` associada ao aluno e obrigatoriamente à trilha em andamento |
 | Administração restrita (RF09–RF15, RB02, RB15, RNF06) | Restrição de permissão sobre catálogo, contas e consulta de progresso, registrada na nota do administrador |

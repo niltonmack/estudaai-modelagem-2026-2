@@ -81,6 +81,20 @@ A chave Gemini **não** entra no log.
 
 A chave Gemini **não** entra no log.
 
+## O que entra no log (SPEC-011)
+
+| Evento | Quando |
+|---|---|
+| `busca.ok` | A pergunta do aluno voltou do índice; o log leva a quantidade de resultados, sem o texto da pergunta nem o conteúdo da etapa |
+| `busca.falha` | Pinecone ausente, timeout ou erro; nada no MySQL foi alterado |
+| `indice.upsert` | Registro `trilhaId#etapaId` gravado ou atualizado depois do commit no MySQL |
+| `indice.removido` | Registro removido porque a etapa saiu do conjunto pesquisável |
+| `indice.falha` | A gravação no Pinecone falhou depois do commit; a trilha no MySQL permanece |
+| `trilha.disponibilizada` | O autor deixou a personalizada disponível a todos |
+| `trilha.retirada` | O autor retirou a disponibilidade; progressos já abertos permanecem |
+
+A chave Pinecone **não** entra no log. O campo `text` do registro **não** entra no log.
+
 ## O que entra no log (SPEC-008)
 
 | Evento | Quando |

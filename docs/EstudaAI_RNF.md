@@ -25,7 +25,7 @@ O sistema **SHALL** adaptar o conteúdo da interface para uso em computadores, t
 
 **Tipo EARS:** Complex
 
-**WHEN** uma pessoa usuária executar uma ação principal do sistema, **IF** a operação não depender diretamente de um serviço externo de LLM, o sistema **SHALL** apresentar tempo de resposta inferior a 2 segundos.
+**WHEN** uma pessoa usuária executar uma ação principal do sistema, **IF** a operação não depender diretamente de um serviço externo de LLM ou do índice vetorial, o sistema **SHALL** apresentar tempo de resposta inferior a 2 segundos.
 
 ## RNF04 - Usabilidade
 
@@ -74,6 +74,18 @@ Não há tela de consulta de log nesta versão: o destino é a saída da API (co
 O sistema **SHALL** aplicar o logotipo e a paleta definidos em [`identidade-visual.md`](identidade-visual.md) em toda superfície web (aluno e administrador).
 
 O sistema **SHALL NOT** usar uma segunda paleta de marca nem um segundo símbolo por perfil. Cores de estado (sucesso, perigo) não substituem Ink, Trilha nem Faísca.
+
+## RNF11 - Índice vetorial
+
+**Tipo EARS:** Optional feature
+
+**WHERE** a busca semântica estiver configurada, o sistema **SHALL** usar o índice Pinecone já existente `quickstart`, no namespace `__default__`, com dimensão 1024, truncamento `END` e field map `text`.
+
+A gravação de um trecho **SHALL** usar o parâmetro de embedding `passage`. A pergunta do aluno **SHALL** usar o parâmetro `query`. Os dois lados **SHALL** permanecer em 1024 dimensões.
+
+A chave `PINECONE_API_KEY` **SHALL** existir somente na API Nest. O sistema **SHALL NOT** enviá-la ao navegador nem gravá-la em log. A chamada ao Pinecone **SHALL NOT** entrar no orçamento de 2 segundos do RNF03.
+
+O sistema **SHALL NOT** gravar o vetor numa coluna do MySQL.
 
 ## Observação sobre `SHOULD`
 

@@ -99,3 +99,9 @@ O layout foi `aprovado` pelo humano em 2026-10-08 e está `implementado` em `app
 Abrir [`spec-010.html`](spec-010.html). Telas: acompanhamento com **Ajustar trilha**, prompt de correção com as etapas atuais, espera ou falha sem gravar, trilha revista com a conclusão das etapas que permaneceram. Viewport desktop e smartphone no mesmo fluxo empilhado.
 
 O layout foi `aprovado` pelo humano em 2026-10-08 e está `implementado` no acompanhamento da trilha personalizada.
+
+## SPEC-011 — layout aprovado (2026-10-09)
+
+Abrir [`spec-011.html`](spec-011.html). A pergunta fica no topo do catálogo. O autor deixa a personalizada disponível; outro aluno começa essa mesma trilha. Telas: pergunta, resultado com autor, disponibilizar, categoria Personalizada, nenhum resultado, busca indisponível. Viewport desktop e smartphone no mesmo fluxo empilhado.
+
+O layout foi `aprovado` pelo humano em 2026-10-09. A implementação não foi iniciada.

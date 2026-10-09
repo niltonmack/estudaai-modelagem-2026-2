@@ -53,6 +53,8 @@ No acompanhamento, cada etapa **SHALL** aparecer em sanfona: o título fica vis�
 
 **WHEN** o aluno acionar um link de vídeo do YouTube (`youtube.com` ou `youtu.be`) no Markdown da etapa, o sistema **SHALL** abrir esse vídeo em um lightbox sobre a página, sem abandonar o acompanhamento. Os demais links **SHALL** permanecer links.
 
+**WHERE** o Markdown contiver fórmula entre `$` ou `$$`, o sistema **SHALL** desenhá-la como expressão matemática. A vírgula entre algarismos permanece vírgula decimal.
+
 ## RF06 - Visualizar progresso
 
 **Tipo EARS:** State-driven
@@ -130,6 +132,24 @@ O administrador **SHALL NOT** registrar conclusão de etapa, iniciar acompanhame
 **WHEN** o aluno dono de uma trilha `personalizada` reenviar um prompt para corrigir ou melhorar essa trilha **e** a funcionalidade de LLM estiver habilitada, o sistema **SHALL** pedir ao agente a trilha revista e **SHALL** gravar o resultado na mesma `Trilha`, sem criar outra e sem alterar trilhas pré-definidas.
 
 O aluno **SHALL** poder pedir inclusão, exclusão ou reescrita de etapas. A etapa que permanece conserva a conclusão já marcada. A etapa excluída deixa de compor a trilha, e a conclusão só dela é removida. A etapa nova nasce sem conclusão.
+
+## RF17 - Buscar conteúdo das trilhas por significado
+
+**Tipo EARS:** Event-driven
+
+**WHEN** o aluno autenticado enviar uma pergunta em linguagem natural na página do catálogo, o sistema **SHALL** devolver as etapas cujo conteúdo é semanticamente próximo dessa pergunta, na mesma página, acima da lista por categoria.
+
+A busca **SHALL** percorrer as trilhas disponíveis para todos: as pré-definidas publicadas e as personalizadas que o autor deixou disponíveis. **SHALL** incluir também as personalizadas ainda privadas desse aluno. **SHALL NOT** devolver a personalizada privada de outro aluno.
+
+Cada resultado **SHALL** identificar a trilha, a etapa e, na personalizada, o autor. O aluno que ainda não acompanha essa trilha **SHALL** poder começá-la dali. O MySQL permanece a fonte do conteúdo; o índice vetorial só acelera a busca.
+
+## RF18 - Disponibilizar trilha personalizada
+
+**Tipo EARS:** Event-driven
+
+**WHEN** o autor de uma trilha `personalizada` deixá-la disponível, o sistema **SHALL** passá-la a constar para todos os alunos, na categoria **Personalizada**, sem copiar a trilha e sem criar outro `Progresso` para o autor.
+
+**WHEN** outro aluno começar essa trilha, o sistema **SHALL** criar o `Progresso` dele sobre a mesma `Trilha` e as mesmas etapas. A autoria **SHALL** permanecer com quem a solicitou. As conclusões de um aluno **SHALL NOT** alterar as de outro.
 
 ## Observação sobre `SHOULD` e `IF`
 
